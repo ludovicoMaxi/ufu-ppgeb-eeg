@@ -18,8 +18,8 @@ public class Paciente {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
+    @GeneratedValue( generator = "increment" )
+    @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
     String nome;
@@ -74,5 +74,12 @@ public class Paciente {
     public void setDataNascimento( Date dataNascimento ) {
 
         this.dataNascimento = dataNascimento;
+    }
+
+
+    @Override
+    public String toString() {
+
+        return "Paciente{" + "id=" + id + ", nome='" + nome + '\'' + ", sexo=" + sexo + ", dataNascimento=" + dataNascimento + '}';
     }
 }
