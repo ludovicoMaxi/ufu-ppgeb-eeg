@@ -8,7 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 
 /**
@@ -23,12 +25,10 @@ public class EegController {
 
 
     @GetMapping
-    public ModelAndView listar() {
+    @ResponseBody
+    public List< Paciente > listar() {
 
-        ModelAndView modelAndView = new ModelAndView( "ListaPacientes" );
-        modelAndView.addObject( "pacientes", pacienteRepository.findAll() );
-        modelAndView.addObject( "paciente", new Paciente() );
-        return modelAndView;
+        return pacienteRepository.findAll();
 
     }
 

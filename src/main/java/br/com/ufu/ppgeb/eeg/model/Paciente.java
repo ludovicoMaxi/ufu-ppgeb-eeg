@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -26,6 +27,7 @@ public class Paciente {
 
     char sexo;
 
+    @JsonFormat(pattern="dd/MM/yyyy")
     Date dataNascimento;
 
 
