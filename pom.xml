@@ -109,16 +109,6 @@
                             <!--</arguments>-->
                         <!--</configuration>-->
                     <!--</execution>-->
-                    <execution>
-                        <id>webpack</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>node_modules/webpack/bin/webpack.js</executable>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
