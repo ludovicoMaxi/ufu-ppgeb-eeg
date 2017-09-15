@@ -31,7 +31,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postbuild": "webpack -p"
+    "postinstall": "./node_modules/webpack/bin/webpack.js -p"
   },
   "repository": {
     "type": "git",
