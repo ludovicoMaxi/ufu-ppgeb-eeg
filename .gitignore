@@ -25,6 +25,8 @@ nbdist/
 
 
 target/
+node_modules/
+src/main/webapp/public
 .settings/
 .classpath
 .project

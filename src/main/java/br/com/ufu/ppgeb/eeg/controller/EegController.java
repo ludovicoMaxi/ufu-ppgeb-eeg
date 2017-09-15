@@ -5,10 +5,7 @@ import br.com.ufu.ppgeb.eeg.model.Paciente;
 import br.com.ufu.ppgeb.eeg.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,5 +35,12 @@ public class EegController {
 
         this.pacienteRepository.save( paciente );
         return "redirect:/pacientes";
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete( @PathVariable(value="id") Long id  ) {
+
+        this.pacienteRepository.delete( id );
+        return "redirect:/";
     }
 }
