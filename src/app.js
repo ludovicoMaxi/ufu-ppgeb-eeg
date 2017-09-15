@@ -14,7 +14,7 @@ import LoginPage from './pages/LoginPage';
 ReactDOM.render((
   <BrowserRouter>
     <Switch>
-      <Route exact path='/' component={MainPage}/> 
+      <Route exact path='/' component={MainPage}/>
       <Route path='/login' component={LoginPage}/>
     </Switch>
   </BrowserRouter>),
