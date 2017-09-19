@@ -23,6 +23,8 @@ public class Pedido {
     @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
+    private Long prontuario;
+
     private Long pedido;
 
     private String setor;
@@ -53,6 +55,18 @@ public class Pedido {
     public void setId( Long id ) {
 
         this.id = id;
+    }
+
+
+    public Long getProntuario() {
+
+        return prontuario;
+    }
+
+
+    public void setProntuario( Long prontuario ) {
+
+        this.prontuario = prontuario;
     }
 
 
@@ -179,8 +193,9 @@ public class Pedido {
     @Override
     public String toString() {
 
-        return "Pedido{" + "id=" + id + ", pedido=" + pedido + ", setor='" + setor + '\'' + ", convenio='" + convenio + '\'' + ", medico_soliciante='"
-            + medico_soliciante + '\'' + ", usuario='" + usuario + '\'' + ", clinicaOrigem='" + clinicaOrigem + '\'' + ", origemCidade='" + origemCidade + '\''
-            + ", pacienteId=" + pacienteId + ", dataPedido=" + dataPedido + ", dataRealizacao=" + dataRealizacao + '}';
+        return "Pedido{" + "id=" + id + ", prontuario=" + prontuario + ", pedido=" + pedido + ", setor='" + setor + '\'' + ", convenio='" + convenio + '\''
+            + ", medico_soliciante='" + medico_soliciante + '\'' + ", usuario='" + usuario + '\'' + ", clinicaOrigem='" + clinicaOrigem + '\''
+            + ", origemCidade='" + origemCidade + '\'' + ", pacienteId=" + pacienteId + ", dataPedido=" + dataPedido + ", dataRealizacao=" + dataRealizacao
+            + '}';
     }
 }

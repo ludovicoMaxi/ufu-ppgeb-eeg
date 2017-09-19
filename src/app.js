@@ -8,14 +8,18 @@ import 'toastr/build/toastr.css';
 
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import MainPage from './pages/MainPage';
+import PacientePage from './pages/PacientePage';
 import LoginPage from './pages/LoginPage';
+import PedidoRegister from './pages/PedidoRegister';
+import ExameRegister from './pages/ExameRegister';
 
 ReactDOM.render((
   <BrowserRouter>
     <Switch>
-      <Route exact path='/' component={MainPage}/>
+      <Route exact path='/' component={PacientePage}/>
       <Route path='/login' component={LoginPage}/>
+      <Route exact path='/pedido' component={PedidoRegister}/>
+      <Route exact path='/exame' component={ExameRegister}/>
     </Switch>
   </BrowserRouter>),
   document.getElementById('root')

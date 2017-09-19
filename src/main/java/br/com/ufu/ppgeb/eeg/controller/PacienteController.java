@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping( "/pacientes" )
-public class EegController {
+public class PacienteController {
 
     @Autowired
     private PacienteRepository pacienteRepository;

@@ -86,22 +86,22 @@ var PacienteForm = React.createClass({
   render: function() {
     return (
       <form className="form-inline" method="POST" onSubmit={this.handleSubmit} style={{margin: '20px 0'}}>
-      <div class="form-group">
-      <input type="text" className="form-control" placeholder="Nome"
-        value={this.state.nome} onChange={this.handleChangeNome}/>
-      <input type="text" className="form-control" placeholder="Sexo"
-        value={this.state.sexo} onChange={this.handleChangeSexo}/>
-      <input type="text" className="form-control" placeholder="Data Nascimento"
-        value={this.state.dataNascimento} onChange={this.handleChangeDataNasc} />
-      <button type="submit" className="btn btn-primary">Adicionar</button>
-      </div>
+        <div class="form-group">
+          <input type="text" className="form-control" placeholder="Nome"
+            value={this.state.nome} onChange={this.handleChangeNome}/>
+          <input type="text" className="form-control" placeholder="Sexo"
+            value={this.state.sexo} onChange={this.handleChangeSexo}/>
+          <input type="text" className="form-control" placeholder="Data Nascimento"
+            value={this.state.dataNascimento} onChange={this.handleChangeDataNasc} />
+          <button type="submit" className="btn btn-primary">Adicionar</button>
+        </div>
       </form>
     );
   }
 });
 
 
-var MainPage = React.createClass({
+var PacientePage = React.createClass({
 
   loadPacientesFromServer: function () {
     var self = this;
@@ -128,4 +128,4 @@ var MainPage = React.createClass({
   }
 });
 
-export default MainPage;
+export default PacientePage;
