@@ -1,46 +1,53 @@
 {
   "name": "ufu-ppgeb-eeg",
   "version": "1.0.0",
-  "description": "Banco de dados de EEG",
-  "main": "webpack.config.js",
-  "dependencies": {
-    "babel-loader": "^6.2.7",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "bootstrap": "^3.3.7",
-    "jquery": "^3.1.1",
-    "react": "^15.3.2",
-    "react-document-title": "^2.0.3",
-    "react-dom": "^15.3.2",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
-    "toastr": "^2.1.2"
-  },
-  "devDependencies": {
-    "babel-core": "^6.18.2",
-    "babel-loader": "^6.2.7",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "css-loader": "^0.25.0",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.9.0",
-    "gulp": "^3.9.1",
-    "style-loader": "^0.13.1",
-    "webpack": "^1.15.0",
-    "webpack-stream": "^3.2.0"
-  },
+  "description": "> Cadastro de EEG coletados no Programa de Pós-graduação da UFU",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "./node_modules/webpack/bin/webpack.js -p"
+    "dev": "webpack-dev-server --progress --colors --inline --hot --mode development",
+    "dev-build": "webpack --display-modules --progress --colors --inline --mode development",
+    "prod-build": "webpack --progress -p --mode production",
+    "watch": "webpack --watch --progress"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ludovicoMaxi/ufu-ppgeb-eeg.git"
   },
-  "author": "",
+  "keywords": [],
+  "author": "João Ludovico Maximiano",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/stormpath/stormpath-spring-boot-react-example/issues"
-  },
-  "homepage": "https://github.com/stormpath/stormpath-spring-boot-react-example#readme"
+  "homepage": "https://github.com/ludovicoMaxi/ufu-ppgeb-eeg#readme",
+  "devDependencies": {
+    "admin-lte": "^2.4.8",
+    "axios": "^0.18.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-react-html-attrs": "^2.1.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.23.1",
+    "file-loader": "^2.0.0",
+    "font-awesome": "^4.7.0",
+    "ionicons": "^4.4.1",
+    "lodash": "^4.17.10",
+    "mini-css-extract-plugin": "^0.4.2",
+    "react": "^15.4.2",
+    "react-bootstrap-datetimepicker": "0.0.22",
+    "react-dom": "^15.4.2",
+    "react-icheck": "^0.3.8",
+    "react-redux": "^5.0.7",
+    "react-redux-toastr": "^7.4.0",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-form": "^7.4.2",
+    "redux-multi": "^0.1.12",
+    "redux-promise": "^0.6.0",
+    "redux-thunk": "^2.3.0",
+    "style-loader": "^0.22.1",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.6"
+  }
 }

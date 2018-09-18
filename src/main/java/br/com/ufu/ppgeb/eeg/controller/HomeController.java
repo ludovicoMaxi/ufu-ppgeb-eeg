@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 /**
- * Created by joaol on 08/09/17.
+ * Created by joaol on 15/04/18.
  */
 @Controller
 public class HomeController {
 
-    @RequestMapping( value = { "/", "/login", "/cadastro", "/pedido", "exame" } )
+    @RequestMapping( value = { "/", "/login", "/customers/*" } )
     public String index() {
 
-        return "index.html";
+        return "index";
     }
 }

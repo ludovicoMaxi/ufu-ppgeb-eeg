@@ -5,21 +5,20 @@ import toastr from 'toastr';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'toastr/build/toastr.css';
+import './pages/style.css';
 
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import PacientePage from './pages/PacientePage';
+import CarPage from './pages/CarPage';
+import CarEditPage from './pages/CarEditPage';
 import LoginPage from './pages/LoginPage';
-import PedidoRegister from './pages/PedidoRegister';
-import ExameRegister from './pages/ExameRegister';
 
 ReactDOM.render((
   <BrowserRouter>
     <Switch>
-      <Route exact path='/' component={PacientePage}/>
+      <Route exact path='/' component={CarPage}/>
+      <Route path='/cars/:id' component={CarEditPage}/>
       <Route path='/login' component={LoginPage}/>
-      <Route exact path='/pedido' component={PedidoRegister}/>
-      <Route exact path='/exame' component={ExameRegister}/>
     </Switch>
   </BrowserRouter>),
   document.getElementById('root')

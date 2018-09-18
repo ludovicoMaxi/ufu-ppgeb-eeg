@@ -1,0 +1,3 @@
+INSERT INTO car ( id, brand, model, color, year, price, description, IS_NEW, CREATED_DATE, UPDATED_DATE) VALUES ( 2,'CHEVROLET', 'CORSA', 'BRANCO', 2011, 22000.10, '1.0', 0, TO_DATE('01/01/2017','dd/MM/RRRR'), null );
+INSERT INTO car ( id, brand, model, color, year, price, description, IS_NEW, CREATED_DATE, UPDATED_DATE) VALUES ( 3,'HONDA', 'CIVIC', 'AZUL', 2017, 90000.10, '2.0', 1, TO_DATE('01/01/2017','dd/MM/RRRR'), null );
+INSERT INTO car ( id, brand, model, color, year, price, description, IS_NEW, CREATED_DATE, UPDATED_DATE) VALUES ( 4,'VOLKSWAGEM', 'GOL', 'AMARELO', 2018, 45000.10, '1.6', 1, TO_DATE('01/01/2017','dd/MM/RRRR'), null );

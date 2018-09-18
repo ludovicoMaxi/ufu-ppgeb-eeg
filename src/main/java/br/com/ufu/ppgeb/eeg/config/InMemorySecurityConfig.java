@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 
 
 /**
- * Created by joaol on 08/09/17.
+ * Created by joaol on 15/04/18.
  */
 @Configuration
 public class InMemorySecurityConfig {
@@ -16,7 +16,7 @@ public class InMemorySecurityConfig {
     public void configureGlobal( AuthenticationManagerBuilder builder )
         throws Exception {
 
-        builder.inMemoryAuthentication().withUser( "joaol" ).password( "123" ).roles( "USER" ).and().withUser( "destro" ).password( "123" )
-            .roles( "USER" ).and().withUser( "gaspar" ).password( "123" ).roles( "USER" );
+        builder.inMemoryAuthentication().withUser( "joaol" ).password( "123" ).roles( "USER" ).and().withUser( "teste" ).password( "123" )
+            .roles( "USER" ).and().withUser( "user" ).password( "123" ).roles( "USER" );
     }
 }

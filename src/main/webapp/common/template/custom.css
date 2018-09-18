@@ -1,0 +1,23 @@
+.main-footer{
+    text-align: center;
+}
+
+button {
+    margin-left: 5px;
+}
+
+.disable-icon-date .input-group-addon {
+    background-color: #eee;
+    pointer-events: none;
+}
+
+.overflow-auto{
+    overflow: auto;
+}
+
+.actions-contacts {
+    float: right;
+    padding: 15px;
+    padding-bottom: 5px;
+    padding-top: 10px;
+}
