@@ -15,6 +15,10 @@ button {
     overflow: auto;
 }
 
+.display-table{
+    display: table;
+}
+
 .actions-contacts {
     float: right;
     padding: 15px;
