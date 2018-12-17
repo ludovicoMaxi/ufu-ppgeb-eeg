@@ -4,9 +4,9 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 
-const BASE_URL_CUSTOMER = 'http://localhost:8080/api/customer'
-const BASE_URL_CONTACT = 'http://localhost:8080/api/contact'
-const INITIAL_VALUES = { 'customer': {}, 'contactList': [{}] }
+import { BASE_URL_CUSTOMER, BASE_URL_CONTACT, BASE_URL_ADDRESS } from '../constants'
+
+const INITIAL_VALUES = { 'customer': {}, 'contactList': [{}], 'address': {} }
 
 export function getList() {
     const request = axios.get(`${BASE_URL_CUSTOMER}`)

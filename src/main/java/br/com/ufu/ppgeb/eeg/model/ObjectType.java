@@ -18,7 +18,7 @@ public class ObjectType {
 
     private static final long serialVersionUID = 1L;
 
-    public static final ObjectType CUSTOMER = new ObjectType( 1L );
+    public static final ObjectType PATIENT = new ObjectType( 1L );
 
     @Id
     private Long id;
