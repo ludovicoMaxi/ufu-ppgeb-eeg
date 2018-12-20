@@ -7,8 +7,10 @@ export default props => (
         <li className="header">MAIN NAVIGATION</li>
         <MenuItem path='#/' label='Dashboard' icon='dashboard' />
         <MenuTree label='Pacientes' icon='users'>
-            <MenuItem path='#/paciente/add'
+            <MenuItem path='#/patient/add'
                 label='Cadastro' icon='user-plus' />
+            <MenuItem path='#/patient/search'
+                label='Busca' icon='search' />
         </MenuTree>
     </ul>
 )

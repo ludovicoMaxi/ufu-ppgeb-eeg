@@ -6,9 +6,10 @@ import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import ContentHeader from './common/template/contentHeader'
 import Content from './common/template/content'
 import Dashboard from './dashboard/dashboard'
-import PacienteForm from './paciente/pacienteForm'
-import PacienteEdit from './paciente/pacienteEdit'
-import { init, submitPaciente, remove } from './paciente/pacienteActions'
+import PatientForm from './patient/patientForm'
+import PatientSearch from './patient/patientSearch'
+import PatientEdit from './patient/patientEdit'
+import { init, submitPatient, remove, initRegisterPatient } from './patient/patientActions'
 
 class Routes extends Component {
     render() {
@@ -16,20 +17,30 @@ class Routes extends Component {
             <HashRouter>
                 <Switch>
                     <Route exact path='/' component={Dashboard} />
-                    <Route path='/paciente/add' render={
+                    <Route path='/patient/add' render={
                         () => {
-                            this.props.init()
+                            this.props.initRegisterPatient()
                             return (
                                 <div><ContentHeader title='Pacientes' small='Cadastro' />
                                     <Content>
-                                        <PacienteForm submitLabel='Adicionar'
-                                            submitClass='primary' onSubmit={this.props.submitPaciente} />
+                                        <PatientForm submitLabel='Adicionar'
+                                            submitClass='primary' onSubmit={this.props.submitPatient} />
                                     </Content>
                                 </div>
                             )
                         }
                     } />
-                    <Route path='/paciente/:pacienteId' component={PacienteEdit} />
+                    <Route path='/patient/search' render={() => {
+                        return (
+                            <div><ContentHeader title='Pacientes' small='Busca' />
+                                <Content>
+                                    <PatientSearch />
+                                </Content>
+                            </div>
+                        )
+                    }
+                    } />
+                    <Route path='/patient/:patientId' component={PatientEdit} />
                     <Redirect from='*' to='/' />
                 </Switch>
             </HashRouter>
@@ -39,6 +50,6 @@ class Routes extends Component {
 
 const mapDispatchToPros = dispatch =>
     bindActionCreators({
-        init, submitPaciente, remove
+        init, submitPatient, remove, initRegisterPatient
     }, dispatch)
 export default connect(null, mapDispatchToPros)(Routes)
