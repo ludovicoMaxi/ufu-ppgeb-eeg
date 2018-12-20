@@ -2,17 +2,17 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { init, getPacienteById, submitPaciente, showUpdate } from './pacienteActions'
+import { init, getPatientById, submitPatient, showUpdate } from './patientActions'
 import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
-import PacienteForm from './pacienteForm'
+import PatientForm from './patientForm'
 
-class PacienteEdit extends Component {
+class PatientEdit extends Component {
 
     componentWillMount() {
         this.props.init();
-        const { pacienteId } = this.props.match.params;
-        this.props.getPacienteById(pacienteId);
+        const { patientId } = this.props.match.params;
+        this.props.getPatientById(patientId);
     }
 
     render() {
@@ -20,9 +20,9 @@ class PacienteEdit extends Component {
         return (
             <div><ContentHeader title='Pacientes' small='Edição' />
                 <Content>
-                    <PacienteForm submitLabel='Alterar'
+                    <PatientForm submitLabel='Alterar'
                         submitClass='primary'
-                        onSubmit={this.props.submitPaciente}
+                        onSubmit={this.props.submitPatient}
                         showSystemInfo={true} />
                 </Content>
             </div>
@@ -30,5 +30,5 @@ class PacienteEdit extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => bindActionCreators({ init, getPacienteById, submitPaciente, showUpdate }, dispatch)
-export default connect(null, mapDispatchToProps)(PacienteEdit)
+const mapDispatchToProps = dispatch => bindActionCreators({ init, getPatientById, submitPatient, showUpdate }, dispatch)
+export default connect(null, mapDispatchToProps)(PatientEdit)

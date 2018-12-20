@@ -35,6 +35,9 @@ public class Patient {
     @Column( name = "NAME" )
     String name;
 
+    @Column( name = "DOCUMENT_NUMBER", length = 20, nullable = false )
+    private String documentNumber;
+
     @Column( name = "SEX" )
     char sex;
 
@@ -76,6 +79,7 @@ public class Patient {
         Patient patient = (Patient) o;
         return getSex() == patient.getSex() //
             && Objects.equals( getName(), patient.getName() ) //
+            && Objects.equals( getDocumentNumber(), patient.getDocumentNumber() ) //
             && CompareDate.compareDates( getBirthDate(), patient.getBirthDate() ) //
             && Objects.equals( getNacionality(), patient.getNacionality() ) //
             && Objects.equals( getCivilStatus(), patient.getCivilStatus() ) //
@@ -92,6 +96,7 @@ public class Patient {
 
         return Objects.hash(
             getName(),
+            getDocumentNumber(),
             getSex(),
             getBirthDate(),
             getNacionality(),
@@ -125,6 +130,18 @@ public class Patient {
     public void setName( String name ) {
 
         this.name = name;
+    }
+
+
+    public String getDocumentNumber() {
+
+        return documentNumber;
+    }
+
+
+    public void setDocumentNumber( String documentNumber ) {
+
+        this.documentNumber = documentNumber;
     }
 
 
@@ -239,8 +256,8 @@ public class Patient {
     @Override
     public String toString() {
 
-        return "Patient{" + "id=" + id + ", name='" + name + '\'' + ", sex=" + sex + ", birthDate=" + birthDate + ", nacionality='" + nacionality + '\''
-            + ", civilStatus='" + civilStatus + '\'' + ", job='" + job + '\'' + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt="
-            + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
+        return "Patient{" + "name='" + name + '\'' + ", documentNumber='" + documentNumber + '\'' + ", sex=" + sex + ", birthDate=" + birthDate
+            + ", nacionality='" + nacionality + '\'' + ", civilStatus='" + civilStatus + '\'' + ", job='" + job + '\'' + ", createdAt=" + createdAt
+            + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }
