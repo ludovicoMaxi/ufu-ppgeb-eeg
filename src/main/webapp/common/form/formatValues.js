@@ -1,5 +1,7 @@
 import { createNumberMask, createTextMask } from 'redux-form-input-masks'
 
+export const upper = value => value && value.toUpperCase();
+
 export function onlyNumbers(value) {
 
     if (!!value) {

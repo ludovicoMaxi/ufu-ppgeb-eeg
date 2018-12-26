@@ -4,12 +4,14 @@ import { reducer as toastrReducer } from 'react-redux-toastr'
 
 import PatientReducer from './patient/patientReducer'
 import TabReducer from './common/tab/tabReducer'
+import ExamRequestReducer from './exam-request/examRequestReducer'
 
 const rootReducer = combineReducers({
     toastr: toastrReducer,
     form: formReducer,
     patient: PatientReducer,
-    tab: TabReducer
+    tab: TabReducer,
+    examRequest: ExamRequestReducer
 })
 
 export default rootReducer

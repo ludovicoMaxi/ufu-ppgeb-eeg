@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
-import { reset as resetForm, initialize, SubmissionError, change as changeFieldValue } from 'redux-form'
+import { reset as resetForm, initialize, SubmissionError } from 'redux-form'
+import { BASE_URL_PATIENT } from '../constants'
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 
-const BASE_URL_PATIENT = 'http://localhost:8080/api/patient'
 const INITIAL_VALUES = {};
 
 export function getPatientById(id) {
@@ -12,7 +12,7 @@ export function getPatientById(id) {
         axios.get(`${BASE_URL_PATIENT}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch(initialize('patientForm', resp.data));
+                    dispatch([initialize('patientForm', resp.data), { type: 'PATIENT_FETCHED', payload: resp.data }]);
                 }
                 else
                     toastr.error('Erro', `Paciente de ID ${id} não existe!!!`)
@@ -100,10 +100,8 @@ function update(values) {
     return dispatch => {
         axios.put(`${BASE_URL_PATIENT}`, values)
             .then(resp => {
-                toastr.success('Sucesso', `Paciente atualizado com sucesso.`)
-                var customerView = INITIAL_VALUES;
-                customerView.customer = resp.data;
-                dispatch(initialize('patientForm', customerView));
+                toastr.success('Sucesso', `Paciente atualizado com sucesso.`);
+                dispatch(initialize('patientForm', resp.data));
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao atualizar o associado (${values.id}): \n` + e.response.data.message)

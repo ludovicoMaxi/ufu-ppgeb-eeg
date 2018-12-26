@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -21,8 +23,8 @@ import br.com.ufu.ppgeb.eeg.utils.CompareDate;
  * Created by joaol on 08/09/17.
  */
 @Entity
-@Table( name = "REQUEST" )
-public class Request {
+@Table( name = "EXAM_REQUEST" )
+public class ExamRequest {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,12 +55,14 @@ public class Request {
     private String clinicOrigin;
 
     @Column( name = "CITY_ORIGIN" )
-    private String CityOrigin;
+    private String cityOrigin;
 
-    @Column( name = "PATIENT_ID" )
-    private Long patientId;
+    @ManyToOne
+    @JoinColumn( name = "PATIENT_ID", nullable = false )
+    private Patient patient;
 
     @Column( name = "REQUEST_DATE" )
+    @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date requestDate;
 
     @Column( name = "ACHIEVEMENT_DATE" )
@@ -85,24 +89,20 @@ public class Request {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof Request ) )
+        if ( !( o instanceof ExamRequest ) )
             return false;
-        Request request = (Request) o;
-        return Objects.equals( getMedicalRecord(), request.getMedicalRecord() ) && //
-            Objects.equals( getMedicalRequest(), request.getMedicalRequest() ) && //
-            Objects.equals( getSector(), request.getSector() ) && //
-            Objects.equals( getAgreement(), request.getAgreement() ) && //
-            Objects.equals( getDoctorRequestant(), request.getDoctorRequestant() ) && //
-            Objects.equals( getUser(), request.getUser() ) && //
-            Objects.equals( getClinicOrigin(), request.getClinicOrigin() ) && //
-            Objects.equals( getCityOrigin(), request.getCityOrigin() ) && //
-            Objects.equals( getPatientId(), request.getPatientId() ) && //
-            Objects.equals( getRequestDate(), request.getRequestDate() ) && //
-            Objects.equals( getAchievementDate(), request.getAchievementDate() ) && //
-            CompareDate.compareDates( getCreatedAt(), request.getCreatedAt() ) && //
-            Objects.equals( getCreatedBy(), request.getCreatedBy() ) && //
-            CompareDate.compareDates( getUpdatedAt(), request.getUpdatedAt() ) && //
-            Objects.equals( getUpdatedBy(), request.getUpdatedBy() );
+        ExamRequest examRequest = (ExamRequest) o;
+        return Objects.equals( getMedicalRecord(), examRequest.getMedicalRecord() ) && //
+            Objects.equals( getMedicalRequest(), examRequest.getMedicalRequest() ) && //
+            Objects.equals( getSector(), examRequest.getSector() ) && //
+            Objects.equals( getAgreement(), examRequest.getAgreement() ) && //
+            Objects.equals( getDoctorRequestant(), examRequest.getDoctorRequestant() ) && //
+            Objects.equals( getUser(), examRequest.getUser() ) && //
+            Objects.equals( getClinicOrigin(), examRequest.getClinicOrigin() ) && //
+            Objects.equals( getCityOrigin(), examRequest.getCityOrigin() ) && //
+            Objects.equals( getPatient(), examRequest.getPatient() ) && //
+            CompareDate.compareDates( getRequestDate(), examRequest.getRequestDate() ) && //
+            CompareDate.compareDates( getAchievementDate(), examRequest.getAchievementDate() );
     }
 
 
@@ -118,7 +118,7 @@ public class Request {
             getUser(),
             getClinicOrigin(),
             getCityOrigin(),
-            getPatientId(),
+            getPatient(),
             getRequestDate(),
             getAchievementDate(),
             getCreatedAt(),
@@ -226,25 +226,25 @@ public class Request {
 
     public String getCityOrigin() {
 
-        return CityOrigin;
+        return cityOrigin;
     }
 
 
     public void setCityOrigin( String cityOrigin ) {
 
-        CityOrigin = cityOrigin;
+        this.cityOrigin = cityOrigin;
     }
 
 
-    public Long getPatientId() {
+    public Patient getPatient() {
 
-        return patientId;
+        return patient;
     }
 
 
-    public void setPatientId( Long patientId ) {
+    public void setPatient( Patient patient ) {
 
-        this.patientId = patientId;
+        this.patient = patient;
     }
 
 
@@ -323,9 +323,9 @@ public class Request {
     @Override
     public String toString() {
 
-        return "Request{" + "id=" + id + ", medicalRecord=" + medicalRecord + ", medicalRequest=" + medicalRequest + ", sector='" + sector + '\''
+        return "ExamRequest{" + "id=" + id + ", medicalRecord=" + medicalRecord + ", medicalRequest=" + medicalRequest + ", sector='" + sector + '\''
             + ", agreement='" + agreement + '\'' + ", doctorRequestant='" + doctorRequestant + '\'' + ", user='" + user + '\'' + ", clinicOrigin='"
-            + clinicOrigin + '\'' + ", CityOrigin='" + CityOrigin + '\'' + ", patientId=" + patientId + ", requestDate=" + requestDate + ", achievementDate="
+            + clinicOrigin + '\'' + ", cityOrigin='" + cityOrigin + '\'' + ", patient=" + patient + ", requestDate=" + requestDate + ", achievementDate="
             + achievementDate + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy
             + '\'' + '}';
     }

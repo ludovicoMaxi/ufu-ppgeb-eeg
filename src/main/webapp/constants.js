@@ -7,17 +7,11 @@ if (host === 'localhost') {
 }
 
 const BASE_URL = host;
-const BASE_URL_CUSTOMER = `${BASE_URL}/api/customer`
-const BASE_URL_CONTACT = `${BASE_URL}/api/contact`
-const BASE_URL_ADDRESS = `${BASE_URL}/api/address`
-const BASE_URL_NOTES = `${BASE_URL}/api/notes`
-const BASE_URL_PAYMENT = `${BASE_URL}/api/payment`
+const BASE_URL_PATIENT = `${BASE_URL}/api/patient`
+const BASE_URL_EXAM_REQUEST = `${BASE_URL}/api/exam-request`
 
 export {
     BASE_URL,
-    BASE_URL_CUSTOMER,
-    BASE_URL_CONTACT,
-    BASE_URL_ADDRESS,
-    BASE_URL_NOTES,
-    BASE_URL_PAYMENT
+    BASE_URL_PATIENT,
+    BASE_URL_EXAM_REQUEST
 };
