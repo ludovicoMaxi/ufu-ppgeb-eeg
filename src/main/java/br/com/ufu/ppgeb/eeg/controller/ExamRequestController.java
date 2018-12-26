@@ -35,12 +35,15 @@ public class ExamRequestController {
 
     @GetMapping
     @ResponseBody
-    public List< ExamRequest > list( @RequestParam( value = "patientId", required = true ) Long patientId
+    public List< ExamRequest > list(
+        @RequestParam( value = "medicalRecord", required = false ) Long medicalRecord,
+        @RequestParam( value = "medicalRequest", required = false ) Long medicalRequest,
+        @RequestParam( value = "doctorRequestant", required = false ) String doctorRequestant
 
     ) {
 
-        logger.info( "Parametros{ patientId=" + patientId + "}" );
-        return examRequestService.findByFilter( patientId );
+        logger.info( "Parametros{ medicalRecord=" + medicalRecord + ", medicalRequest=" + medicalRequest + ", doctorRequestant=" + doctorRequestant + "}" );
+        return examRequestService.findByFilter( medicalRecord, medicalRequest, doctorRequestant );
 
     }
 

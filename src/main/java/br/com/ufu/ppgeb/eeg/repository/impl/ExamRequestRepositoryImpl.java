@@ -6,14 +6,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
-import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.repository.ExamRequestRepositoryCustom;
 
 
@@ -28,20 +27,25 @@ public class ExamRequestRepositoryImpl implements ExamRequestRepositoryCustom {
 
 
     @Override
-    public List< ExamRequest > findByFilter( Long patientId ) {
-
-        Assert.notNull( patientId, "patientId cannot be null." );
+    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant ) {
 
         Session session = em.unwrap( Session.class );
 
-        Criteria criteria = session.createCriteria( Patient.class );
+        Criteria criteria = session.createCriteria( ExamRequest.class );
 
-        // if ( StringUtils.isBlank( name ) && StringUtils.isBlank( documentNumber ) ) {
-        // throw new IllegalArgumentException( "Informe pelo menos um campo para
-        // consultar!" );
-        // }
+        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && medicalRecord == null ) {
+            throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
+        }
 
-        criteria.add( Restrictions.eq( "patient.id", patientId ) );
+        if ( StringUtils.isNotBlank( doctorRequestant ) ) {
+            criteria.add( Restrictions.like( "doctorRequestant", "%" + doctorRequestant + "%" ) );
+        }
+        if ( medicalRecord != null ) {
+            criteria.add( Restrictions.eq( "medicalRecord", medicalRecord ) );
+        }
+        if ( medicalRequest != null ) {
+            criteria.add( Restrictions.eq( "medicalRequest", medicalRequest ) );
+        }
 
         List< ExamRequest > list = criteria.list();
 

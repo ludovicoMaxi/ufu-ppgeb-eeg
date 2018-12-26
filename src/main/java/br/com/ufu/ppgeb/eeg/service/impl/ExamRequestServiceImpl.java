@@ -4,6 +4,7 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,13 +71,15 @@ public class ExamRequestServiceImpl implements ExamRequestService {
 
     @Override
     @Transactional( readOnly = true )
-    public List< ExamRequest > findByFilter( Long patientId ) {
+    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant ) {
 
-        Assert.notNull( patientId, "patientId cannot be null." );
+        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && medicalRecord == null ) {
+            throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
+        }
 
         List< ExamRequest > list = null;
 
-        list = examRequestRepository.findByFilter( patientId );
+        list = examRequestRepository.findByFilter( medicalRecord, medicalRequest, doctorRequestant );
         return list;
     }
 
