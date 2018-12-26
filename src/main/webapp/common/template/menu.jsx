@@ -12,5 +12,9 @@ export default props => (
             <MenuItem path='#/patient/search'
                 label='Busca' icon='search' />
         </MenuTree>
+        <MenuTree label='Requerimentos' icon='folder-open'>
+            <MenuItem path='#/exam-request/search'
+                label='Busca' icon='search' />
+        </MenuTree>
     </ul>
 )

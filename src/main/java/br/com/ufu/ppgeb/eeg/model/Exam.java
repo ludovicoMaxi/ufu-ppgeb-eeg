@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,8 +36,9 @@ public class Exam {
     @Column( name = "REQUEST_ID" )
     private Long requestId;
 
-    @Column( name = "PATIENT_ID", nullable = false )
-    private Long patientId;
+    @ManyToOne
+    @JoinColumn( name = "PATIENT_ID", nullable = false )
+    private Patient patient;
 
     @Column( name = "ACHIEVEMENT_DATE" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
@@ -82,10 +85,14 @@ public class Exam {
         if ( !( o instanceof Exam ) )
             return false;
         Exam exam = (Exam) o;
-        return Objects.equals( getRequestId(), exam.getRequestId() ) && Objects.equals( getPatientId(), exam.getPatientId() )
-            && Objects.equals( getAchievementDate(), exam.getAchievementDate() ) && Objects.equals( getMedicalReport(), exam.getMedicalReport() )
-            && Objects.equals( getConclusion(), exam.getConclusion() ) && Objects.equals( getBed(), exam.getBed() )
-            && Objects.equals( getClinicalData(), exam.getClinicalData() ) && Objects.equals( getExamMedicaments(), exam.getExamMedicaments() )
+        return Objects.equals( getRequestId(), exam.getRequestId() ) //
+            && Objects.equals( getPatient(), exam.getPatient() ) //
+            && Objects.equals( getAchievementDate(), exam.getAchievementDate() ) //
+            && Objects.equals( getMedicalReport(), exam.getMedicalReport() ) //
+            && Objects.equals( getConclusion(), exam.getConclusion() ) //
+            && Objects.equals( getBed(), exam.getBed() ) //
+            && Objects.equals( getClinicalData(), exam.getClinicalData() ) //
+            && Objects.equals( getExamMedicaments(), exam.getExamMedicaments() ) //
             && Objects.equals( getExamEquipments(), exam.getExamEquipments() );
     }
 
@@ -95,7 +102,7 @@ public class Exam {
 
         return Objects.hash(
             getRequestId(),
-            getPatientId(),
+            getPatient(),
             getAchievementDate(),
             getMedicalReport(),
             getConclusion(),
@@ -130,15 +137,15 @@ public class Exam {
     }
 
 
-    public Long getPatientId() {
+    public Patient getPatient() {
 
-        return patientId;
+        return patient;
     }
 
 
-    public void setPatientId( Long patientId ) {
+    public void setPatient( Patient patient ) {
 
-        this.patientId = patientId;
+        this.patient = patient;
     }
 
 
@@ -277,7 +284,7 @@ public class Exam {
     @Override
     public String toString() {
 
-        return "Exam{" + "id=" + id + ", requestId=" + requestId + ", patientId=" + patientId + ", achievementDate=" + achievementDate + ", medicalReport='"
+        return "Exam{" + "id=" + id + ", requestId=" + requestId + ", patient=" + patient + ", achievementDate=" + achievementDate + ", medicalReport='"
             + medicalReport + '\'' + ", conclusion='" + conclusion + '\'' + ", bed='" + bed + '\'' + ", clinicalData='" + clinicalData + '\''
             + ", examMedicaments=" + examMedicaments + ", examEquipments=" + examEquipments + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\''
             + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';

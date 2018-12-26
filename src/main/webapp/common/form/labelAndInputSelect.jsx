@@ -10,7 +10,6 @@ export default props => {
             <div className={`form-group ${!!error ? 'has-error' : ''}`}>
                 <label htmlFor={name}>{label}</label>
                 <select {...input} className='form-control'
-                    placeholder={placeholder}
                     readOnly={readOnly} type={type}>
                     <option></option>
                     {

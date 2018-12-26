@@ -1,48 +1,53 @@
 import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
-import { reset as resetForm, initialize, SubmissionError } from 'redux-form'
-import { BASE_URL_PATIENT } from '../constants'
+import { reset as resetForm, initialize, SubmissionError, change as changeFieldValue } from 'redux-form'
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
+import { BASE_URL_EXAM_REQUEST } from '../constants'
 
 const INITIAL_VALUES = {};
 
-export function getPatientById(id) {
+export function getExamRequestById(id) {
     return dispatch => {
-        axios.get(`${BASE_URL_PATIENT}/${id}`)
+        axios.get(`${BASE_URL_EXAM_REQUEST}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch([initialize('patientForm', resp.data), { type: 'PATIENT_FETCHED', payload: resp.data }]);
+                    dispatch([initialize('examRequestForm', resp.data), initialize('patientForm', resp.data.patient)]);
                 }
                 else
-                    toastr.error('Erro', `Paciente de ID ${id} não existe!!!`)
+                    toastr.error('Erro', `Requerimento de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar o paciente (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar o Requerimento (${id}): \n` + e.response.data.message)
             })
     }
 }
 
-export function submitPatient(values) {
+export function submitExamRequest(values) {
+
     const errors = {}
-    if (!values.name) {
-        errors.name = 'Nome é obrigatório!'
+    if (!values.medicalRecord) {
+        errors.medicalRecord = 'Prontuário ID é obrigatório!'
     }
 
-    if (!values.documentNumber) {
-        errors.documentNumber = 'CPF é obrigatório!'
+    if (!values.medicalRequest) {
+        errors.medicalRequest = 'Requisição ID é obrigatório!'
     }
 
-    if (!values.sex) {
-        errors.sex = 'Sexo é obrigatório!'
+    if (!values.sector) {
+        errors.sector = 'Setor é obrigatório!'
     }
 
-    if (!values.birthDate) {
-        errors.birthDate = 'Data de Nascimento é Obrigatório!'
+    if (!values.doctorRequestant) {
+        errors.doctorRequestant = 'Medico Solicitante é Obrigatório!'
     }
 
-    if (!values.nacionality) {
-        errors.nacionality = 'Nacionalidade é obrigatório!'
+    if (!values.user) {
+        errors.user = 'Usuario é obrigatório!'
+    }
+
+    if (!values.requestDate) {
+        errors.requestDate = 'Data do Pedido é obrigatório!'
     }
 
     if (Object.keys(errors).length !== 0) {
@@ -98,42 +103,29 @@ export function remove(values) {
 
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_PATIENT}`, values)
+        axios.put(`${BASE_URL_EXAM_REQUEST}`, values)
             .then(resp => {
-                toastr.success('Sucesso', `Paciente atualizado com sucesso.`);
-                dispatch(initialize('patientForm', resp.data));
+                toastr.success('Sucesso', `Requerimento atualizado com sucesso.`);
+                console.log('teste');
+                console.log(resp.data);
+                dispatch(initialize('examRequestForm', resp.data));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar o associado (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar o Requerimento (${values.id}): \n` + e.response.data.message)
             })
     }
 }
 
 function create(values) {
     return dispatch => {
-        axios.post(`${BASE_URL_PATIENT}`, values)
+        axios.post(`${BASE_URL_EXAM_REQUEST}`, values)
             .then(resp => {
-                toastr.success('Sucesso', `Paciente cadastrado com sucesso.`)
-                dispatch(resetForm('patientForm'));
-                window.location = `/#/patient/${resp.data.id}`;
+                toastr.success('Sucesso', `Requerimento cadastrado com sucesso.`)
+                dispatch(resetForm('examRequestForm'));
+                window.location = `/#/exam-request/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar o paciente: \n` + e.response.data.message)
-            })
-    }
-}
-
-function submit(values, method, action, idCustomer) {
-    return dispatch => {
-        const id = idCustomer ? idCustomer : ''
-
-        axios[method](`${BASE_URL_PATIENT}/${id}`, values)
-            .then(resp => {
-                toastr.success('Sucesso', `${action} realizado(a) com sucesso.`)
-                dispatch(init())
-            })
-            .catch(e => {
-                toastr.error('Erro', 'Ocorreu um erro ao realizar o(a) ${action}: \n' + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Requerimento: \n` + e.response.data.message)
             })
     }
 }
@@ -151,4 +143,8 @@ export function initRegisterPatient() {
         showTabs(),
         initialize('patientForm', INITIAL_VALUES)
     ]
+}
+
+export function setPatientInForm(patient) {
+    return changeFieldValue('examRequestForm', 'patient', patient);
 }

@@ -26,7 +26,7 @@ public class PatientServiceImpl implements PatientService {
     @Transactional( rollbackFor = Exception.class )
     public Patient save( Patient patient ) {
 
-        Assert.notNull( patient, "patientView cannot be null." );
+        Assert.notNull( patient, "patient cannot be null." );
 
         validatePatient( patient );
 

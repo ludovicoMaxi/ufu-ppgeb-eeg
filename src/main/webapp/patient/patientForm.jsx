@@ -16,57 +16,62 @@ import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
 import ContactList from './contactList'
 import SystemInfo from '../common/form/systemInfo'
-import { documentNumber as documentNumberMask } from '../common/form/formatValues'
+import { upper, documentNumber as documentNumberMask } from '../common/form/formatValues'
 
 class PatientForm extends Component {
 
     render() {
-        const { documentNumberReadOnly, handleSubmit, readOnly, pristine, reset, submitting, contactList } = this.props
-        const upper = value => value && value.toUpperCase();
+        const { handleSubmit, readOnly, pristine, reset, submitting, contactList, submitLabel, submitClass, showSystemInfo, initRegisterPatient } = this.props
 
         return (
             <form role='form' onSubmit={handleSubmit} className='box box-solid'>
                 <div className='box'>
                     <div className='box-body'>
                         <fieldset>
+                            <legend>Paciente</legend>
                             <Field name='name' component={LabelAndInput} readOnly={readOnly}
                                 label='Nome' cols='12 10' placeholder='Informe o nome' normalize={upper} />
-                            <Field name='documentNumber' component={LabelAndInput} readOnly={documentNumberReadOnly}
+                            <Field name='documentNumber' component={LabelAndInput} readOnly={readOnly}
                                 label='CPF' cols='12 2' placeholder='Informe o CPF' {...documentNumberMask} />
 
                             <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                 label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
-                            <Field name='nacionality' component={LabelAndInput} readOnly={readOnly}
+                            <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                 label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
                             <Field name='sex' component={LabelAndInputSelect}
-                                label='Sexo' cols='12 2' placeholder='Informe o Sexo'
+                                label='Sexo' cols='12 2'
+                                readOnly={readOnly}
+                                placeholder='Informe o Sexo'
                                 optionList={[{ 'value': 'M', 'label': 'Masculino' },
                                 { 'value': 'F', 'label': 'Feminino' }]}>
                             </Field>
 
-                            <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly}
+                            <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                 label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
-                            <Field name='job' component={LabelAndInput} readOnly={readOnly}
+                            <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                 label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
 
-                            <If test={this.props.showSystemInfo}>
+                            <If test={showSystemInfo}>
                                 <SystemInfo formName="patientForm" />
                             </If>
                             <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                         </fieldset>
                     </div>
-                    <div className='box-footer'>
-                        <button type='submit'
-                            className={`btn btn-${this.props.submitClass}`}
-                            disabled={submitting}>
-                            {this.props.submitLabel}
-                        </button>
-                        <button type='button' className='btn btn-default'
-                            onClick={this.props.initRegisterPatient}
-                            disabled={pristine || submitting}>
-                            {'Cancelar'}
-                        </button>
-                    </div>
+                    <If test={!readOnly}>
+                        <div className='box-footer'>
+                            <button type='submit'
+                                className={`btn btn-${submitClass}`}
+                                disabled={submitting}>
+                                {submitLabel}
+                            </button>
+                            <button type='button' className='btn btn-default'
+                                onClick={initRegisterPatient}
+                                disabled={pristine || submitting}>
+                                {'Cancelar'}
+                            </button>
+                        </div>
+                    </If>
+
                     {/* <Tabs>
                         <TabsHeader>
                             <TabHeader label='Pedido' icon='address-card' target='tabPedido' />
@@ -187,9 +192,9 @@ class PatientForm extends Component {
 PatientForm = reduxForm({ form: 'patientForm', destroyOnUnmount: false })(PatientForm)
 const selector = formValueSelector('patientForm')
 const mapStateToProps = state => ({
-    dataNascimento: selector(state, 'dataNascimento'),
-    criadoEm: selector(state, 'criadoEm'),
-    atualizadoEm: selector(state, 'atualizadoEm')
+    birthDate: selector(state, 'birthDate'),
+    createdAt: selector(state, 'createdAt'),
+    updateAt: selector(state, 'updateAt')
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ initRegisterPatient }, dispatch)

@@ -83,11 +83,7 @@ public class Patient {
             && CompareDate.compareDates( getBirthDate(), patient.getBirthDate() ) //
             && Objects.equals( getNacionality(), patient.getNacionality() ) //
             && Objects.equals( getCivilStatus(), patient.getCivilStatus() ) //
-            && Objects.equals( getJob(), patient.getJob() ) //
-            && CompareDate.compareDates( getCreatedAt(), patient.getCreatedAt() ) //
-            && Objects.equals( getCreatedBy(), patient.getCreatedBy() ) //
-            && CompareDate.compareDates( getUpdatedAt(), patient.getUpdatedAt() ) //
-            && Objects.equals( getUpdatedBy(), patient.getUpdatedBy() );
+            && Objects.equals( getJob(), patient.getJob() );
     }
 
 
