@@ -17,11 +17,6 @@ import { onlyNumbers, upper } from '../common/form/formatValues'
 
 class ExamRequestForm extends Component {
 
-    clearFields() {
-        this.props.reset();
-        //changeFieldValue('customerForm', 'contactList', resp.data);
-    }
-
     render() {
         const { handleSubmit, readOnly, pristine, submitting, submitClass, submitLabel, showSystemInfo, reset } = this.props
 

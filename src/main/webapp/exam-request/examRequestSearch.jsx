@@ -27,8 +27,7 @@ class ExamRequestSearch extends Component {
     }
 
     render() {
-        const { handleSubmit, pristine, submitting, resetForm, list } = this.props;
-        const upper = value => value && value.toUpperCase();
+        const { handleSubmit, pristine, submitting, reset, list } = this.props;
 
         return (
             <div>
@@ -53,7 +52,7 @@ class ExamRequestSearch extends Component {
                                 Buscar
                         </button>
                             <button type='button' className='btn btn-default'
-                                onClick={resetForm}
+                                onClick={reset}
                                 disabled={pristine || submitting}>
                                 {'Limpar'}
                             </button>
@@ -83,9 +82,9 @@ class ExamRequestSearch extends Component {
     }
 }
 
-ExamRequestSearch = reduxForm({ form: 'patientSearch' })(ExamRequestSearch)
+ExamRequestSearch = reduxForm({ form: 'examRequestSearch' })(ExamRequestSearch)
 const mapStateToProps = state => ({
-    list: state.patient.resultSearch
+    list: state.examRequest.resultSearch
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchExamRequest }, dispatch)

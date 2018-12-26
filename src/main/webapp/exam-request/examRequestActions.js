@@ -62,24 +62,26 @@ export function submitExamRequest(values) {
     }
 }
 
-export function searchPatients(values) {
+export function searchExamRequest(values) {
 
     var errors = {}
 
-    if (!values.name && !values.documentNumber) {
-        errors.name = ' ';
-        errors.documentNumber = ' ';
+    if (!values.medicalRecord && !values.medicalRequest && !values.doctorRequestant) {
+        errors.medicalRecord = ' ';
+        errors.medicalRequest = ' ';
+        errors.doctorRequestant = ' ';
         errors._error = 'Preencha pelo menos um campo para consultar!';
         throw new SubmissionError(errors);
     }
 
     return dispatch => {
-        var params = (!!values.name ? `name=${values.name}` : '')
-            + (!!values.documentNumber ? `documentNumber=${values.documentNumber}` : '');
-        axios.get(`${BASE_URL_PATIENT}?${params}`)
+        var params = (!!values.medicalRecord ? `medicalRecord=${values.medicalRecord}` : '')
+            + (!!values.medicalRequest ? `medicalRequest=${values.medicalRequest}` : '')
+            + (!!values.doctorRequestant ? `doctorRequestant=${values.doctorRequestant}` : '');
+        axios.get(`${BASE_URL_EXAM_REQUEST}?${params}`)
             .then(resp => {
                 if (!!resp.data && resp.data.length > 0) {
-                    dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: resp.data });
+                    dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: resp.data });
                 }
                 else
                     toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
@@ -90,10 +92,10 @@ export function searchPatients(values) {
     }
 }
 
-export function clearSearchPatients() {
+export function clearSearchExamRequest() {
 
     return dispatch => {
-        dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: [] });
+        dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: [] });
     }
 }
 

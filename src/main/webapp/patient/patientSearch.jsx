@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { searchPatients as onSubmit, clearSearchPatients } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
-
+import { upper } from '../common/form/formatValues'
 
 class PatientSearch extends Component {
 
@@ -26,8 +26,7 @@ class PatientSearch extends Component {
     }
 
     render() {
-        const { handleSubmit, pristine, submitting, resetForm, list } = this.props;
-        const upper = value => value && value.toUpperCase();
+        const { handleSubmit, pristine, submitting, reset, list } = this.props;
 
         return (
             <div>
@@ -50,7 +49,7 @@ class PatientSearch extends Component {
                                 Buscar
                         </button>
                             <button type='button' className='btn btn-default'
-                                onClick={resetForm}
+                                onClick={reset}
                                 disabled={pristine || submitting}>
                                 {'Limpar'}
                             </button>
