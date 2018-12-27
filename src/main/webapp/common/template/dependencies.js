@@ -7,6 +7,7 @@ import 'modules/admin-lte/dist/js/adminlte.min.js'
 import 'modules/admin-lte/bower_components/bootstrap/dist/css/bootstrap.min.css'
 import 'modules/react-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'
 import 'modules/font-awesome/css/font-awesome.min.css'
+import 'modules/@fortawesome/fontawesome-free/css/all.min.css'
 import 'modules/ionicons/dist/css/ionicons.min.css'
 import 'modules/admin-lte/plugins/iCheck/all.css'
 
