@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -33,8 +34,9 @@ public class Exam {
     @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
-    @Column( name = "REQUEST_ID" )
-    private Long requestId;
+    @OneToOne
+    @JoinColumn( name = "EXAM_REQUEST_ID" )
+    private ExamRequest examRequest;
 
     @ManyToOne
     @JoinColumn( name = "PATIENT_ID", nullable = false )
@@ -85,7 +87,7 @@ public class Exam {
         if ( !( o instanceof Exam ) )
             return false;
         Exam exam = (Exam) o;
-        return Objects.equals( getRequestId(), exam.getRequestId() ) //
+        return Objects.equals( getExamRequest(), exam.getExamRequest() ) //
             && Objects.equals( getPatient(), exam.getPatient() ) //
             && Objects.equals( getAchievementDate(), exam.getAchievementDate() ) //
             && Objects.equals( getMedicalReport(), exam.getMedicalReport() ) //
@@ -101,7 +103,7 @@ public class Exam {
     public int hashCode() {
 
         return Objects.hash(
-            getRequestId(),
+            getExamRequest(),
             getPatient(),
             getAchievementDate(),
             getMedicalReport(),
@@ -125,15 +127,15 @@ public class Exam {
     }
 
 
-    public Long getRequestId() {
+    public ExamRequest getExamRequest() {
 
-        return requestId;
+        return examRequest;
     }
 
 
-    public void setRequestId( Long requestId ) {
+    public void setExamRequest( ExamRequest examRequest ) {
 
-        this.requestId = requestId;
+        this.examRequest = examRequest;
     }
 
 
@@ -284,7 +286,7 @@ public class Exam {
     @Override
     public String toString() {
 
-        return "Exam{" + "id=" + id + ", requestId=" + requestId + ", patient=" + patient + ", achievementDate=" + achievementDate + ", medicalReport='"
+        return "Exam{" + "id=" + id + ", examRequest=" + examRequest + ", patient=" + patient + ", achievementDate=" + achievementDate + ", medicalReport='"
             + medicalReport + '\'' + ", conclusion='" + conclusion + '\'' + ", bed='" + bed + '\'' + ", clinicalData='" + clinicalData + '\''
             + ", examMedicaments=" + examMedicaments + ", examEquipments=" + examEquipments + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\''
             + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';

@@ -12,6 +12,9 @@ import PatientEdit from './patient/patientEdit'
 import ExamRequestEdit from './exam-request/examRequestEdit'
 import ExamRequestSearch from './exam-request/examRequestSearch'
 import ExamRequestRegister from './exam-request/examRequestRegister'
+import ExamEdit from './exam/examEdit'
+import ExamSearch from './exam/examSearch'
+import ExamRegister from './exam/examRegister'
 import { init, submitPatient, remove, initRegisterPatient } from './patient/patientActions'
 
 class Routes extends Component {
@@ -46,6 +49,9 @@ class Routes extends Component {
                     <Route path='/patient/:patientId/exam-request/add' component={ExamRequestRegister} />
                     <Route path='/exam-request/search' component={ExamRequestSearch} />
                     <Route path='/exam-request/:examRequestId' component={ExamRequestEdit} />
+                    <Route path='/patient/:patientId/exam/add' component={ExamRegister} />
+                    <Route path='/exam/search' component={ExamSearch} />
+                    <Route path='/exam/:examId' component={ExamEdit} />
                     <Route path='/patient/:patientId' component={PatientEdit} />
                     <Redirect from='*' to='/' />
                 </Switch>

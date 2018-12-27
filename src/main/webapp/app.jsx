@@ -8,7 +8,7 @@ import Routes from './routes'
 import Messages from './common/msg/messages'
 
 export default props => (
-    <div className='wrapper'>
+    <div className='wrapper' style={{ 'overflow': 'hidden' }}>
         <Header />
         <Sidebar />
         <div className='content-wrapper'>

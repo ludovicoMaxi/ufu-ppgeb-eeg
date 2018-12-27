@@ -9,9 +9,11 @@ if (host === 'localhost') {
 const BASE_URL = host;
 const BASE_URL_PATIENT = `${BASE_URL}/api/patient`
 const BASE_URL_EXAM_REQUEST = `${BASE_URL}/api/exam-request`
+const BASE_URL_EXAM = `${BASE_URL}/api/exam`
 
 export {
     BASE_URL,
     BASE_URL_PATIENT,
-    BASE_URL_EXAM_REQUEST
+    BASE_URL_EXAM_REQUEST,
+    BASE_URL_EXAM
 };
