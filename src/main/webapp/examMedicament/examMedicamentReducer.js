@@ -20,6 +20,7 @@ export default (state = INITIAL_STATE, action) => {
                     options[i] = { 'value': item, 'label': item.name };
                 }
             }
+            options.push({ 'value': { 'name': 'outro' }, 'label': 'OUTRO' });
             return { ...state, optionsMedicament: options }
 
         default:
