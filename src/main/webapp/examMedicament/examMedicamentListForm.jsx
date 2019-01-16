@@ -5,9 +5,10 @@ import { reduxForm, Field, formValueSelector } from 'redux-form'
 
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputSelect from '../common/form/labelAndInputSelect'
+import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
 import If from '../common/operator/if'
 import SystemInfo from '../common/form/systemInfo'
-import { onlyNumbers } from '../common/form/formatValues'
+import { onlyNumbers, upper } from '../common/form/formatValues'
 import Grid from '../common/layout/grid'
 import {
     init,
@@ -72,6 +73,16 @@ class ExamMedicamentListForm extends Component {
                 <If test={this.props.showSystemInfo}>
                     <SystemInfo field={`${this.props.field}[${index}]`} />
                 </If>
+
+                <If test={!!item.medicament && item.medicament.name == 'outro'}>
+                    <div>
+                        <Field name={`examMedicaments[${index}].name`} component={LabelAndInput} readOnly={readOnly}
+                            label='Nome Medicamento' cols='12 4' placeholder='Informe o Medicamento' normalize={upper} />
+                        <Field name={`examMedicaments[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                            label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
+                    </div>
+                </If>
+
                 <div className='actions-contacts'>
                     <button type='button' className='btn btn-success'
                         onClick={() => this.add(index + 1)}>

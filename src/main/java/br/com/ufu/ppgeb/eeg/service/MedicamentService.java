@@ -10,4 +10,10 @@ public interface MedicamentService {
 
     List< Medicament > findAll();
 
+
+    List< Medicament > findByName( String name );
+
+
+    Medicament save( Medicament medicament );
+
 }

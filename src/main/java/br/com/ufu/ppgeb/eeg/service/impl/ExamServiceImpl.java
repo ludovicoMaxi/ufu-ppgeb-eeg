@@ -13,9 +13,11 @@ import org.springframework.util.Assert;
 
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
+import br.com.ufu.ppgeb.eeg.model.Medicament;
 import br.com.ufu.ppgeb.eeg.repository.ExamMedicamentRepository;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
+import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 
 
 @Service
@@ -26,6 +28,9 @@ public class ExamServiceImpl implements ExamService {
 
     @Autowired
     private ExamMedicamentRepository examMedicamentRepository;
+
+    @Autowired
+    private MedicamentService medicamentService;
 
 
     @Override
@@ -144,12 +149,30 @@ public class ExamServiceImpl implements ExamService {
     }
 
 
+    private void registerUnregisteredMedications( List< ExamMedicament > examMedicamentList ) {
+
+        if ( examMedicamentList != null && examMedicamentList.size() > 0 ) {
+            for ( ExamMedicament examMedicament : examMedicamentList ) {
+                Medicament medicament = examMedicament.getMedicament();
+                Assert.notNull( medicament, "medicament cannot be null." );
+                Assert.hasText( medicament.getName(), "medicament name cannot be empty." );
+
+                if ( medicament.getId() == null ) {
+                    examMedicament.setMedicament( medicamentService.save( medicament ) );
+                }
+            }
+        }
+    }
+
+
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public Exam updateExamMedicament( Exam exam ) {
 
         Assert.notNull( exam, "exam cannot be null." );
         Assert.notNull( exam.getId(), "exam ID cannot be null." );
 
+        registerUnregisteredMedications( exam.getExamMedicaments() );
         validateExamMedicamentList( exam.getExamMedicaments() );
 
         Exam oldExam = examRepository.getOne( exam.getId() );
@@ -216,7 +239,7 @@ public class ExamServiceImpl implements ExamService {
 
         if ( examMedicamentList != null && examMedicamentList.size() > 0 ) {
             for ( ExamMedicament examMedicament : examMedicamentList ) {
-
+                validateExamMedicament( examMedicament );
             }
         }
     }

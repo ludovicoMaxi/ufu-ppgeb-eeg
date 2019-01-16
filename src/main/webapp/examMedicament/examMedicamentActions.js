@@ -51,7 +51,7 @@ export function submitUpdateExamMedicamentList(values) {
         axios.put(`${BASE_URL_EXAM}/medicament`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Medicamentos do exame atualizado com sucesso.`);
-                dispatch(initialize('examMedicamentListForm', resp.data));
+                dispatch([changeFieldValue('examMedicamentListForm', 'examMedicaments', resp.data.examMedicaments), getOptionsMedicament()]);
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao atualizar os Medicamentos do Exame (${values.id}): \n` + e.response.data.message)
@@ -61,6 +61,18 @@ export function submitUpdateExamMedicamentList(values) {
 
 export function submitExamMedicamentList(values) {
     validateExamMedicamentList(values);
+
+    var valuesSubmit = { ...values };
+    for (var i = 0; i < valuesSubmit.examMedicaments.length; i++) {
+        if (valuesSubmit.examMedicaments[i].medicament.name == 'outro') {
+            valuesSubmit.examMedicaments[i].medicament.id = undefined;
+            valuesSubmit.examMedicaments[i].medicament.name = valuesSubmit.examMedicaments[i].name;
+            valuesSubmit.examMedicaments[i].name = undefined;
+            valuesSubmit.examMedicaments[i].medicament.description = valuesSubmit.examMedicaments[i].description;
+            valuesSubmit.examMedicaments[i].description = undefined;
+        }
+    }
+
     return submitUpdateExamMedicamentList(values);
 }
 
@@ -68,7 +80,6 @@ export function validateExamMedicamentList(values) {
     var errors = { 'examMedicaments': {} }
 
     if (!values.id) {
-        errors.examId = 'ID do exame não foi configurado!';
         errors._error = 'ID do exame não foi configurado!';
     }
 
@@ -97,6 +108,15 @@ function validateExamMedicament(examMedicament) {
 
     if (!examMedicament.unit) {
         errors.unit = 'Unidade é obrigatório!'
+    }
+
+    if (examMedicament.medicament.name == 'outro') {
+        if (!examMedicament.name) {
+            errors.name = 'Nome Medicamento é obrigatório!'
+        }
+        if (!examMedicament.description) {
+            errors.description = 'Descrição é obrigatória!'
+        }
     }
 
     return errors;
