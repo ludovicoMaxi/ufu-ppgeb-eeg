@@ -140,8 +140,6 @@ function submit(values, method, action, idCustomer) {
 
 export function init() {
     return [
-        showTabs('tabPedido', 'tabExame'),
-        selectTab('tabPedido'),
         initialize('patientForm', INITIAL_VALUES)
     ]
 }

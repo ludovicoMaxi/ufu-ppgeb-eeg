@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,6 +29,7 @@ public class ExamMedicament {
 
     @ManyToOne
     @JoinColumn( name = "EXAM_ID", nullable = false )
+    @JsonBackReference
     private Exam exam;
 
     @ManyToOne
@@ -64,7 +66,7 @@ public class ExamMedicament {
         if ( !( o instanceof ExamMedicament ) )
             return false;
         ExamMedicament that = (ExamMedicament) o;
-        return Objects.equals( getExam(), that.getExam() ) && Objects.equals( getMedicament(), that.getMedicament() )
+        return Objects.equals( getExamId(), that.getExamId() ) && Objects.equals( getMedicament(), that.getMedicament() )
             && Objects.equals( getAmount(), that.getAmount() ) && Objects.equals( getUnit(), that.getUnit() );
     }
 
@@ -184,10 +186,19 @@ public class ExamMedicament {
     }
 
 
+    public Long getExamId() {
+
+        if ( exam != null ) {
+            return exam.getId();
+        }
+        return null;
+    }
+
+
     @Override
     public String toString() {
 
-        return "ExamMedicament{" + "id=" + id + ", exam=" + exam + ", medicament=" + medicament + ", amount=" + amount + ", unit=" + unit + ", createdAt="
-            + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
+        return "ExamMedicament{" + "id=" + id + ", examId=" + getExamId() + ", medicament=" + medicament + ", amount=" + amount + ", unit=" + unit
+            + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -28,6 +29,7 @@ public class ExamEquipment {
 
     @ManyToOne
     @JoinColumn( name = "EXAM_ID", nullable = false )
+    @JsonBackReference
     private Exam exam;
 
     @ManyToOne
@@ -60,7 +62,7 @@ public class ExamEquipment {
         if ( !( o instanceof ExamEquipment ) )
             return false;
         ExamEquipment that = (ExamEquipment) o;
-        return Objects.equals( getExam(), that.getExam() ) && Objects.equals( getEquipment(), that.getEquipment() )
+        return Objects.equals( getExamId(), that.getExamId() ) && Objects.equals( getEquipment(), that.getEquipment() )
             && Objects.equals( getAmount(), that.getAmount() );
     }
 
@@ -168,10 +170,19 @@ public class ExamEquipment {
     }
 
 
+    public Long getExamId() {
+
+        if ( exam != null ) {
+            return exam.getId();
+        }
+        return null;
+    }
+
+
     @Override
     public String toString() {
 
-        return "ExamEquipment{" + "id=" + id + ", exam=" + exam + ", equipment=" + equipment + ", amount=" + amount + ", createdAt=" + createdAt
+        return "ExamEquipment{" + "id=" + id + ", examId=" + getExamId() + ", equipment=" + equipment + ", amount=" + amount + ", createdAt=" + createdAt
             + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

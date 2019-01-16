@@ -4,6 +4,7 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 import { BASE_URL_EXAM } from '../constants'
+import { updateExamMedicamentList } from '../examMedicament/examMedicamentActions'
 
 const INITIAL_VALUES = {};
 
@@ -12,7 +13,7 @@ export function getExamById(id) {
         axios.get(`${BASE_URL_EXAM}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch([initialize('examForm', resp.data), initialize('patientForm', resp.data.patient)]);
+                    dispatch([initialize('examForm', resp.data), initialize('patientForm', resp.data.patient), updateExamMedicamentList(resp.data.examMedicaments)]);
                 }
                 else
                     toastr.error('Erro', `Exame de ID ${id} não existe!!!`)
@@ -30,17 +31,17 @@ export function submitExam(values) {
         errors.achievementDate = 'A data é obrigatório!'
     }
 
-    if (!values.clinicalData) {
-        errors.clinicalData = 'Os dados Clinicos são obrigatórios!'
-    }
+    // if (!values.clinicalData) {
+    //     errors.clinicalData = 'Os dados Clinicos são obrigatórios!'
+    // }
 
-    if (!values.medicalReport) {
-        errors.medicalReport = 'O Laudo é obrigatório!'
-    }
+    // if (!values.medicalReport) {
+    //     errors.medicalReport = 'O Laudo é obrigatório!'
+    // }
 
-    if (!values.conclusion) {
-        errors.conclusion = 'A conclusão é Obrigatório!'
-    }
+    // if (!values.conclusion) {
+    //     errors.conclusion = 'A conclusão é Obrigatório!'
+    // }
 
     if (Object.keys(errors).length !== 0) {
         errors._error = 'Preencha todos os campos obrigatórios!';
@@ -100,8 +101,6 @@ function update(values) {
         axios.put(`${BASE_URL_EXAM}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Exame atualizado com sucesso.`);
-                console.log('teste');
-                console.log(resp.data);
                 dispatch(initialize('examForm', resp.data));
             })
             .catch(e => {
@@ -126,16 +125,9 @@ function create(values) {
 
 export function init() {
     return [
-        showTabs('tabPedido', 'tabExame'),
-        selectTab('tabPedido'),
-        initialize('patientForm', INITIAL_VALUES)
-    ]
-}
-
-export function initRegisterPatient() {
-    return [
-        showTabs(),
-        initialize('patientForm', INITIAL_VALUES)
+        showTabs('tabMedicine', 'tabEquipments'),
+        selectTab('tabMedicine'),
+        initialize('examForm', INITIAL_VALUES)
     ]
 }
 

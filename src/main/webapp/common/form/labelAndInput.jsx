@@ -7,8 +7,9 @@ export default props => {
     return (
         <Grid cols={cols}>
             <div className={`form-group ${!!error ? 'has-error' : ''}`}>
-                <label htmlFor={name}>{label}</label>
+                <label htmlFor={input.name}>{label}</label>
                 <input {...input} className='form-control'
+                    id={input.name}
                     placeholder={placeholder}
                     readOnly={readOnly} type={type} />
                 {error && <span className="help-block">{error}</span>}

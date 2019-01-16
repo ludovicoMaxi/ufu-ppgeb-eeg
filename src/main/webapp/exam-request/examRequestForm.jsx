@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
 
-import { initRegisterPatient } from './examRequestActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import DateTimeInput from '../common/form/dateTimeInput'
 import If from '../common/operator/if'
@@ -80,5 +79,5 @@ const mapStateToProps = state => ({
     updateAt: selector(state, 'updateAt')
 })
 
-const mapDispatchToProps = dispatch => bindActionCreators({ initRegisterPatient }, dispatch)
+const mapDispatchToProps = dispatch => bindActionCreators({ }, dispatch)
 export default connect(mapStateToProps, mapDispatchToProps)(ExamRequestForm)

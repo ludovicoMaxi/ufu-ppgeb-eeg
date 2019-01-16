@@ -7,7 +7,6 @@ import { initRegisterPatient } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputSelect from '../common/form/labelAndInputSelect'
 import DateTimeInput from '../common/form/dateTimeInput'
-import Row from '../common/layout/row'
 import If from '../common/operator/if'
 import Tabs from '../common/tab/tabs';
 import TabsHeader from '../common/tab/tabsHeader'
@@ -41,9 +40,9 @@ class PatientForm extends Component {
                             <Field name='sex' component={LabelAndInputSelect}
                                 label='Sexo' cols='12 2'
                                 readOnly={readOnly}
-                                placeholder='Informe o Sexo'
-                                optionList={[{ 'value': 'M', 'label': 'Masculino' },
-                                { 'value': 'F', 'label': 'Feminino' }]}>
+                                placeholder='Sexo'
+                                options={[{ 'value': 'M', 'label': 'MASCULINO' },
+                                { 'value': 'F', 'label': 'FEMININO' }]}>
                             </Field>
 
                             <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}

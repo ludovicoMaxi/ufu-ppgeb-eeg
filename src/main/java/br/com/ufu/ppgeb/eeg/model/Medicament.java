@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * Created by joaol on 08/12/18.
  */
 @Entity
-@Table( name = "EQUIPMENT" )
+@Table( name = "MEDICAMENT" )
 public class Medicament {
 
     @Id

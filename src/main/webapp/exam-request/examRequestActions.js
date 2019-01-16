@@ -108,8 +108,6 @@ function update(values) {
         axios.put(`${BASE_URL_EXAM_REQUEST}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Requerimento atualizado com sucesso.`);
-                console.log('teste');
-                console.log(resp.data);
                 dispatch(initialize('examRequestForm', resp.data));
             })
             .catch(e => {
@@ -134,16 +132,7 @@ function create(values) {
 
 export function init() {
     return [
-        showTabs('tabPedido', 'tabExame'),
-        selectTab('tabPedido'),
-        initialize('patientForm', INITIAL_VALUES)
-    ]
-}
-
-export function initRegisterPatient() {
-    return [
-        showTabs(),
-        initialize('patientForm', INITIAL_VALUES)
+        initialize('examRequestForm', INITIAL_VALUES)
     ]
 }
 

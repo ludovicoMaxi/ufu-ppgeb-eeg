@@ -40,7 +40,7 @@ class SystemInfo extends Component {
 }
 
 
-const mapStateToProps = (state, props) =>  {
+const mapStateToProps = (state, props) => {
 
     const selector = formValueSelector(props.formName);
     const prefix = props.field ? props.field + '.' : '';
