@@ -122,6 +122,7 @@ public class PatientServiceImpl implements PatientService {
                 throw new IllegalArgumentException( "CPF/CNPJ está divergente." );
             }
 
+            oldPatient.setSex( patient.getSex() );
             oldPatient.setBirthDate( patient.getBirthDate() );
             oldPatient.setNacionality( patient.getNacionality() );
             oldPatient.setCivilStatus( patient.getCivilStatus() );

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 
 import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
-import { initRegisterPatient, submitExamRequest, setPatientInForm } from './examRequestActions'
+import { submitExamRequest, setPatientInForm, init } from './examRequestActions'
 import { init as initPatient, getPatientById } from '../patient/patientActions'
 import PatientForm from '../patient/patientForm'
 import ExamRequestForm from './examRequestForm'
@@ -12,6 +12,7 @@ import ExamRequestForm from './examRequestForm'
 class ExamRequestRegister extends Component {
 
     componentWillMount() {
+        this.props.init();
         this.props.initPatient();
         const { patientId } = this.props.match.params;
         this.props.getPatientById(patientId);
@@ -34,5 +35,5 @@ class ExamRequestRegister extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => bindActionCreators({ initPatient, getPatientById, initRegisterPatient, submitExamRequest, setPatientInForm }, dispatch)
+const mapDispatchToProps = dispatch => bindActionCreators({ initPatient, getPatientById, submitExamRequest, setPatientInForm, init }, dispatch)
 export default connect(null, mapDispatchToProps)(ExamRequestRegister)

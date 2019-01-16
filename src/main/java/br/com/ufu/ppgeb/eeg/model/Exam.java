@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 /**
@@ -42,26 +43,28 @@ public class Exam {
     @JoinColumn( name = "PATIENT_ID", nullable = false )
     private Patient patient;
 
-    @Column( name = "ACHIEVEMENT_DATE" )
+    @Column( name = "ACHIEVEMENT_DATE", nullable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date achievementDate;
 
-    @Column( name = "MEDICAL_REPORT", length = 256, nullable = false )
+    @Column( name = "MEDICAL_REPORT", length = 256 )
     private String medicalReport;
 
-    @Column( name = "CONCLUSION", length = 256, nullable = false )
+    @Column( name = "CONCLUSION", length = 256 )
     private String conclusion;
 
     @Column( name = "BED", length = 256 )
     private String bed;
 
-    @Column( name = "CLINICAL_DATA", length = 256, nullable = false )
+    @Column( name = "CLINICAL_DATA", length = 256 )
     private String clinicalData;
 
     @OneToMany( mappedBy = "exam" )
+    @JsonManagedReference
     private List< ExamMedicament > examMedicaments;
 
     @OneToMany( mappedBy = "exam" )
+    @JsonManagedReference
     private List< ExamEquipment > examEquipments;
 
     @Column( name = "CREATED_AT", nullable = false )

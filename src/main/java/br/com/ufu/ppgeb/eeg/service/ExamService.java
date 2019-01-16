@@ -8,7 +8,7 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
 
 public interface ExamService {
 
-    Exam save( Exam examRequest );
+    Exam save( Exam exam );
 
 
     Exam findById( Long id );
@@ -23,6 +23,8 @@ public interface ExamService {
     void delete( Long id );
 
 
-    Exam update( Exam examRequest );
+    Exam update( Exam exam );
+
+    Exam updateExamMedicament( Exam exam );
 
 }

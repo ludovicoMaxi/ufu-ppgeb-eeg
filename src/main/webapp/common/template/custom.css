@@ -25,3 +25,29 @@ button {
     padding-bottom: 5px;
     padding-top: 10px;
 }
+
+.form-group .css-vj8t7z, .css-162g8z5{
+    border-radius: 0px!important;
+    border-color: #d2d6de;
+}
+
+.form-group .css-162g8z5{
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+.form-group .css-10nd86i{
+    height: 34px;
+}
+
+.form-group .css-142w6gm, .css-xp4uvy{
+    color: #555!important;
+}
+
+.form-group .css-15k3avv{
+    z-index: 99;
+}
+
+.has-error .css-vj8t7z{
+    border-color: red;
+}

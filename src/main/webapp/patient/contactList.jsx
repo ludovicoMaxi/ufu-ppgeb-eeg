@@ -73,7 +73,7 @@ class ContactList extends Component {
                     </button>
                     <button type='button' className='btn btn-danger'
                         onClick={() => this.remove(index)}>
-                        <i className="fa fa-trash-o"></i>
+                        <i className="fa fa-trash-alt"></i>
                     </button>
                 </div>
             </div>

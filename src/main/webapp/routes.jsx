@@ -52,6 +52,7 @@ class Routes extends Component {
                     <Route path='/patient/:patientId/exam/add' component={ExamRegister} />
                     <Route path='/exam/search' component={ExamSearch} />
                     <Route path='/exam/:examId' component={ExamEdit} />
+                    <Redirect from='/patient/*/*' to='/' />
                     <Route path='/patient/:patientId' component={PatientEdit} />
                     <Redirect from='*' to='/' />
                 </Switch>
