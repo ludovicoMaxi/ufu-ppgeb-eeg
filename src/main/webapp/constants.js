@@ -12,6 +12,7 @@ const BASE_URL_EXAM_REQUEST = `${BASE_URL}/api/exam-request`
 const BASE_URL_EXAM = `${BASE_URL}/api/exam`
 const BASE_URL_UNIT = `${BASE_URL}/api/unit`
 const BASE_URL_MEDICAMENT = `${BASE_URL}/api/medicament`
+const BASE_URL_EQUIPMENT = `${BASE_URL}/api/equipment`
 
 export {
     BASE_URL,
@@ -19,5 +20,6 @@ export {
     BASE_URL_EXAM_REQUEST,
     BASE_URL_EXAM,
     BASE_URL_UNIT,
-    BASE_URL_MEDICAMENT
+    BASE_URL_MEDICAMENT,
+    BASE_URL_EQUIPMENT
 };

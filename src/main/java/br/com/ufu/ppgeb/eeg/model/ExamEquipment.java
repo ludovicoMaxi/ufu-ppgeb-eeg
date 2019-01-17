@@ -39,6 +39,10 @@ public class ExamEquipment {
     @Column( name = "AMOUNT", nullable = false )
     private Long amount;
 
+    @ManyToOne
+    @JoinColumn( name = "UNIT_ID", nullable = false )
+    private Unit unit;
+
     @Column( name = "CREATED_AT", nullable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
@@ -63,7 +67,7 @@ public class ExamEquipment {
             return false;
         ExamEquipment that = (ExamEquipment) o;
         return Objects.equals( getExamId(), that.getExamId() ) && Objects.equals( getEquipment(), that.getEquipment() )
-            && Objects.equals( getAmount(), that.getAmount() );
+            && Objects.equals( getAmount(), that.getAmount() ) && Objects.equals( getUnit(), that.getUnit() );
     }
 
 
@@ -119,6 +123,18 @@ public class ExamEquipment {
     public void setAmount( Long amount ) {
 
         this.amount = amount;
+    }
+
+
+    public Unit getUnit() {
+
+        return unit;
+    }
+
+
+    public void setUnit( Unit unit ) {
+
+        this.unit = unit;
     }
 
 
@@ -182,7 +198,7 @@ public class ExamEquipment {
     @Override
     public String toString() {
 
-        return "ExamEquipment{" + "id=" + id + ", examId=" + getExamId() + ", equipment=" + equipment + ", amount=" + amount + ", createdAt=" + createdAt
-            + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
+        return "ExamEquipment{" + "id=" + id + ", examId=" + getExamId() + ", equipment=" + equipment + ", amount=" + amount + ", unit=" + unit + ", createdAt="
+            + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

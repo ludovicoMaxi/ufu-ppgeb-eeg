@@ -11,11 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
+import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
 import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
 import br.com.ufu.ppgeb.eeg.model.Medicament;
+import br.com.ufu.ppgeb.eeg.repository.ExamEquipmentRepository;
 import br.com.ufu.ppgeb.eeg.repository.ExamMedicamentRepository;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
+import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 
@@ -30,7 +34,13 @@ public class ExamServiceImpl implements ExamService {
     private ExamMedicamentRepository examMedicamentRepository;
 
     @Autowired
+    private ExamEquipmentRepository examEquipmentRepository;
+
+    @Autowired
     private MedicamentService medicamentService;
+
+    @Autowired
+    private EquipmentService equipmentService;
 
 
     @Override
@@ -149,7 +159,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
 
-    private void registerUnregisteredMedications( List< ExamMedicament > examMedicamentList ) {
+    private void registerUnregisteredMedicaments( List< ExamMedicament > examMedicamentList ) {
 
         if ( examMedicamentList != null && examMedicamentList.size() > 0 ) {
             for ( ExamMedicament examMedicament : examMedicamentList ) {
@@ -172,7 +182,7 @@ public class ExamServiceImpl implements ExamService {
         Assert.notNull( exam, "exam cannot be null." );
         Assert.notNull( exam.getId(), "exam ID cannot be null." );
 
-        registerUnregisteredMedications( exam.getExamMedicaments() );
+        registerUnregisteredMedicaments( exam.getExamMedicaments() );
         validateExamMedicamentList( exam.getExamMedicaments() );
 
         Exam oldExam = examRepository.getOne( exam.getId() );
@@ -253,5 +263,112 @@ public class ExamServiceImpl implements ExamService {
         Assert.notNull( examMedicament.getMedicament().getId(), "examMedicament-medicament-id cannot be null" );
         Assert.notNull( examMedicament.getUnit(), "examMedicament-unit cannot be null" );
         Assert.notNull( examMedicament.getUnit().getId(), "examMedicament-unit-id cannot be null" );
+    }
+
+
+    private void registerUnregisteredEquipments( List< ExamEquipment > examEquipmentList ) {
+
+        if ( examEquipmentList != null && examEquipmentList.size() > 0 ) {
+            for ( ExamEquipment examEquipment : examEquipmentList ) {
+                Equipment equipment = examEquipment.getEquipment();
+                Assert.notNull( equipment, "equipment cannot be null." );
+                Assert.hasText( equipment.getName(), "equipment name cannot be empty." );
+
+                if ( equipment.getId() == null ) {
+                    examEquipment.setEquipment( equipmentService.save( equipment ) );
+                }
+            }
+        }
+    }
+
+
+    @Override
+    @Transactional( rollbackFor = Exception.class )
+    public Exam updateExamEquipment( Exam exam ) {
+
+        Assert.notNull( exam, "exam cannot be null." );
+        Assert.notNull( exam.getId(), "exam ID cannot be null." );
+
+        registerUnregisteredEquipments( exam.getExamEquipments() );
+        validateExamEquipmentList( exam.getExamEquipments() );
+
+        Exam oldExam = examRepository.getOne( exam.getId() );
+
+        if ( oldExam == null ) {
+            throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
+        }
+
+        List< ExamEquipment > oldExamEquipmentList = oldExam.getExamEquipments();
+
+        List< ExamEquipment > examEquipmentUpdateList = new ArrayList<>();
+
+        if ( exam.getExamEquipments() != null && exam.getExamEquipments().size() > 0 ) {
+
+            List< ExamEquipment > examEquipmentList = exam.getExamEquipments();
+            for ( int i = 0; i < examEquipmentList.size(); i++ ) {
+
+                if ( examEquipmentList.get( i ).getId() != null ) {
+                    Boolean existExamEquipment = false;
+
+                    if ( oldExamEquipmentList != null && oldExamEquipmentList.size() > 0 ) {
+                        for ( ExamEquipment oldContact : oldExamEquipmentList ) {
+                            if ( examEquipmentList.get( i ).getId().equals( oldContact.getId() ) ) {
+                                existExamEquipment = true;
+
+                                examEquipmentList.get( i ).setUpdatedAt( new Date() );
+                                examEquipmentList.get( i ).setUpdatedBy( "SYSTEM" );
+                                examEquipmentList.set( i, examEquipmentRepository.save( examEquipmentList.get( i ) ) );
+                                examEquipmentUpdateList.add( examEquipmentList.get( i ) );
+                                break;
+                            }
+                        }
+                    }
+
+                    if ( existExamEquipment == false ) {
+                        throw new IllegalArgumentException(
+                            "Exam Equipment with id=" + examEquipmentList.get( i ).getId() + " not exist by examID=" + exam.getId() );
+                    }
+                }
+            }
+        }
+
+        exam.getExamEquipments().removeAll( examEquipmentUpdateList );
+        if ( exam.getExamEquipments() != null && exam.getExamEquipments().size() > 0 ) {
+            for ( ExamEquipment newExamEquipment : exam.getExamEquipments() ) {
+                newExamEquipment.setCreatedAt( new Date() );
+                newExamEquipment.setCreatedBy( "SYSTEM" );
+                examEquipmentRepository.save( newExamEquipment );
+            }
+        }
+
+        oldExamEquipmentList.removeAll( examEquipmentUpdateList );
+        for ( ExamEquipment oldExamEquipment : oldExamEquipmentList ) {
+            examEquipmentRepository.delete( oldExamEquipment );
+        }
+
+        exam.getExamEquipments().addAll( examEquipmentUpdateList );
+
+        return exam;
+    }
+
+
+    private void validateExamEquipmentList( List< ExamEquipment > examEquipmentList ) {
+
+        if ( examEquipmentList != null && examEquipmentList.size() > 0 ) {
+            for ( ExamEquipment examEquipment : examEquipmentList ) {
+                validateExamEquipment( examEquipment );
+            }
+        }
+    }
+
+
+    private void validateExamEquipment( ExamEquipment examEquipment ) {
+
+        Assert.notNull( examEquipment, "examEquipment cannot be null" );
+        Assert.notNull( examEquipment.getAmount(), "examEquipment-amount cannot be null" );
+        Assert.notNull( examEquipment.getEquipment(), "examEquipment-equipment cannot be null" );
+        Assert.notNull( examEquipment.getEquipment().getId(), "examEquipment-equipment-id cannot be null" );
+        Assert.notNull( examEquipment.getUnit(), "examEquipment-unit cannot be null" );
+        Assert.notNull( examEquipment.getUnit().getId(), "examEquipment-unit-id cannot be null" );
     }
 }

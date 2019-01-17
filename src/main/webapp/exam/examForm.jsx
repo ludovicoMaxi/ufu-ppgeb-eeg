@@ -15,12 +15,24 @@ import TabContent from '../common/tab/tabContent'
 import SystemInfo from '../common/form/systemInfo'
 import { upper } from '../common/form/formatValues'
 import ExamMedicamentListForm from '../examMedicament/examMedicamentListForm'
+import ExamEquipmentListForm from '../examEquipment/examEquipmentListForm'
 import Grid from '../common/layout/grid'
 
 class ExamForm extends Component {
 
     render() {
-        const { handleSubmit, readOnly, pristine, submitting, submitClass, submitLabel, showSystemInfo, reset, examId, examMedicaments } = this.props;
+        const {
+            handleSubmit,
+            readOnly,
+            pristine,
+            submitting,
+            submitClass,
+            submitLabel,
+            showSystemInfo,
+            reset,
+            examId,
+            examMedicaments,
+            examEquipments } = this.props;
 
         return (
             <div>
@@ -72,7 +84,7 @@ class ExamForm extends Component {
                                 <ExamMedicamentListForm examId={examId} examMedicamentList={examMedicaments} />
                             </TabContent>
                             <TabContent id='tabEquipments'>
-                                <h1>Em construção</h1>
+                                <ExamEquipmentListForm examId={examId} examEquipmentList={examEquipments} />
                             </TabContent>
                         </TabsContent>
                     </Tabs>
@@ -87,7 +99,8 @@ const selector = formValueSelector('examForm')
 const mapStateToProps = state => ({
     createdAt: selector(state, 'createdAt'),
     updateAt: selector(state, 'updateAt'),
-    examMedicaments: selector(state, 'examMedicaments')
+    examMedicaments: selector(state, 'examMedicaments'),
+    examEquipments: selector(state, 'examEquipments')
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch)

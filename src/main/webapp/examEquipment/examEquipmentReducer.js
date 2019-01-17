@@ -12,7 +12,7 @@ export default (state = INITIAL_STATE, action) => {
             }
             return { ...state, optionsUnit: options }
 
-        case 'OPTIONS_MEDICAMENT':
+        case 'OPTIONS_EQUIPMENT':
             var options = [];
             if (!!action.payload) {
                 for (var i = 0; i < action.payload.length; i++) {
@@ -21,7 +21,7 @@ export default (state = INITIAL_STATE, action) => {
                 }
             }
             options.push({ 'value': { 'name': 'outro' }, 'label': 'OUTRO' });
-            return { ...state, optionsMedicament: options }
+            return { ...state, optionsEquipment: options }
 
         default:
             return state
