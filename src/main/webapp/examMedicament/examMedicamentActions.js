@@ -10,7 +10,7 @@ export function getOptionsUnit() {
         axios.get(`${BASE_URL_UNIT}/`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPIONS_UNIT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_UNIT', payload: resp.data });
                 }
                 else
                     toastr.error('Erro', `Não existe unidades!!!`)
@@ -26,7 +26,7 @@ export function getOptionsMedicament() {
         axios.get(`${BASE_URL_MEDICAMENT}/`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPIONS_MEDICAMENT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_MEDICAMENT', payload: resp.data });
                 }
                 else
                     toastr.error('Erro', `Não existe Medicamentos!!!`)
@@ -46,7 +46,6 @@ export function removeItemList(index) {
 }
 
 export function submitUpdateExamMedicamentList(values) {
-    console.log('cheguei perori');
     return dispatch => {
         axios.put(`${BASE_URL_EXAM}/medicament`, values)
             .then(resp => {

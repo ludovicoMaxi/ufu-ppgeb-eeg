@@ -2,7 +2,7 @@ const INITIAL_STATE = { optionsUnit: [] }
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case 'OPIONS_UNIT':
+        case 'OPTIONS_UNIT':
             var options = [];
             if (!!action.payload) {
                 for (var i = 0; i < action.payload.length; i++) {
@@ -12,7 +12,7 @@ export default (state = INITIAL_STATE, action) => {
             }
             return { ...state, optionsUnit: options }
 
-        case 'OPIONS_MEDICAMENT':
+        case 'OPTIONS_MEDICAMENT':
             var options = [];
             if (!!action.payload) {
                 for (var i = 0; i < action.payload.length; i++) {

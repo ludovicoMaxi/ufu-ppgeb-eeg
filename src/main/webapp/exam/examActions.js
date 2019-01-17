@@ -5,6 +5,7 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 import { showTabs, selectTab } from '../common/tab/tabActions'
 import { BASE_URL_EXAM } from '../constants'
 import { updateExamMedicamentList } from '../examMedicament/examMedicamentActions'
+import { updateExamEquipmentList } from '../examEquipment/examEquipmentActions'
 
 const INITIAL_VALUES = {};
 
@@ -13,7 +14,11 @@ export function getExamById(id) {
         axios.get(`${BASE_URL_EXAM}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch([initialize('examForm', resp.data), initialize('patientForm', resp.data.patient), updateExamMedicamentList(resp.data.examMedicaments)]);
+                    dispatch([
+                        initialize('examForm', resp.data),
+                        initialize('patientForm', resp.data.patient),
+                        updateExamMedicamentList(resp.data.examMedicaments),
+                        updateExamEquipmentList(resp.data.examEquipments)]);
                 }
                 else
                     toastr.error('Erro', `Exame de ID ${id} não existe!!!`)

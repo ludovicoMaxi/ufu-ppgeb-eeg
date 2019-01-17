@@ -25,6 +25,10 @@ public interface ExamService {
 
     Exam update( Exam exam );
 
+
     Exam updateExamMedicament( Exam exam );
+
+
+    Exam updateExamEquipment( Exam exam );
 
 }

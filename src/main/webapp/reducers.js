@@ -7,6 +7,7 @@ import TabReducer from './common/tab/tabReducer'
 import ExamRequestReducer from './exam-request/examRequestReducer'
 import ExamReducer from './exam/examReducer'
 import ExamMedicamentReducer from './examMedicament/examMedicamentReducer'
+import ExamEquipmentReducer from './examEquipment/examEquipmentReducer'
 
 const rootReducer = combineReducers({
     toastr: toastrReducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
     tab: TabReducer,
     examRequest: ExamRequestReducer,
     exam: ExamReducer,
-    examMedicament: ExamMedicamentReducer
+    examMedicament: ExamMedicamentReducer,
+    examEquipment: ExamEquipmentReducer
 })
 
 export default rootReducer

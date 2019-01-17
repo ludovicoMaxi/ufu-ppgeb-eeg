@@ -79,4 +79,13 @@ public class ExamController {
         logger.info( "Updating exam-medicament" + examMedicamentList );
         return this.examService.updateExamMedicament( examMedicamentList );
     }
+
+
+    @PutMapping( "/equipment" )
+    public @ResponseBody Exam updateExamEquipment( @RequestBody Exam examEquipmentList )
+        throws Exception {
+
+        logger.info( "Updating exam-equipment" + examEquipmentList );
+        return this.examService.updateExamEquipment( examEquipmentList );
+    }
 }
