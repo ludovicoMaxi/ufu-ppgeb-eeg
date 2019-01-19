@@ -3,7 +3,7 @@ import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError, change as changeFieldValue } from 'redux-form'
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
-import { BASE_URL_EXAM_REQUEST } from '../constants'
+import { BASE_URL_EXAM_REQUEST, BASE_URL_EXAM } from '../constants'
 
 const INITIAL_VALUES = {};
 
@@ -12,13 +12,32 @@ export function getExamRequestById(id) {
         axios.get(`${BASE_URL_EXAM_REQUEST}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch([initialize('examRequestForm', resp.data), initialize('patientForm', resp.data.patient)]);
+                    dispatch([
+                        initialize('examRequestForm', resp.data),
+                        initialize('patientForm', resp.data.patient),
+                        showTabs('tabExams'),
+                        selectTab('tabExams')
+                    ]);
                 }
                 else
                     toastr.error('Erro', `Requerimento de ID ${id} não existe!!!`)
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao buscar o Requerimento (${id}): \n` + e.response.data.message)
+            })
+    }
+}
+
+export function getExamByExamRequestId(id) {
+    return dispatch => {
+        axios.get(`${BASE_URL_EXAM}/?examRequestId=${id}`)
+            .then(resp => {
+                if (!!resp.data) {
+                    dispatch({ type: 'EXAM_REQUEST_EXAM_FETCHED', payload: resp.data });
+                }
+            })
+            .catch(e => {
+                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do requerimento (${id}): \n` + e.response.data.message)
             })
     }
 }

@@ -6,6 +6,8 @@ export default (state = INITIAL_STATE, action) => {
             return { ...state, resultSearch: action.payload }
         case 'PATIENT_FETCHED':
             return { ...state, patient: action.payload }
+        case 'EXAM_REQUEST_EXAM_FETCHED':
+            return { ...state, examList: action.payload }            
         default:
             return state
     }

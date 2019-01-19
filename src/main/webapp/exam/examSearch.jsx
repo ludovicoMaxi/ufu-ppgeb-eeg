@@ -19,9 +19,8 @@ class ExamSearch extends Component {
         const list = this.props.list || []
         return list.map(exam => (
             <tr key={exam.id}>
-                <td><Link to={`/exam/${exam.id}`}>{exam.medicalRecord}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.medicalRequest}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.doctorRequestant}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{exam.id}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{exam.bed}</Link></td>
             </tr>
         ))
     }
@@ -35,12 +34,10 @@ class ExamSearch extends Component {
                     <div className='box'>
                         <div className='box-body'>
                             <fieldset>
-                                <Field name='medicalRecord' component={LabelAndInput} readOnly={false}
-                                    label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
-                                <Field name='medicalRequest' component={LabelAndInput} readOnly={false}
-                                    label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
-                                <Field name='doctorRequestant' component={LabelAndInput} readOnly={false} normalize={upper}
-                                    label='Medico Solicitante' cols='12 6' placeholder='Informe o Médico' />
+                                <Field name='id' component={LabelAndInput} readOnly={false}
+                                    label='Exame id' cols='4 2' placeholder='Identificador' normalize={onlyNumbers} />
+                                <Field name='bed' component={LabelAndInput} readOnly={false}
+                                    label='Leito' cols='8 6' placeholder='Leito' normalize={upper} />
                                 <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                             </fieldset>
                         </div>
@@ -65,9 +62,8 @@ class ExamSearch extends Component {
                             <table className='table'>
                                 <thead>
                                     <tr>
-                                        <th>Prontuário ID</th>
-                                        <th>Requisição ID</th>
-                                        <th>Medico Solicitante</th>
+                                        <th>Exame ID</th>
+                                        <th>Leito</th>
                                     </tr>
                                 </thead>
                                 <tbody>

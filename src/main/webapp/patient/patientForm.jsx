@@ -14,7 +14,6 @@ import TabsHeader from '../common/tab/tabsHeader'
 import TabsContent from '../common/tab/tabsContent'
 import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
-import ContactList from './contactList'
 import SystemInfo from '../common/form/systemInfo'
 import { upper, documentNumber as documentNumberMask } from '../common/form/formatValues'
 

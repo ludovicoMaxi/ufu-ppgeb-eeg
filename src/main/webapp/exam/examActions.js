@@ -64,22 +64,20 @@ export function searchExam(values) {
 
     var errors = {}
 
-    if (!values.medicalRecord && !values.medicalRequest && !values.doctorRequestant) {
-        errors.medicalRecord = ' ';
-        errors.medicalRequest = ' ';
-        errors.doctorRequestant = ' ';
+    if (!values.id && !values.bed) {
+        errors.id = ' ';
+        errors.bed = ' ';
         errors._error = 'Preencha pelo menos um campo para consultar!';
         throw new SubmissionError(errors);
     }
 
     return dispatch => {
-        var params = (!!values.medicalRecord ? `medicalRecord=${values.medicalRecord}` : '')
-            + (!!values.medicalRequest ? `medicalRequest=${values.medicalRequest}` : '')
-            + (!!values.doctorRequestant ? `doctorRequestant=${values.doctorRequestant}` : '');
+        var params = (!!values.id ? `id=${values.id}` : '')
+            + (!!values.bed ? `bed=${values.bed}` : '');
         axios.get(`${BASE_URL_EXAM}?${params}`)
             .then(resp => {
                 if (!!resp.data && resp.data.length > 0) {
-                    dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: resp.data });
+                    dispatch({ type: 'EXAM_SEARCH_RESULT', payload: resp.data });
                 }
                 else
                     toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
@@ -128,11 +126,16 @@ function create(values) {
     }
 }
 
-export function init() {
+export function init(examRequestId) {
+    var initialvalues = { ...INITIAL_VALUES };
+    if (!!examRequestId) {
+        initialvalues.examRequest = {};
+        initialvalues.examRequest.id = examRequestId;
+    }
     return [
-        showTabs('tabMedicine', 'tabEquipments', 'tabEpochs'),
+        showTabs('tabMedicine', 'tabEquipments', 'tabEpochs', 'tabRequests'),
         selectTab('tabMedicine'),
-        initialize('examForm', INITIAL_VALUES)
+        initialize('examForm', initialvalues)
     ]
 }
 

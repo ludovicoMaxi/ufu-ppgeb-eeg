@@ -76,7 +76,6 @@ export function validateEpochList(values) {
         }
     }
 
-    console.log(errors);
     if (hasErrorEquipmentExamList || !!errors._error) {
         throw new SubmissionError(errors);
     }
