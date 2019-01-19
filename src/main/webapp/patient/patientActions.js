@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError } from 'redux-form'
-import { BASE_URL_PATIENT } from '../constants'
+import { BASE_URL_PATIENT, BASE_URL_EXAM, BASE_URL_EXAM_REQUEST } from '../constants'
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 
@@ -19,6 +19,34 @@ export function getPatientById(id) {
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao buscar o paciente (${id}): \n` + e.response.data.message)
+            })
+    }
+}
+
+export function getExamByPatientId(id) {
+    return dispatch => {
+        axios.get(`${BASE_URL_EXAM}/?patientId=${id}`)
+            .then(resp => {
+                if (!!resp.data) {
+                    dispatch({ type: 'PATIENT_EXAM_FETCHED', payload: resp.data });
+                }
+            })
+            .catch(e => {
+                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do paciente (${id}): \n` + e.response.data.message)
+            })
+    }
+}
+
+export function getExamRequestByPatientId(id) {
+    return dispatch => {
+        axios.get(`${BASE_URL_EXAM_REQUEST}/?patientId=${id}`)
+            .then(resp => {
+                if (!!resp.data) {
+                    dispatch({ type: 'PATIENT_EXAM_REQUEST_FETCHED', payload: resp.data });
+                }
+            })
+            .catch(e => {
+                toastr.error('Erro', `Ocorreu um erro ao buscar os requerimentos do paciente (${id}): \n` + e.response.data.message)
             })
     }
 }
@@ -140,6 +168,8 @@ function submit(values, method, action, idCustomer) {
 
 export function init() {
     return [
+        showTabs('tabExams', 'tabRequests'),
+        selectTab('tabExams'),
         initialize('patientForm', INITIAL_VALUES)
     ]
 }

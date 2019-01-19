@@ -72,7 +72,7 @@ export function submitExamEquipmentList(values) {
         }
     }
 
-    return submitUpdateExamEquipmentList(values);
+    return submitUpdateExamEquipmentList(valuesSubmit);
 }
 
 export function validateExamEquipmentList(values) {
@@ -127,13 +127,13 @@ export function init(examId, examEquipmentList) {
     if (!!examId) {
         initialValues.id = examId;
     }
-    if (!!examEquipmentList) {
-        initialValues.examEquipments = examEquipmentList;
-    }
 
     return initialize('examEquipmentListForm', initialValues);
 }
 
 export function updateExamEquipmentList(examEquipmentList) {
+    if (!examEquipmentList || examEquipmentList.length == 0) {
+        examEquipmentList = [{}];
+    }
     return changeFieldValue('examEquipmentListForm', 'examEquipments', examEquipmentList);
 }

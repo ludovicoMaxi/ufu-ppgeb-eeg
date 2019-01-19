@@ -43,7 +43,7 @@ class ExamMedicamentListForm extends Component {
     add(index, item) {
         if (!this.props.readOnly) {
             if (!item) {
-                item = { 'objectId': this.props.objectId, 'objectType': this.props.objectType };
+                item = { 'exam': {'id': this.props.examId}, 'medicament': {} };
             }
 
             this.props.addItemList(index, item);
@@ -58,7 +58,9 @@ class ExamMedicamentListForm extends Component {
 
     renderRows() {
         const { readOnly, optionsUnit, optionsMedicament } = this.props;
-        const list = this.props.list || [];
+        const list = this.props.list || [{}];
+        console.log('uai');
+        console.log(list);
 
         return list.map((item, index) => (
             <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
@@ -92,7 +94,6 @@ class ExamMedicamentListForm extends Component {
                         onClick={() => {
                             var itemAdd = { ...item };
                             itemAdd.id = undefined;
-                            itemAdd.main = false;
                             itemAdd.createdAt = undefined;
                             itemAdd.createdBy = undefined;
                             itemAdd.updatedAt = undefined;

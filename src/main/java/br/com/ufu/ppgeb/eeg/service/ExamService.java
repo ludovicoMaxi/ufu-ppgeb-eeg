@@ -14,7 +14,7 @@ public interface ExamService {
     Exam findById( Long id );
 
 
-    List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant );
+    List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant );
 
 
     List< Exam > findAll();

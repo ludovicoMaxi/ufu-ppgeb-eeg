@@ -17,7 +17,7 @@ class ExamRequestRegister extends Component {
         const { patientId } = this.props.match.params;
         this.props.getPatientById(patientId);
 
-        const patient = {'id': patientId};
+        const patient = { 'id': patientId };
         this.props.setPatientInForm(patient);
     }
 

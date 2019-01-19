@@ -11,6 +11,6 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
  */
 public interface ExamRepositoryCustom {
 
-    List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant );
+    List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant );
 
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
+import { Link } from 'react-router-dom'
 
 import { initRegisterPatient } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
@@ -19,171 +20,159 @@ import { upper, documentNumber as documentNumberMask } from '../common/form/form
 
 class PatientForm extends Component {
 
+    renderExamRows() {
+        const list = this.props.examList || []
+        return list.map(exam => (
+            <tr key={exam.id}>
+                <td><Link to={`/exam/${exam.id}`}>{exam.id}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{exam.achievementDate}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{exam.createdAt}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{exam.createdBy}</Link></td>
+            </tr>
+        ))
+    }
+
+    renderExamRequestRows() {
+        const list = this.props.examRequestList || []
+        return list.map(examRequest => (
+            <tr key={examRequest.id}>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.id}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdAt}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdBy}</Link></td>
+            </tr>
+        ))
+    }
+
+
     render() {
-        const { handleSubmit, readOnly, pristine, reset, submitting, contactList, submitLabel, submitClass, showSystemInfo, initRegisterPatient } = this.props
+        const { handleSubmit,
+            readOnly,
+            pristine,
+            reset,
+            submitting,
+            submitLabel,
+            submitClass,
+            showSystemInfo,
+            initRegisterPatient,
+            patientId,
+            showTabs } = this.props
 
         return (
-            <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                <div className='box'>
-                    <div className='box-body'>
-                        <fieldset>
-                            <legend>Paciente</legend>
-                            <Field name='name' component={LabelAndInput} readOnly={readOnly}
-                                label='Nome' cols='12 10' placeholder='Informe o nome' normalize={upper} />
-                            <Field name='documentNumber' component={LabelAndInput} readOnly={readOnly}
-                                label='CPF' cols='12 2' placeholder='Informe o CPF' {...documentNumberMask} />
+            <div>
+                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
+                    <div className='box'>
+                        <div className='box-body'>
+                            <fieldset>
+                                <legend>Paciente</legend>
+                                <Field name='name' component={LabelAndInput} readOnly={readOnly}
+                                    label='Nome' cols='12 10' placeholder='Informe o nome' normalize={upper} />
+                                <Field name='documentNumber' component={LabelAndInput} readOnly={readOnly}
+                                    label='CPF' cols='12 2' placeholder='Informe o CPF' {...documentNumberMask} />
 
-                            <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
-                            <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
-                            <Field name='sex' component={LabelAndInputSelect}
-                                label='Sexo' cols='12 2'
-                                readOnly={readOnly}
-                                placeholder='Sexo'
-                                options={[{ 'value': 'M', 'label': 'MASCULINO' },
-                                { 'value': 'F', 'label': 'FEMININO' }]}>
-                            </Field>
+                                <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
+                                    label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
+                                <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
+                                <Field name='sex' component={LabelAndInputSelect}
+                                    label='Sexo' cols='12 2'
+                                    readOnly={readOnly}
+                                    placeholder='Sexo'
+                                    options={[{ 'value': 'M', 'label': 'MASCULINO' },
+                                    { 'value': 'F', 'label': 'FEMININO' }]}>
+                                </Field>
 
-                            <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
-                            <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
+                                <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
+                                <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
 
-                            <If test={showSystemInfo}>
-                                <SystemInfo formName="patientForm" />
-                            </If>
-                            <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
-                        </fieldset>
-                    </div>
-                    <If test={!readOnly}>
-                        <div className='box-footer'>
-                            <button type='submit'
-                                className={`btn btn-${submitClass}`}
-                                disabled={submitting}>
-                                {submitLabel}
-                            </button>
-                            <button type='button' className='btn btn-default'
-                                onClick={initRegisterPatient}
-                                disabled={pristine || submitting}>
-                                {'Cancelar'}
-                            </button>
+                                <If test={showSystemInfo}>
+                                    <SystemInfo formName="patientForm" />
+                                </If>
+                                <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
+                            </fieldset>
                         </div>
-                    </If>
+                        <If test={!readOnly}>
+                            <div className='box-footer'>
+                                <button type='submit'
+                                    className={`btn btn-${submitClass}`}
+                                    disabled={submitting}>
+                                    {submitLabel}
+                                </button>
+                                <button type='button' className='btn btn-default'
+                                    onClick={initRegisterPatient}
+                                    disabled={pristine || submitting}>
+                                    {'Cancelar'}
+                                </button>
+                            </div>
+                        </If>
+                    </div>
+                </form >
 
-                    {/* <Tabs>
-                        <TabsHeader>
-                            <TabHeader label='Pedido' icon='address-card' target='tabPedido' />
-                            <TabHeader label='Exame' icon='map-marker' target='tabExame' />
-                        </TabsHeader>
-                        <TabsContent>
-                            <TabContent id='tabPedido'>
-                                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                                    <div className='box'>
-                                        <div className='box-body'>
-                                            <fieldset>
-                                                <Field name='setor' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Setor' cols='6 6' placeholder='Informe o setor' />
-                                                <Field name='convenio' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Convenio' cols='6 6' placeholder='Informe o convenio' />
-                                                <Field name='medicoSoliciante' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Medico Solicitante' cols='12 6' placeholder='Informe o Médico' />
-                                                <Field name='usuario' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Usuario' cols='6 6' placeholder='Informe o usuário' />
-                                                <Field name='clinicaOrigem' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Clinica Origem' cols='6 6' placeholder='Informe a Clinica Origem' />
-                                                <Field name='origemCidade' component={LabelAndInput} readOnly={readOnly}
-                                                    label='origem Cidade' cols='9 4' placeholder='Informe a cidade de origem' />
-                                                <Field name='dataPedido' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                                    label='Data Pedido' cols='12 3' placeholder='Data Pedido' formatDate='DD/MM/YYYY' />
-                                                <Field name='dataRealizacao' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                                    label='Data Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY' />
-
-                                                <If test={this.props.showSystemInfo}>
-                                                    <Row>
-                                                        <Field name='createdAt' component={DateTimeInput} readOnly={true}
-                                                            label='Criado em' cols='6 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                                        <Field name='createdBy' component={LabelAndInput} readOnly={true}
-                                                            label='Criado por' cols='6 3' />
-                                                        <Field name='updatedAt' component={DateTimeInput} readOnly={true}
-                                                            label='Atualizado em' cols='6 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                                        <Field name='updatedBy' component={LabelAndInput} readOnly={true}
-                                                            label='Atualizado por' cols='6 3' />
-                                                    </Row>
-                                                </If>
-                                                <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
-                                            </fieldset>
-                                        </div>
-                                        {this.props.error && <strong>{this.props.error}</strong>}
-                                        <div className='box-footer'>
-                                            <button type='submit'
-                                                className={`btn btn-${this.props.submitClass}`}
-                                                disabled={submitting}>
-                                                {this.props.submitLabel}
-                                            </button>
-                                            <button type='button' className='btn btn-default'
-                                                onClick={this.props.init}
-                                                disabled={pristine || submitting}>
-                                                {'Cancelar'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form >
-                            </TabContent>
-                            <TabContent id='tabExame'>
-                                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                                    <div className='box'>
-                                        <div className='box-body'>
-                                            <fieldset>
-                                                <Field name='laudo' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Laudo' cols='12 12' placeholder='Informe o Laudo' />
-                                                <Field name='conclusao' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Conclusão' cols='12 12' placeholder='Informe a conclusao' />
-                                                <Field name='leito' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Leito' cols='6 3' placeholder='Informe o Leito' />
-                                                <Field name='dadosClinicos' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
-                                                <Field name='medicacoesUsadas' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Medicacoes Usadas' cols='6 6' placeholder='Informe a medicacoes Usadas' />
-                                                <Field name='aparelhagem' component={LabelAndInput} readOnly={readOnly}
-                                                    label='Aparelhagem' cols='9 4' placeholder='Informe a aparelhagem' />
-                                                <Field name='dataRealizacao' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                                    label='Data Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY' />
-                                                <If test={this.props.showSystemInfo}>
-                                                    <Row>
-                                                        <Field name='createdAt' component={DateTimeInput} readOnly={true}
-                                                            label='Criado em' cols='6 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                                        <Field name='createdBy' component={LabelAndInput} readOnly={true}
-                                                            label='Criado por' cols='6 3' />
-                                                        <Field name='updatedAt' component={DateTimeInput} readOnly={true}
-                                                            label='Atualizado em' cols='6 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                                        <Field name='updatedBy' component={LabelAndInput} readOnly={true}
-                                                            label='Atualizado por' cols='6 3' />
-                                                    </Row>
-                                                </If>
-                                                <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
-                                            </fieldset>
-                                        </div>
-                                        {this.props.error && <strong>{this.props.error}</strong>}
-                                        <div className='box-footer'>
-                                            <button type='submit'
-                                                className={`btn btn-${this.props.submitClass}`}
-                                                disabled={submitting}>
-                                                {this.props.submitLabel}
-                                            </button>
-                                            <button type='button' className='btn btn-default'
-                                                onClick={this.props.init}
-                                                disabled={pristine || submitting}>
-                                                {'Cancelar'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form >
-                            </TabContent>
-                        </TabsContent>
-                    </Tabs> */}
-                </div>
-            </form >
+                <If test={showTabs === true}>
+                    <div className='box'>
+                        <div className='box-body'>
+                            <Tabs>
+                                <TabsHeader>
+                                    <TabHeader label='Exames' icon='notes-medical' target='tabExams' />
+                                    <TabHeader label='Requerimentos' icon='box' target='tabRequests' />
+                                </TabsHeader>
+                                <TabsContent>
+                                    <TabContent id='tabExams'>
+                                        <div>
+                                            <table className='table'>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Exame Id</th>
+                                                        <th>Data Realização</th>
+                                                        <th>Criado Em</th>
+                                                        <th>Criado Por</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {this.renderExamRows()}
+                                                </tbody>
+                                            </table>
+                                            <div className='box-footer'>
+                                                <Link to={`/patient/${patientId}/exam/add`}>
+                                                    <button type='submit'
+                                                        className={`btn btn-success`}>
+                                                        <i className="fa fa-plus"></i> Adicionar
+                                                </button>
+                                                </Link>
+                                            </div>
+                                        </div >
+                                    </TabContent>
+                                    <TabContent id='tabRequests'>
+                                        <div>
+                                            <table className='table'>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Requerimento Id</th>
+                                                        <th>Criado Em</th>
+                                                        <th>Criado Por</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {this.renderExamRequestRows()}
+                                                </tbody>
+                                            </table>
+                                            <div className='box-footer'>
+                                                <Link to={`/patient/${patientId}/exam-request/add`}>
+                                                    <button type='submit'
+                                                        className={`btn btn-success`}>
+                                                        <i className="fa fa-plus"></i> Adicionar
+                                                </button>
+                                                </Link>
+                                            </div>
+                                        </div >
+                                    </TabContent>
+                                </TabsContent>
+                            </Tabs>
+                        </div>
+                    </div>
+                </If>
+            </div>
         )
     }
 }
@@ -193,7 +182,10 @@ const selector = formValueSelector('patientForm')
 const mapStateToProps = state => ({
     birthDate: selector(state, 'birthDate'),
     createdAt: selector(state, 'createdAt'),
-    updateAt: selector(state, 'updateAt')
+    updateAt: selector(state, 'updateAt'),
+    patientId: selector(state, 'id'),
+    examRequestList: state.patient.examRequestList,
+    examList: state.patient.examList
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ initRegisterPatient }, dispatch)

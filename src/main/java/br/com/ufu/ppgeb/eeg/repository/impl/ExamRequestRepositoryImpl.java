@@ -27,13 +27,13 @@ public class ExamRequestRepositoryImpl implements ExamRequestRepositoryCustom {
 
 
     @Override
-    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant ) {
+    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
 
         Session session = em.unwrap( Session.class );
 
         Criteria criteria = session.createCriteria( ExamRequest.class );
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && medicalRecord == null ) {
+        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
@@ -45,6 +45,9 @@ public class ExamRequestRepositoryImpl implements ExamRequestRepositoryCustom {
         }
         if ( medicalRequest != null ) {
             criteria.add( Restrictions.eq( "medicalRequest", medicalRequest ) );
+        }
+        if ( patientId != null ) {
+            criteria.add( Restrictions.eq( "patient.id", patientId ) );
         }
 
         List< ExamRequest > list = criteria.list();
