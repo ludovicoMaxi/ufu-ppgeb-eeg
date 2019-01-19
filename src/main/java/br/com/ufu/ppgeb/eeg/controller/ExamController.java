@@ -38,12 +38,15 @@ public class ExamController {
     public List< Exam > list(
         @RequestParam( value = "medicalRecord", required = false ) Long medicalRecord,
         @RequestParam( value = "medicalRequest", required = false ) Long medicalRequest,
+        @RequestParam( value = "patientId", required = false ) Long patientId,
         @RequestParam( value = "doctorRequestant", required = false ) String doctorRequestant
 
     ) {
 
-        logger.info( "Parametros{ medicalRecord=" + medicalRecord + ", medicalRequest=" + medicalRequest + ", doctorRequestant=" + doctorRequestant + "}" );
-        return examService.findByFilter( medicalRecord, medicalRequest, doctorRequestant );
+        logger.info(
+            "Parametros{ medicalRecord=" + medicalRecord + ", medicalRequest=" + medicalRequest + ", patientId=" + patientId + ", doctorRequestant="
+                + doctorRequestant + "}" );
+        return examService.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
 
     }
 

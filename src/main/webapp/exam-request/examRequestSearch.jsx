@@ -50,7 +50,7 @@ class ExamRequestSearch extends Component {
                                 className={`btn btn-primary`}
                                 disabled={submitting}>
                                 Buscar
-                        </button>
+                            </button>
                             <button type='button' className='btn btn-default'
                                 onClick={reset}
                                 disabled={pristine || submitting}>

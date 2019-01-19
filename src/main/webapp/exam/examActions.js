@@ -130,7 +130,7 @@ function create(values) {
 
 export function init() {
     return [
-        showTabs('tabMedicine', 'tabEquipments'),
+        showTabs('tabMedicine', 'tabEquipments', 'tabEpochs'),
         selectTab('tabMedicine'),
         initialize('examForm', INITIAL_VALUES)
     ]

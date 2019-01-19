@@ -94,15 +94,15 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     @Transactional( readOnly = true )
-    public List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant ) {
+    public List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && medicalRecord == null ) {
+        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
         List< Exam > list = null;
 
-        list = examRepository.findByFilter( medicalRecord, medicalRequest, doctorRequestant );
+        list = examRepository.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
         return list;
     }
 

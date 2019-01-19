@@ -4,28 +4,23 @@ import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
 
 import LabelAndInput from '../common/form/labelAndInput'
-import LabelAndInputSelect from '../common/form/labelAndInputSelect'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
 import If from '../common/operator/if'
 import SystemInfo from '../common/form/systemInfo'
-import { onlyNumbers, upper } from '../common/form/formatValues'
+import { onlyNumbers } from '../common/form/formatValues'
 import Grid from '../common/layout/grid'
 import {
     init,
-    getOptionsUnit,
-    getOptionsMedicament,
     addItemList,
     removeItemList,
-    submitExamMedicamentList
-} from './examMedicamentActions'
+    submitEpochList
+} from './epochActions'
 
 
-class ExamMedicamentListForm extends Component {
+class EpochListForm extends Component {
 
     componentWillMount() {
-        this.props.init(this.props.examId, this.props.examMedicamentList);
-        this.props.getOptionsUnit();
-        this.props.getOptionsMedicament();
+        this.props.init(this.props.examId, this.props.epochList);
     }
 
 
@@ -43,7 +38,7 @@ class ExamMedicamentListForm extends Component {
     add(index, item) {
         if (!this.props.readOnly) {
             if (!item) {
-                item = { 'exam': {'id': this.props.examId}, 'medicament': {} };
+                item = { 'exam': { 'id': this.props.examId } };
             }
 
             this.props.addItemList(index, item);
@@ -57,32 +52,21 @@ class ExamMedicamentListForm extends Component {
     }
 
     renderRows() {
-        const { readOnly, optionsUnit, optionsMedicament } = this.props;
-        const list = this.props.list || [{}];
-        console.log('uai');
-        console.log(list);
+        const { readOnly } = this.props;
+        const list = this.props.list || [];
 
         return list.map((item, index) => (
             <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
-                <Field name={`examMedicaments[${index}].medicament`} component={LabelAndInputSelect} readOnly={readOnly}
-                    label='Medicamento' cols='12 4' placeholder='Medicamento' options={optionsMedicament} />
-                <Field name={`examMedicaments[${index}].amount`} component={LabelAndInput} readOnly={readOnly}
-                    label='Quantidade' cols='6 2' placeholder='Quantidade' normalize={onlyNumbers} />
-                <Field name={`examMedicaments[${index}].unit`} component={LabelAndInputSelect} readOnly={readOnly}
-                    label='Unidade' cols='6 2' placeholder='Unidade' options={optionsUnit} />
+                <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
+                    label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
+                    label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                    label='Descrição' cols='12 8' placeholder='Informe a Descrição' />
 
                 <If test={this.props.showSystemInfo}>
                     <SystemInfo field={`${this.props.field}[${index}]`} />
-                </If>
-
-                <If test={!!item.medicament && item.medicament.name == 'outro'}>
-                    <div>
-                        <Field name={`examMedicaments[${index}].name`} component={LabelAndInput} readOnly={readOnly}
-                            label='Nome Medicamento' cols='12 4' placeholder='Informe o Medicamento' normalize={upper} />
-                        <Field name={`examMedicaments[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
-                            label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
-                    </div>
                 </If>
 
                 <div className='actions-contacts'>
@@ -113,10 +97,10 @@ class ExamMedicamentListForm extends Component {
     }
 
     render() {
-        const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitExamMedicamentList } = this.props;
+        const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitEpochList } = this.props;
 
         return (
-            <form role='form' onSubmit={handleSubmit(submitExamMedicamentList)} className='box box-solid'>
+            <form role='form' onSubmit={handleSubmit(submitEpochList)} className='box box-solid'>
                 <div className='box'>
                     <div className='box-body' style={{ 'paddingLeft': '0px' }}>
                         {this.renderRows()}
@@ -148,19 +132,15 @@ class ExamMedicamentListForm extends Component {
     }
 }
 
-ExamMedicamentListForm = reduxForm({ form: 'examMedicamentListForm', destroyOnUnmount: false })(ExamMedicamentListForm)
-const selector = formValueSelector('examMedicamentListForm')
+EpochListForm = reduxForm({ form: 'epochListForm', destroyOnUnmount: false })(EpochListForm)
+const selector = formValueSelector('epochListForm')
 const mapStateToProps = state => ({
-    optionsUnit: state.examMedicament.optionsUnit,
-    optionsMedicament: state.examMedicament.optionsMedicament,
-    list: selector(state, 'examMedicaments')
+    list: selector(state, 'epochs')
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     init,
-    getOptionsUnit,
-    getOptionsMedicament,
     removeItemList,
     addItemList,
-    submitExamMedicamentList
+    submitEpochList
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(ExamMedicamentListForm)
+export default connect(mapStateToProps, mapDispatchToProps)(EpochListForm)

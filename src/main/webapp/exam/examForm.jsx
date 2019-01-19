@@ -16,7 +16,7 @@ import SystemInfo from '../common/form/systemInfo'
 import { upper } from '../common/form/formatValues'
 import ExamMedicamentListForm from '../examMedicament/examMedicamentListForm'
 import ExamEquipmentListForm from '../examEquipment/examEquipmentListForm'
-import Grid from '../common/layout/grid'
+import EpochListForm from '../epoch/epochListForm'
 
 class ExamForm extends Component {
 
@@ -78,6 +78,7 @@ class ExamForm extends Component {
                         <TabsHeader>
                             <TabHeader label='Medicamentos' icon='capsules' target='tabMedicine' />
                             <TabHeader label='Equipamentos' icon='cogs' target='tabEquipments' />
+                            <TabHeader label='Épocas' icon='stopwatch' target='tabEpochs' />
                         </TabsHeader>
                         <TabsContent>
                             <TabContent id='tabMedicine'>
@@ -86,6 +87,9 @@ class ExamForm extends Component {
                             <TabContent id='tabEquipments'>
                                 <ExamEquipmentListForm examId={examId} examEquipmentList={examEquipments} />
                             </TabContent>
+                            <TabContent id='tabEpochs'>
+                                <EpochListForm examId={examId} />
+                            </TabContent>                            
                         </TabsContent>
                     </Tabs>
                 </If>

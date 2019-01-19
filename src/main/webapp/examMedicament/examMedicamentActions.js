@@ -72,7 +72,7 @@ export function submitExamMedicamentList(values) {
         }
     }
 
-    return submitUpdateExamMedicamentList(values);
+    return submitUpdateExamMedicamentList(valuesSubmit);
 }
 
 export function validateExamMedicamentList(values) {
@@ -127,13 +127,13 @@ export function init(examId, examMedicamentList) {
     if (!!examId) {
         initialValues.id = examId;
     }
-    if (!!examMedicamentList) {
-        initialValues.examMedicaments = examMedicamentList;
-    }
-
+    
     return initialize('examMedicamentListForm', initialValues);
 }
 
 export function updateExamMedicamentList(examMedicamentList) {
+    if (!examMedicamentList || examMedicamentList.length == 0) {
+        examMedicamentList = [{}];
+    }
     return changeFieldValue('examMedicamentListForm', 'examMedicaments', examMedicamentList);
 }

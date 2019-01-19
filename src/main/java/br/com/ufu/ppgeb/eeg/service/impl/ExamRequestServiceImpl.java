@@ -71,15 +71,15 @@ public class ExamRequestServiceImpl implements ExamRequestService {
 
     @Override
     @Transactional( readOnly = true )
-    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, String doctorRequestant ) {
+    public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && medicalRecord == null ) {
+        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
         List< ExamRequest > list = null;
 
-        list = examRequestRepository.findByFilter( medicalRecord, medicalRequest, doctorRequestant );
+        list = examRequestRepository.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
         return list;
     }
 
