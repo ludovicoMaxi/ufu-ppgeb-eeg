@@ -59,8 +59,6 @@ class ExamMedicamentListForm extends Component {
     renderRows() {
         const { readOnly, optionsUnit, optionsMedicament } = this.props;
         const list = this.props.list || [{}];
-        console.log('uai');
-        console.log(list);
 
         return list.map((item, index) => (
             <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >

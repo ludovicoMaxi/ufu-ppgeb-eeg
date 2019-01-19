@@ -94,15 +94,15 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     @Transactional( readOnly = true )
-    public List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
+    public List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId ) {
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
+        if ( id == null && StringUtils.isBlank( bed ) && patientId == null && examRequestId == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
         List< Exam > list = null;
 
-        list = examRepository.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
+        list = examRepository.findByFilter( id, bed, patientId, examRequestId );
         return list;
     }
 
@@ -131,21 +131,16 @@ public class ExamServiceImpl implements ExamService {
         }
 
         if ( !oldExam.equals( exam ) ) {
-            // oldExam.setMedicalRecord( exam.getMedicalRecord() );
-            // oldExam.setMedicalRequest( exam.getMedicalRequest() );
 
             if ( !exam.getPatient().getId().equals( oldExam.getPatient().getId() ) ) {
                 throw new IllegalArgumentException( "Patient ID is different. Neew=" + exam.getPatient().getId() + ", Old=" + oldExam.getPatient().getId() );
             }
 
             oldExam.setAchievementDate( exam.getAchievementDate() );
-            // oldExam.setAgreement( exam.getAgreement() );
-            // oldExam.setCityOrigin( exam.getCityOrigin() );
-            // oldExam.setClinicOrigin( exam.getClinicOrigin() );
-            // oldExam.setDoctorRequestant( exam.getDoctorRequestant() );
-            // oldExam.setRequestDate( exam.getRequestDate() );
-            // oldExam.setSector( exam.getSector() );
-            // oldExam.setUser( exam.getUser() );
+            oldExam.setMedicalReport( exam.getMedicalReport() );
+            oldExam.setConclusion( exam.getConclusion() );
+            oldExam.setBed( exam.getBed() );
+            oldExam.setClinicalData( exam.getClinicalData() );
 
             oldExam.setUpdatedAt( new Date() );
             // TODO: pegar o usuario logado

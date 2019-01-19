@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import * as qs from 'query-string'
 
 import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
@@ -12,7 +13,8 @@ import ExamForm from './examForm'
 class ExamRegister extends Component {
 
     componentWillMount() {
-        this.props.init();
+        const queryParams = qs.parse(this.props.location.search);
+        this.props.init(queryParams.examRequestId);
         this.props.initPatient();
         const { patientId } = this.props.match.params;
         this.props.getPatientById(patientId);

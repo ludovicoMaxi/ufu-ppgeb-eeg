@@ -27,27 +27,27 @@ public class ExamRepositoryImpl implements ExamRepositoryCustom {
 
 
     @Override
-    public List< Exam > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
+    public List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId ) {
 
         Session session = em.unwrap( Session.class );
 
         Criteria criteria = session.createCriteria( Exam.class );
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
+        if ( id == null && StringUtils.isBlank( bed ) && patientId == null && examRequestId == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
-        if ( StringUtils.isNotBlank( doctorRequestant ) ) {
-            criteria.add( Restrictions.like( "doctorRequestant", "%" + doctorRequestant + "%" ) );
+        if ( StringUtils.isNotBlank( bed ) ) {
+            criteria.add( Restrictions.like( "bed", "%" + bed + "%" ) );
         }
-        if ( medicalRecord != null ) {
-            criteria.add( Restrictions.eq( "medicalRecord", medicalRecord ) );
-        }
-        if ( medicalRequest != null ) {
-            criteria.add( Restrictions.eq( "medicalRequest", medicalRequest ) );
+        if ( id != null ) {
+            criteria.add( Restrictions.eq( "id", id ) );
         }
         if ( patientId != null ) {
             criteria.add( Restrictions.eq( "patient.id", patientId ) );
+        }
+        if ( examRequestId != null ) {
+            criteria.add( Restrictions.eq( "examRequest.id", examRequestId ) );
         }
 
         List< Exam > list = criteria.list();

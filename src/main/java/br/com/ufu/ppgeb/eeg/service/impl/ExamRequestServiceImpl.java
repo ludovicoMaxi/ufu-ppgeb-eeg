@@ -108,14 +108,14 @@ public class ExamRequestServiceImpl implements ExamRequestService {
         }
 
         if ( !oldExamRequest.equals( examRequest ) ) {
-            oldExamRequest.setMedicalRecord( examRequest.getMedicalRecord() );
-            oldExamRequest.setMedicalRequest( examRequest.getMedicalRequest() );
 
             if ( !examRequest.getPatient().getId().equals( oldExamRequest.getPatient().getId() ) ) {
                 throw new IllegalArgumentException(
                     "Patient ID is different. Neew=" + examRequest.getPatient().getId() + ", Old=" + oldExamRequest.getPatient().getId() );
             }
 
+            oldExamRequest.setMedicalRecord( examRequest.getMedicalRecord() );
+            oldExamRequest.setMedicalRequest( examRequest.getMedicalRequest() );
             oldExamRequest.setAchievementDate( examRequest.getAchievementDate() );
             oldExamRequest.setAgreement( examRequest.getAgreement() );
             oldExamRequest.setCityOrigin( examRequest.getCityOrigin() );

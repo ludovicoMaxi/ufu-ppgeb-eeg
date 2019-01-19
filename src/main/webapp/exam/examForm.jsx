@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
+import { Link } from 'react-router-dom'
 
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
@@ -20,6 +21,17 @@ import EpochListForm from '../epoch/epochListForm'
 
 class ExamForm extends Component {
 
+    renderExamRequestRows() {
+        const examRequest = this.props.examRequest || {}
+        return (
+            <tr key={examRequest.id}>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.id}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdAt}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdBy}</Link></td>
+            </tr>
+        )
+    }
+
     render() {
         const {
             handleSubmit,
@@ -32,7 +44,9 @@ class ExamForm extends Component {
             reset,
             examId,
             examMedicaments,
-            examEquipments } = this.props;
+            examEquipments,
+            examRequest,
+            patientId } = this.props;
 
         return (
             <div>
@@ -79,6 +93,9 @@ class ExamForm extends Component {
                             <TabHeader label='Medicamentos' icon='capsules' target='tabMedicine' />
                             <TabHeader label='Equipamentos' icon='cogs' target='tabEquipments' />
                             <TabHeader label='Épocas' icon='stopwatch' target='tabEpochs' />
+                            <If test={examRequest != undefined} >
+                                <TabHeader label='Requerimentos' icon='box' target='tabRequests' />
+                            </If>
                         </TabsHeader>
                         <TabsContent>
                             <TabContent id='tabMedicine'>
@@ -89,7 +106,25 @@ class ExamForm extends Component {
                             </TabContent>
                             <TabContent id='tabEpochs'>
                                 <EpochListForm examId={examId} />
-                            </TabContent>                            
+                            </TabContent>
+                            <If test={examRequest != undefined} >
+                                <TabContent id='tabRequests'>
+                                    <div>
+                                        <table className='table'>
+                                            <thead>
+                                                <tr>
+                                                    <th>Requerimento Id</th>
+                                                    <th>Criado Em</th>
+                                                    <th>Criado Por</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.renderExamRequestRows()}
+                                            </tbody>
+                                        </table>
+                                    </div >
+                                </TabContent>
+                            </If>
                         </TabsContent>
                     </Tabs>
                 </If>
@@ -104,7 +139,9 @@ const mapStateToProps = state => ({
     createdAt: selector(state, 'createdAt'),
     updateAt: selector(state, 'updateAt'),
     examMedicaments: selector(state, 'examMedicaments'),
-    examEquipments: selector(state, 'examEquipments')
+    examEquipments: selector(state, 'examEquipments'),
+    examRequest: selector(state, 'examRequest'),
+    patientId: selector(state, 'patient.id')
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch)
