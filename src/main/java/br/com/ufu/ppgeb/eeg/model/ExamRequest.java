@@ -48,7 +48,7 @@ public class ExamRequest {
     @Column( name = "DOCTOR_REQUESTANT" )
     private String doctorRequestant;
 
-    @Column( name = "USER" )
+    @Column( name = "USER_REQUEST" )
     private String user;
 
     @Column( name = "CLINIC_ORIGIN" )
