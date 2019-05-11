@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -31,8 +33,10 @@ public class PatientServiceImpl implements PatientService {
         validatePatient( patient );
 
         patient.setCreatedAt( new Date() );
-        // TODO: pegar o usuario logado
-        patient.setCreatedBy( "system" );
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ( auth != null ) {
+            patient.setCreatedBy( auth.getName() );
+        }
 
         patient.setUpdatedAt( null );
         patient.setUpdatedBy( null );
@@ -129,8 +133,10 @@ public class PatientServiceImpl implements PatientService {
             oldPatient.setJob( patient.getJob() );
 
             oldPatient.setUpdatedAt( new Date() );
-            // TODO: pegar o usuario logado
-            oldPatient.setUpdatedBy( "system" );
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if ( auth != null ) {
+                oldPatient.setUpdatedBy( auth.getName() );
+            }
 
             patient = patientRepository.save( oldPatient );
         }

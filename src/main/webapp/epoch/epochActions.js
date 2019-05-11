@@ -1,6 +1,12 @@
 import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
-import { reset as resetForm, initialize, SubmissionError, arrayInsert, arrayRemove, change as changeFieldValue } from 'redux-form'
+import {
+    initialize,
+    SubmissionError,
+    arrayInsert,
+    arrayRemove,
+    change as changeFieldValue,
+} from 'redux-form'
 import { BASE_URL_EPOCH } from '../constants'
 
 const INITIAL_VALUES = { 'epochs': [{}] };
@@ -9,27 +15,40 @@ export function getEpochsByExamId(examId) {
     return dispatch => {
         axios.get(`${BASE_URL_EPOCH}/?examId=${examId}`)
             .then(resp => {
-                if (!!resp.data) {
-                    var epochsList = { ...INITIAL_VALUES };
+                var epochList = { ...INITIAL_VALUES };
+                epochList.examId = examId;
 
+                if (!!resp.data) {
                     if (resp.data.length > 0) {
-                        epochsList.epochs = resp.data;
-                        for (var i = 0; i < epochsList.epochs.length; i++) {
-                            var startTime = {};
-                            startTime.minute = Math.trunc(epochsList.epochs[i].startTime / 60);
-                            startTime.second = epochsList.epochs[i].startTime % 60;
-                            epochsList.epochs[i].startTime = startTime;
-                        }
+                        epochList.epochs = convertSecondsInMinutesAndSeconds(resp.data);
                     }
-                    dispatch(initialize('epochListForm', epochsList));
                 }
-                else
-                    dispatch(initialize('epochListForm', INITIAL_VALUES));
+                dispatch(initialize('epochListForm', epochList));
             })
             .catch(e => {
+                console.log(e);
                 toastr.error('Erro', `Ocorreu um erro ao buscar as epocas: \n` + e.response.data.message)
             })
     }
+}
+
+function convertSecondsInMinutesAndSeconds(epochs) {
+    if (epochs != null && epochs != undefined) {
+        for (var i = 0; i < epochs.length; i++) {
+            var finalTime = {};
+            var finalTimeInSeconds = epochs[i].startTime + epochs[i].duration;
+            finalTime.minute = Math.trunc(finalTimeInSeconds / 60);
+            finalTime.second = finalTimeInSeconds % 60;
+            epochs[i].finalTime = finalTime;
+
+            var startTime = {};
+            startTime.minute = Math.trunc(epochs[i].startTime / 60);
+            startTime.second = epochs[i].startTime % 60;
+            epochs[i].startTime = startTime;
+        }
+    }
+
+    return epochs;
 }
 
 export function addItemList(index, item) {
@@ -42,41 +61,42 @@ export function removeItemList(index) {
 
 export function submitUpdateEpochList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EPOCH}/equipment`, values)
+        axios.put(`${BASE_URL_EPOCH}/`, values)
             .then(resp => {
-                toastr.success('Sucesso', `Equipamentos do exame atualizado com sucesso.`);
-                dispatch([changeFieldValue('epochListForm', 'epochs', resp.data.epochs), getOptionsEquipment()]);
+                toastr.success('Sucesso', `Atividade(s) do exame atualizada(s) com sucesso.`);
+                var epochs = convertSecondsInMinutesAndSeconds(resp.data.epochs);
+                dispatch(changeFieldValue('epochListForm', 'epochs', epochs));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar os Equipamentos do Exame (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar a(s) Atividade(s) do Exame (${values.id}): \n` + e.response.data.message)
             })
     }
 }
 
 export function submitEpochList(values) {
     validateEpochList(values);
-
     var valuesSubmit = { ...values };
+
     for (var i = 0; i < valuesSubmit.epochs.length; i++) {
         var startTime = valuesSubmit.epochs[i].startTime.minute * 60 + valuesSubmit.epochs[i].startTime.second;
         valuesSubmit.epochs[i].startTime = startTime;
     }
-
     return submitUpdateEpochList(valuesSubmit);
 }
 
 export function validateEpochList(values) {
-    var errors = { 'epochs': {} }
+    var errors = { 'epochs': [] }
 
-    var hasErrorEquipmentExamList = false;
+    var hasErrorEpochExamList = false;
     for (var i = 0; i < values.epochs.length; i++) {
         errors.epochs[i] = validateEpoch(values.epochs[i]);
-        if (!!errors.epochs[i].description || Object.keys(errors.epochs[i]).startTime !== 0) {
-            hasErrorEquipmentExamList = true;
+        if (!!errors.epochs[i].description || !!errors.epochs[i].duration ||
+            Object.keys(errors.epochs[i].startTime).length !== 0) {
+            hasErrorEpochExamList = true;
         }
     }
 
-    if (hasErrorEquipmentExamList || !!errors._error) {
+    if (hasErrorEpochExamList || !!errors._error) {
         throw new SubmissionError(errors);
     }
 }
@@ -97,10 +117,15 @@ function validateEpoch(epoch) {
         }
     }
 
+    if (!epoch.duration) {
+        errors.duration = 'Obrigatório';
+    }
+
     if (!epoch.description) {
         errors.description = 'Descrição é obrigatória!'
     }
 
+    console.log(errors);
     return errors;
 }
 

@@ -13,12 +13,12 @@ import {
     init,
     addItemList,
     removeItemList,
-    submitEpochList,
+    submitActivityList,
     updateFinalTime
-} from './epochActions'
+} from './activityActions'
 
 
-class EpochListForm extends Component {
+class ActivityListForm extends Component {
 
     componentWillMount() {
         this.props.init(this.props.examId);
@@ -116,18 +116,18 @@ class EpochListForm extends Component {
         return list.map((item, index) => (
             <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
-                <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
+                <Field name={`activities[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
                     label='Minutos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
                     onChange={handleChangeMinute} />
-                <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
+                <Field name={`activities[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
                     label='Segundos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
                     onChange={handleChangeSecond} />
-                <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
+                <Field name={`activities[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
                     label='Duração (Segundos)' cols='4 2' placeholder='XXX' normalize={onlyNumbers}
                     onChange={handleChangeDuration} />
-                <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
+                <Field name={`activities[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
                     label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
-                <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
+                <Field name={`activities[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
                     label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
 
                 <If test={this.props.showSystemInfo}>
@@ -158,7 +158,7 @@ class EpochListForm extends Component {
                     </button>
                 </div>
 
-                <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                <Field name={`activities[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
                     label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
 
             </ div>
@@ -166,10 +166,10 @@ class EpochListForm extends Component {
     }
 
     render() {
-        const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitEpochList } = this.props;
+        const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitActivityList } = this.props;
 
         return (
-            <form role='form' onSubmit={handleSubmit(submitEpochList)} className='box box-solid'>
+            <form role='form' onSubmit={handleSubmit(submitActivityList)} className='box box-solid'>
                 <div className='box'>
                     <div className='box-body' style={{ 'paddingLeft': '0px' }}>
                         <div style={{ 'display': 'none' }}>
@@ -204,16 +204,16 @@ class EpochListForm extends Component {
     }
 }
 
-EpochListForm = reduxForm({ form: 'epochListForm', destroyOnUnmount: false })(EpochListForm)
-const selector = formValueSelector('epochListForm')
+ActivityListForm = reduxForm({ form: 'activityListForm', destroyOnUnmount: false })(ActivityListForm)
+const selector = formValueSelector('activityListForm')
 const mapStateToProps = state => ({
-    list: selector(state, 'epochs')
+    list: selector(state, 'activities')
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
     init,
     removeItemList,
     addItemList,
-    submitEpochList,
+    submitActivityList,
     updateFinalTime
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(EpochListForm)
+export default connect(mapStateToProps, mapDispatchToProps)(ActivityListForm)

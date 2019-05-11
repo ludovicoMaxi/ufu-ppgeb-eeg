@@ -21,7 +21,7 @@ import br.com.ufu.ppgeb.eeg.utils.CompareDate;
  * Created by joaol on 08/09/17.
  */
 @Entity
-@Table( name = "patient" )
+@Table( name = "PATIENT" )
 public class Patient {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class Patient {
     @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
-    @Column( name = "NAME" )
+    @Column( name = "NAME", length = 512, nullable = false )
     String name;
 
     @Column( name = "DOCUMENT_NUMBER", length = 20, nullable = false )

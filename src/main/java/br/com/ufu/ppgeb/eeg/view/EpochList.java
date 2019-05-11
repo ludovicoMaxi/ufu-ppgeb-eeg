@@ -1,31 +1,45 @@
 package br.com.ufu.ppgeb.eeg.view;
 
 
-import br.com.ufu.ppgeb.eeg.model.Epoch;
-
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Epoch;
 
 
 public class EpochList {
 
-    List< Epoch > epochList;
+    Long examId;
+
+    List< Epoch > epochs;
 
 
-    public List< Epoch > getEpochList() {
+    public Long getExamId() {
 
-        return epochList;
+        return examId;
     }
 
 
-    public void setEpochList( List< Epoch > epochList ) {
+    public void setExamId( Long examId ) {
 
-        this.epochList = epochList;
+        this.examId = examId;
+    }
+
+
+    public List< Epoch > getEpochs() {
+
+        return epochs;
+    }
+
+
+    public void setEpochs( List< Epoch > epochs ) {
+
+        this.epochs = epochs;
     }
 
 
     @Override
     public String toString() {
 
-        return "EpochList{" + "epochList=" + epochList + '}';
+        return "EpochList{" + "examId=" + examId + ", epochs=" + epochs + '}';
     }
 }

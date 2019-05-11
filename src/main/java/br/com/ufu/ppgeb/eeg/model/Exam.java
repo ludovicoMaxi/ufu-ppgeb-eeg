@@ -82,6 +82,17 @@ public class Exam {
     private String updatedBy;
 
 
+    public Exam() {
+
+    }
+
+
+    public Exam( Long id ) {
+
+        this.id = id;
+    }
+
+
     @Override
     public boolean equals( Object o ) {
 

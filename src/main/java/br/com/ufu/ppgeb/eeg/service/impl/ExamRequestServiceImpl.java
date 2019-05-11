@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -31,8 +33,10 @@ public class ExamRequestServiceImpl implements ExamRequestService {
         validateExamRequest( examRequest );
 
         examRequest.setCreatedAt( new Date() );
-        // TODO: pegar o usuario logado
-        examRequest.setCreatedBy( "system" );
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ( auth != null ) {
+            examRequest.setCreatedBy( auth.getName() );
+        }
 
         examRequest.setUpdatedAt( null );
         examRequest.setUpdatedBy( null );
@@ -126,8 +130,10 @@ public class ExamRequestServiceImpl implements ExamRequestService {
             oldExamRequest.setUser( examRequest.getUser() );
 
             oldExamRequest.setUpdatedAt( new Date() );
-            // TODO: pegar o usuario logado
-            oldExamRequest.setUpdatedBy( "system" );
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if ( auth != null ) {
+                oldExamRequest.setUpdatedBy( auth.getName() );
+            }
 
             examRequest = examRequestRepository.save( oldExamRequest );
         }
