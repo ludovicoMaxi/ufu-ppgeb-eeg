@@ -13,14 +13,15 @@ import {
     init,
     addItemList,
     removeItemList,
-    submitEpochList
+    submitEpochList,
+    updateFinalTime
 } from './epochActions'
 
 
 class EpochListForm extends Component {
 
     componentWillMount() {
-        this.props.init(this.props.examId, this.props.epochList);
+        this.props.init(this.props.examId);
     }
 
 
@@ -38,7 +39,7 @@ class EpochListForm extends Component {
     add(index, item) {
         if (!this.props.readOnly) {
             if (!item) {
-                item = { 'exam': { 'id': this.props.examId } };
+                item = {};
             }
 
             this.props.addItemList(index, item);
@@ -52,18 +53,82 @@ class EpochListForm extends Component {
     }
 
     renderRows() {
-        const { readOnly } = this.props;
+        const { readOnly, change } = this.props;
         const list = this.props.list || [];
+
+        const handleChangeDuration = function (event, value) {
+            var index = getIndex(event);
+
+            if (!list[index].startTime) {
+                return;
+            }
+            var initialMinutes = list[index].startTime.minute;
+            var initialSeconds = list[index].startTime.second;
+
+            if (!!initialMinutes && !!initialSeconds) {
+                var finalTime = Number(initialMinutes) * 60 + Number(initialSeconds) + Number(value);
+                updateFinalTime(finalTime, event);
+            }
+        }
+
+        const handleChangeMinute = function (event, value) {
+            var index = getIndex(event);
+
+            if (!list[index].startTime) {
+                return;
+            }
+            var duration = list[index].duration;
+            var initialSeconds = list[index].startTime.second;
+
+            if (!!duration && !!initialSeconds) {
+                var finalTime = Number(value) * 60 + Number(initialSeconds) + Number(duration);
+                updateFinalTime(finalTime, event);
+            }
+        }
+
+        const handleChangeSecond = function (event, value) {
+            var index = getIndex(event);
+
+            if (!list[index].startTime) {
+                return;
+            }
+            var initialMinutes = list[index].startTime.minute;
+            var duration = list[index].duration;
+
+            if (!!initialMinutes && !!duration) {
+                var finalTime = Number(initialMinutes) * 60 + Number(value) + Number(duration);
+                updateFinalTime(finalTime, event);
+            }
+        }
+
+        const getIndex = function (event) {
+            var onlyNumbers = new RegExp('\\d+');
+            return event.target.id.match(onlyNumbers);
+        }
+
+        const updateFinalTime = function (finalTime, event) {
+            console.log(finalTime);
+            var name = event.target.name.split('.')[0];
+            change(name + '.finalTime.minute', Math.trunc(finalTime / 60));
+            change(name + '.finalTime.second', finalTime % 60);
+        }
 
         return list.map((item, index) => (
             <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
                 <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
-                    label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                    label='Minutos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
+                    onChange={handleChangeMinute} />
                 <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
+                    label='Segundos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
+                    onChange={handleChangeSecond} />
+                <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
+                    label='Duração (Segundos)' cols='4 2' placeholder='XXX' normalize={onlyNumbers}
+                    onChange={handleChangeDuration} />
+                <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
+                    label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
                     label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
-                <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
-                    label='Descrição' cols='12 8' placeholder='Informe a Descrição' />
 
                 <If test={this.props.showSystemInfo}>
                     <SystemInfo field={`${this.props.field}[${index}]`} />
@@ -92,6 +157,10 @@ class EpochListForm extends Component {
                         <i className="fa fa-trash-alt"></i>
                     </button>
                 </div>
+
+                <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                    label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
+
             </ div>
         ))
     }
@@ -103,6 +172,9 @@ class EpochListForm extends Component {
             <form role='form' onSubmit={handleSubmit(submitEpochList)} className='box box-solid'>
                 <div className='box'>
                     <div className='box-body' style={{ 'paddingLeft': '0px' }}>
+                        <div style={{ 'display': 'none' }}>
+                            <Field name={'examI'} component={LabelAndInput} readOnly={true} normalize={onlyNumbers} />
+                        </div>
                         {this.renderRows()}
                     </div>
                     <If test={this.props.error != undefined} >
@@ -141,6 +213,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     init,
     removeItemList,
     addItemList,
-    submitEpochList
+    submitEpochList,
+    updateFinalTime
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(EpochListForm)

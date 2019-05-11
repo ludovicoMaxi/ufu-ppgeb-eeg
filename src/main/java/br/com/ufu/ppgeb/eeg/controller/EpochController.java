@@ -66,9 +66,8 @@ public class EpochController {
         throws Exception {
 
         logger.info( "Updating " + epochList );
-        List< Epoch > epoches = this.epochService.updateList( epochList.getEpochList() );
-        EpochList epochesReturn = new EpochList();
-        epochesReturn.setEpochList( epoches );
-        return epochesReturn;
+        List< Epoch > epochs = this.epochService.updateList( epochList );
+        epochList.setEpochs( epochs );
+        return epochList;
     }
 }

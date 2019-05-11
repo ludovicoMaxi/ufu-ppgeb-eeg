@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -52,8 +54,10 @@ public class ExamServiceImpl implements ExamService {
         validateExam( exam );
 
         exam.setCreatedAt( new Date() );
-        // TODO: pegar o usuario logado
-        exam.setCreatedBy( "system" );
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ( auth != null ) {
+            exam.setCreatedBy( auth.getName() );
+        }
 
         exam.setUpdatedAt( null );
         exam.setUpdatedBy( null );
@@ -143,8 +147,10 @@ public class ExamServiceImpl implements ExamService {
             oldExam.setClinicalData( exam.getClinicalData() );
 
             oldExam.setUpdatedAt( new Date() );
-            // TODO: pegar o usuario logado
-            oldExam.setUpdatedBy( "system" );
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if ( auth != null ) {
+                oldExam.setUpdatedBy( auth.getName() );
+            }
 
             exam = examRepository.save( oldExam );
         }
@@ -204,7 +210,10 @@ public class ExamServiceImpl implements ExamService {
                                 existExamMedicament = true;
 
                                 examMedicamentList.get( i ).setUpdatedAt( new Date() );
-                                examMedicamentList.get( i ).setUpdatedBy( "SYSTEM" );
+                                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                                if ( auth != null ) {
+                                    examMedicamentList.get( i ).setUpdatedBy( auth.getName() );
+                                }
                                 examMedicamentList.set( i, examMedicamentRepository.save( examMedicamentList.get( i ) ) );
                                 examMedicamentUpdateList.add( examMedicamentList.get( i ) );
                                 break;
@@ -306,12 +315,17 @@ public class ExamServiceImpl implements ExamService {
                     Boolean existExamEquipment = false;
 
                     if ( oldExamEquipmentList != null && oldExamEquipmentList.size() > 0 ) {
-                        for ( ExamEquipment oldContact : oldExamEquipmentList ) {
-                            if ( examEquipmentList.get( i ).getId().equals( oldContact.getId() ) ) {
+                        for ( ExamEquipment oldEquipment : oldExamEquipmentList ) {
+                            if ( examEquipmentList.get( i ).getId().equals( oldEquipment.getId() ) ) {
                                 existExamEquipment = true;
 
+                                examEquipmentList.get( i ).setCreatedAt( oldEquipment.getCreatedAt() );
+                                examEquipmentList.get( i ).setCreatedBy( oldEquipment.getCreatedBy() );
                                 examEquipmentList.get( i ).setUpdatedAt( new Date() );
-                                examEquipmentList.get( i ).setUpdatedBy( "SYSTEM" );
+                                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                                if ( auth != null ) {
+                                    examEquipmentList.get( i ).setUpdatedBy( auth.getName() );
+                                }
                                 examEquipmentList.set( i, examEquipmentRepository.save( examEquipmentList.get( i ) ) );
                                 examEquipmentUpdateList.add( examEquipmentList.get( i ) );
                                 break;
@@ -331,7 +345,10 @@ public class ExamServiceImpl implements ExamService {
         if ( exam.getExamEquipments() != null && exam.getExamEquipments().size() > 0 ) {
             for ( ExamEquipment newExamEquipment : exam.getExamEquipments() ) {
                 newExamEquipment.setCreatedAt( new Date() );
-                newExamEquipment.setCreatedBy( "SYSTEM" );
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if ( auth != null ) {
+                    newExamEquipment.setCreatedBy( auth.getName() );
+                }
                 examEquipmentRepository.save( newExamEquipment );
             }
         }

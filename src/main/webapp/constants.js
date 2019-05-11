@@ -14,6 +14,7 @@ const BASE_URL_UNIT = `${BASE_URL}/api/unit`
 const BASE_URL_MEDICAMENT = `${BASE_URL}/api/medicament`
 const BASE_URL_EQUIPMENT = `${BASE_URL}/api/equipment`
 const BASE_URL_EPOCH = `${BASE_URL}/api/epoch`
+const BASE_URL_ACTIVITY = `${BASE_URL}/api/activity`
 
 export {
     BASE_URL,
@@ -23,5 +24,6 @@ export {
     BASE_URL_UNIT,
     BASE_URL_MEDICAMENT,
     BASE_URL_EQUIPMENT,
-    BASE_URL_EPOCH
+    BASE_URL_EPOCH,
+    BASE_URL_ACTIVITY
 };

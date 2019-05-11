@@ -47,10 +47,28 @@ class Routes extends Component {
                     }
                     } />
                     <Route path='/patient/:patientId/exam-request/add' component={ExamRequestRegister} />
-                    <Route path='/exam-request/search' component={ExamRequestSearch} />
+                    <Route path='/exam-request/search' render={() => {
+                        return (
+                            <div><ContentHeader title='Requerimentos' small='Busca' />
+                                <Content>
+                                    <ExamRequestSearch />
+                                </Content>
+                            </div>
+                        )
+                    }
+                    } />
                     <Route path='/exam-request/:examRequestId' component={ExamRequestEdit} />
                     <Route path='/patient/:patientId/exam/add' component={ExamRegister} />
-                    <Route path='/exam/search' component={ExamSearch} />
+                    <Route path='/exam/search' render={() => {
+                        return (
+                            <div><ContentHeader title='Exames' small='Busca' />
+                                <Content>
+                                    <ExamSearch />
+                                </Content>
+                            </div>
+                        )
+                    }
+                    } />
                     <Route path='/exam/:examId' component={ExamEdit} />
                     <Redirect from='/patient/*/*' to='/' />
                     <Route path='/patient/:patientId' component={PatientEdit} />

@@ -6,6 +6,8 @@ import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -27,8 +29,10 @@ public class ContactServiceImpl implements ContactService {
         validateContact( contact );
 
         contact.setCreatedAt( new Date() );
-        // TODO: pegar o usuario logado
-        contact.setCreatedBy( "system" );
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ( auth != null ) {
+            contact.setCreatedBy( auth.getName() );
+        }
 
         contact.setUpdatedAt( null );
         contact.setUpdatedBy( null );
@@ -124,8 +128,10 @@ public class ContactServiceImpl implements ContactService {
         oldContact.setWhatsapp( contact.getWhatsapp() );
 
         oldContact.setUpdatedAt( new Date() );
-        // TODO: pegar o usuario logado
-        oldContact.setUpdatedBy( "system" );
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ( auth != null ) {
+            contact.setUpdatedBy( auth.getName() );
+        }
 
         contact = contactRepository.save( oldContact );
 

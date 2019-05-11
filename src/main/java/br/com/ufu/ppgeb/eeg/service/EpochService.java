@@ -4,6 +4,7 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Epoch;
+import br.com.ufu.ppgeb.eeg.view.EpochList;
 
 
 public interface EpochService {
@@ -23,6 +24,6 @@ public interface EpochService {
     void delete( Long id );
 
 
-    List< Epoch > updateList( List< Epoch > epoch );
+    List< Epoch > updateList( EpochList epochList );
 
 }
