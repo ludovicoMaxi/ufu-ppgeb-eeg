@@ -7,12 +7,12 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -23,8 +23,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class ExamEquipment {
 
     @Id
-    @GeneratedValue( generator = "increment" )
-    @GenericGenerator( name = "increment", strategy = "increment" )
+    @SequenceGenerator( name = "EXAM_EQUIPMENT_SQ", sequenceName = "EXAM_EQUIPMENT_SQ", allocationSize = 1 )
+    @GeneratedValue( generator = "EXAM_EQUIPMENT_SQ", strategy = GenerationType.SEQUENCE )
     private Long id;
 
     @ManyToOne
