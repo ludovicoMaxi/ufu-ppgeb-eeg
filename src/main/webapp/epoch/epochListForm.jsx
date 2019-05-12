@@ -65,7 +65,7 @@ class EpochListForm extends Component {
             var initialMinutes = list[index].startTime.minute;
             var initialSeconds = list[index].startTime.second;
 
-            if (!!initialMinutes && !!initialSeconds) {
+            if ((!!initialMinutes || initialMinutes == 0) && (!!initialSeconds || initialSeconds == 0)) {
                 var finalTime = Number(initialMinutes) * 60 + Number(initialSeconds) + Number(value);
                 updateFinalTime(finalTime, event);
             }
@@ -80,7 +80,7 @@ class EpochListForm extends Component {
             var duration = list[index].duration;
             var initialSeconds = list[index].startTime.second;
 
-            if (!!duration && !!initialSeconds) {
+            if ((!!duration || duration == 0) && (!!initialSeconds || initialSeconds == 0)) {
                 var finalTime = Number(value) * 60 + Number(initialSeconds) + Number(duration);
                 updateFinalTime(finalTime, event);
             }
@@ -95,7 +95,7 @@ class EpochListForm extends Component {
             var initialMinutes = list[index].startTime.minute;
             var duration = list[index].duration;
 
-            if (!!initialMinutes && !!duration) {
+            if ((!!initialMinutes || initialMinutes == 0) && (!!duration || duration == 0)) {
                 var finalTime = Number(initialMinutes) * 60 + Number(value) + Number(duration);
                 updateFinalTime(finalTime, event);
             }
@@ -107,7 +107,6 @@ class EpochListForm extends Component {
         }
 
         const updateFinalTime = function (finalTime, event) {
-            console.log(finalTime);
             var name = event.target.name.split('.')[0];
             change(name + '.finalTime.minute', Math.trunc(finalTime / 60));
             change(name + '.finalTime.second', finalTime % 60);

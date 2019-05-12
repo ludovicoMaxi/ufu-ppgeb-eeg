@@ -14,6 +14,6 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
  */
 public interface ActivityRepository extends JpaRepository< Activity, Long > {
 
-    List< Activity > findByExam( Exam exam );
+    List< Activity > findByExamId( Long examId );
 
 }

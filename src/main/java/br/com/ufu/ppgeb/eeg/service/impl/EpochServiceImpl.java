@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import br.com.ufu.ppgeb.eeg.model.Epoch;
-import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.repository.EpochRepository;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
 import br.com.ufu.ppgeb.eeg.view.EpochList;
@@ -78,13 +77,9 @@ public class EpochServiceImpl implements EpochService {
     @Transactional( readOnly = true )
     public List< Epoch > findByFilter( Long examId ) {
 
-        List< Epoch > list = null;
-
         Assert.notNull( examId, "examId cannot be null." );
-
-        Exam exam = new Exam();
-        exam.setId( examId );
-        return list = epochRepository.findByExam( exam );
+        List< Epoch > list = epochRepository.findByExamId( examId );
+        return list;
     }
 
 
@@ -103,7 +98,7 @@ public class EpochServiceImpl implements EpochService {
         Assert.notNull( epochList, "EpochList cannot be null." );
         Assert.notNull( epochList.getExamId(), "ExamId cannot be null." );
 
-        List< Epoch > oldEpochs = epochRepository.findByExam( new Exam( epochList.getExamId() ) );
+        List< Epoch > oldEpochs = epochRepository.findByExamId( epochList.getExamId() );
 
         List< Epoch > epochUpdateList = new ArrayList<>();
         List< Epoch > currentEpochs = epochList.getEpochs();
@@ -112,7 +107,7 @@ public class EpochServiceImpl implements EpochService {
 
             for ( int i = 0; i < currentEpochs.size(); i++ ) {
 
-                if ( currentEpochs.get( i ).getExam() != null && currentEpochs.get( i ).getExam().getId() != epochList.getExamId() ) {
+                if ( currentEpochs.get( i ).getExamId() != null && !currentEpochs.get( i ).getExamId().equals( epochList.getExamId() ) ) {
                     throw new IllegalArgumentException( currentEpochs.get( i ) + " is not same examId in update=" + epochList.getExamId() );
                 }
 
@@ -124,16 +119,20 @@ public class EpochServiceImpl implements EpochService {
                             if ( currentEpochs.get( i ).getId().equals( oldEpoch.getId() ) ) {
                                 existEpoch = true;
 
-                                currentEpochs.get( i ).setCreatedAt( oldEpoch.getCreatedAt() );
-                                currentEpochs.get( i ).setCreatedBy( oldEpoch.getCreatedBy() );
-                                currentEpochs.get( i ).setUpdatedAt( new Date() );
-                                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                if ( auth != null ) {
-                                    currentEpochs.get( i ).setUpdatedBy( auth.getName() );
+                                if ( !currentEpochs.get( i ).equals( oldEpoch ) ) {
+                                    currentEpochs.get( i ).setCreatedAt( oldEpoch.getCreatedAt() );
+                                    currentEpochs.get( i ).setCreatedBy( oldEpoch.getCreatedBy() );
+                                    currentEpochs.get( i ).setUpdatedAt( new Date() );
+                                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                                    if ( auth != null ) {
+                                        currentEpochs.get( i ).setUpdatedBy( auth.getName() );
+                                    }
+                                    validateEpoch( currentEpochs.get( i ) );
+                                    currentEpochs.set( i, epochRepository.save( currentEpochs.get( i ) ) );
                                 }
-                                validateEpoch( currentEpochs.get( i ) );
-                                currentEpochs.set( i, epochRepository.save( currentEpochs.get( i ) ) );
+
                                 epochUpdateList.add( currentEpochs.get( i ) );
+                                oldEpochs.remove( oldEpoch );
                                 break;
                             }
                         }
@@ -141,17 +140,15 @@ public class EpochServiceImpl implements EpochService {
 
                     if ( existEpoch == false ) {
                         throw new IllegalArgumentException(
-                                "Epoch with id=" + currentEpochs.get( i ).getId() + " not exist by examID=" + epochList.getExamId() );
+                            "Epoch with id=" + currentEpochs.get( i ).getId() + " not exist by examID=" + epochList.getExamId() );
                     }
                 }
             }
 
             currentEpochs.removeAll( epochUpdateList );
             if ( !CollectionUtils.isEmpty( currentEpochs ) ) {
-                Exam examCurrent = new Exam();
-                examCurrent.setId( epochList.getExamId() );
                 for ( Epoch newEpoch : currentEpochs ) {
-                    newEpoch.setExam( examCurrent );
+                    newEpoch.setExamId( epochList.getExamId() );
                     newEpoch.setCreatedAt( new Date() );
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                     if ( auth != null ) {
@@ -162,7 +159,6 @@ public class EpochServiceImpl implements EpochService {
             }
         }
 
-        oldEpochs.removeAll( epochUpdateList );
         for ( Epoch oldEpoch : oldEpochs ) {
             epochRepository.delete( oldEpoch );
         }

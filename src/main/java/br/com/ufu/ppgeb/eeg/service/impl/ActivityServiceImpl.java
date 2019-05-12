@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import br.com.ufu.ppgeb.eeg.model.Activity;
-import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
@@ -78,13 +77,10 @@ public class ActivityServiceImpl implements ActivityService {
     @Transactional( readOnly = true )
     public List< Activity > findByFilter( Long examId ) {
 
-        List< Activity > list = null;
-
         Assert.notNull( examId, "examId cannot be null." );
 
-        Exam exam = new Exam();
-        exam.setId( examId );
-        return list = activityRepository.findByExam( exam );
+        List< Activity > list = activityRepository.findByExamId( examId );
+        return list;
     }
 
 
@@ -103,7 +99,7 @@ public class ActivityServiceImpl implements ActivityService {
         Assert.notNull( activityList, "ActivityList cannot be null." );
         Assert.notNull( activityList.getExamId(), "ExamId cannot be null." );
 
-        List< Activity > oldActivities = activityRepository.findByExam( new Exam( activityList.getExamId() ) );
+        List< Activity > oldActivities = activityRepository.findByExamId( activityList.getExamId() );
 
         List< Activity > activityUpdateList = new ArrayList<>();
         List< Activity > currentActivities = activityList.getActivities();
@@ -112,7 +108,7 @@ public class ActivityServiceImpl implements ActivityService {
 
             for ( int i = 0; i < currentActivities.size(); i++ ) {
 
-                if ( currentActivities.get( i ).getExam() != null && currentActivities.get( i ).getExam().getId() != activityList.getExamId() ) {
+                if ( currentActivities.get( i ).getExamId() != null && !currentActivities.get( i ).getExamId().equals( activityList.getExamId() ) ) {
                     throw new IllegalArgumentException( currentActivities.get( i ) + " is not same examId in update=" + activityList.getExamId() );
                 }
 
@@ -124,16 +120,19 @@ public class ActivityServiceImpl implements ActivityService {
                             if ( currentActivities.get( i ).getId().equals( oldActivity.getId() ) ) {
                                 existActivity = true;
 
-                                currentActivities.get( i ).setCreatedAt( oldActivity.getCreatedAt() );
-                                currentActivities.get( i ).setCreatedBy( oldActivity.getCreatedBy() );
-                                currentActivities.get( i ).setUpdatedAt( new Date() );
-                                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                if ( auth != null ) {
-                                    currentActivities.get( i ).setUpdatedBy( auth.getName() );
+                                if ( !currentActivities.get( i ).equals( oldActivity ) ) {
+                                    currentActivities.get( i ).setCreatedAt( oldActivity.getCreatedAt() );
+                                    currentActivities.get( i ).setCreatedBy( oldActivity.getCreatedBy() );
+                                    currentActivities.get( i ).setUpdatedAt( new Date() );
+                                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                                    if ( auth != null ) {
+                                        currentActivities.get( i ).setUpdatedBy( auth.getName() );
+                                    }
+                                    validateActivity( currentActivities.get( i ) );
+                                    currentActivities.set( i, activityRepository.save( currentActivities.get( i ) ) );
                                 }
-                                validateActivity( currentActivities.get( i ) );
-                                currentActivities.set( i, activityRepository.save( currentActivities.get( i ) ) );
                                 activityUpdateList.add( currentActivities.get( i ) );
+                                oldActivities.remove( oldActivity );
                                 break;
                             }
                         }
@@ -148,10 +147,8 @@ public class ActivityServiceImpl implements ActivityService {
 
             currentActivities.removeAll( activityUpdateList );
             if ( !CollectionUtils.isEmpty( currentActivities ) ) {
-                Exam examCurrent = new Exam();
-                examCurrent.setId( activityList.getExamId() );
                 for ( Activity newActivity : currentActivities ) {
-                    newActivity.setExam( examCurrent );
+                    newActivity.setExamId( activityList.getExamId() );
                     newActivity.setCreatedAt( new Date() );
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                     if ( auth != null ) {
@@ -162,7 +159,6 @@ public class ActivityServiceImpl implements ActivityService {
             }
         }
 
-        oldActivities.removeAll( activityUpdateList );
         for ( Activity oldActivity : oldActivities ) {
             activityRepository.delete( oldActivity );
         }

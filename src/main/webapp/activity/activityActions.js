@@ -26,7 +26,6 @@ export function getActivitysByExamId(examId) {
                 dispatch(initialize('activityListForm', activityList));
             })
             .catch(e => {
-                console.log(e);
                 toastr.error('Erro', `Ocorreu um erro ao buscar as epocas: \n` + e.response.data.message)
             })
     }
@@ -78,7 +77,7 @@ export function submitActivityList(values) {
     var valuesSubmit = { ...values };
 
     for (var i = 0; i < valuesSubmit.activities.length; i++) {
-        var startTime = valuesSubmit.activities[i].startTime.minute * 60 + valuesSubmit.activities[i].startTime.second;
+        var startTime = Number(valuesSubmit.activities[i].startTime.minute) * 60 + Number(valuesSubmit.activities[i].startTime.second);
         valuesSubmit.activities[i].startTime = startTime;
     }
     return submitUpdateActivityList(valuesSubmit);
@@ -104,15 +103,14 @@ export function validateActivityList(values) {
 function validateActivity(activity) {
     var errors = {};
     errors.startTime = {};
-
     if (!activity.startTime) {
         errors.startTime.minute = 'Obrigatório';
         errors.startTime.second = 'Obrigatório';
     } else {
-        if (!activity.startTime.minute) {
+        if (!activity.startTime.minute && activity.startTime.minute != 0) {
             errors.startTime.minute = 'Obrigatório';
         }
-        if (!activity.startTime.second) {
+        if (!activity.startTime.second && activity.startTime.second != 0) {
             errors.startTime.second = 'Obrigatório';
         }
     }
@@ -125,7 +123,6 @@ function validateActivity(activity) {
         errors.description = 'Descrição é obrigatória!'
     }
 
-    console.log(errors);
     return errors;
 }
 

@@ -26,7 +26,6 @@ export function getEpochsByExamId(examId) {
                 dispatch(initialize('epochListForm', epochList));
             })
             .catch(e => {
-                console.log(e);
                 toastr.error('Erro', `Ocorreu um erro ao buscar as epocas: \n` + e.response.data.message)
             })
     }
@@ -63,12 +62,12 @@ export function submitUpdateEpochList(values) {
     return dispatch => {
         axios.put(`${BASE_URL_EPOCH}/`, values)
             .then(resp => {
-                toastr.success('Sucesso', `Atividade(s) do exame atualizada(s) com sucesso.`);
+                toastr.success('Sucesso', `Época(s) do exame atualizada(s) com sucesso.`);
                 var epochs = convertSecondsInMinutesAndSeconds(resp.data.epochs);
                 dispatch(changeFieldValue('epochListForm', 'epochs', epochs));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar a(s) Atividade(s) do Exame (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar a(s) Época(s) do Exame (${values.id}): \n` + e.response.data.message)
             })
     }
 }
@@ -78,7 +77,7 @@ export function submitEpochList(values) {
     var valuesSubmit = { ...values };
 
     for (var i = 0; i < valuesSubmit.epochs.length; i++) {
-        var startTime = valuesSubmit.epochs[i].startTime.minute * 60 + valuesSubmit.epochs[i].startTime.second;
+        var startTime = Number(valuesSubmit.epochs[i].startTime.minute) * 60 + Number(valuesSubmit.epochs[i].startTime.second);
         valuesSubmit.epochs[i].startTime = startTime;
     }
     return submitUpdateEpochList(valuesSubmit);
@@ -109,10 +108,10 @@ function validateEpoch(epoch) {
         errors.startTime.minute = 'Obrigatório';
         errors.startTime.second = 'Obrigatório';
     } else {
-        if (!epoch.startTime.minute) {
+        if (!epoch.startTime.minute && epoch.startTime.minute != 0) {
             errors.startTime.minute = 'Obrigatório';
         }
-        if (!epoch.startTime.second) {
+        if (!epoch.startTime.second && epoch.startTime.second != 0) {
             errors.startTime.second = 'Obrigatório';
         }
     }
@@ -125,7 +124,6 @@ function validateEpoch(epoch) {
         errors.description = 'Descrição é obrigatória!'
     }
 
-    console.log(errors);
     return errors;
 }
 
