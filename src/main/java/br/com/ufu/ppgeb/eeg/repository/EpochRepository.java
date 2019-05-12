@@ -14,6 +14,6 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
  */
 public interface EpochRepository extends JpaRepository< Epoch, Long > {
 
-    List< Epoch > findByExam( Exam exam );
+    List< Epoch > findByExamId( Long examId );
 
 }

@@ -26,9 +26,8 @@ public class Epoch {
     @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
-    @ManyToOne
-    @JoinColumn( name = "EXAM_ID", nullable = false )
-    private Exam exam;
+    @Column( name = "EXAM_ID", nullable = false )
+    private Long examId;
 
     @Column( name = "START_TIME", nullable = false )
     private Long startTime;
@@ -63,14 +62,10 @@ public class Epoch {
             return false;
         Epoch epoch = (Epoch) o;
         return Objects.equals( getId(), epoch.getId() ) && //
-            Objects.equals( getExam(), epoch.getExam() ) && //
+            Objects.equals( getExamId(), epoch.getExamId() ) && //
             Objects.equals( getStartTime(), epoch.getStartTime() ) && //
             Objects.equals( getDuration(), epoch.getDuration() ) && //
-            Objects.equals( getDescription(), epoch.getDescription() ) && //
-            Objects.equals( getCreatedAt(), epoch.getCreatedAt() ) && //
-            Objects.equals( getCreatedBy(), epoch.getCreatedBy() ) && //
-            Objects.equals( getUpdatedAt(), epoch.getUpdatedAt() ) && //
-            Objects.equals( getUpdatedBy(), epoch.getUpdatedBy() );
+            Objects.equals( getDescription(), epoch.getDescription() );
     }
 
 
@@ -78,7 +73,7 @@ public class Epoch {
     public int hashCode() {
 
         return Objects
-            .hash( getId(), getExam(), getStartTime(), getDuration(), getDescription(), getCreatedAt(), getCreatedBy(), getUpdatedAt(), getUpdatedBy() );
+            .hash( getId(), getExamId(), getStartTime(), getDuration(), getDescription(), getCreatedAt(), getCreatedBy(), getUpdatedAt(), getUpdatedBy() );
     }
 
 
@@ -94,15 +89,15 @@ public class Epoch {
     }
 
 
-    public Exam getExam() {
+    public Long getExamId() {
 
-        return exam;
+        return examId;
     }
 
 
-    public void setExam( Exam exam ) {
+    public void setExamId( Long examId ) {
 
-        this.exam = exam;
+        this.examId = examId;
     }
 
 
@@ -193,7 +188,7 @@ public class Epoch {
     @Override
     public String toString() {
 
-        return "Epoch{" + "id=" + id + ", exam=" + exam + ", startTime=" + startTime + ", duration=" + duration + ", description=" + description
+        return "Epoch{" + "id=" + id + ", examId=" + examId + ", startTime=" + startTime + ", duration=" + duration + ", description=" + description
             + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

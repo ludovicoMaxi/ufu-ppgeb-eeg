@@ -8,8 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -26,9 +24,8 @@ public class Activity {
     @GenericGenerator( name = "increment", strategy = "increment" )
     private Long id;
 
-    @ManyToOne
-    @JoinColumn( name = "EXAM_ID", nullable = false )
-    private Exam exam;
+    @Column( name = "EXAM_ID", nullable = false )
+    private Long examId;
 
     @Column( name = "START_TIME", nullable = false )
     private Long startTime;
@@ -63,14 +60,10 @@ public class Activity {
             return false;
         Activity epoch = (Activity) o;
         return Objects.equals( getId(), epoch.getId() ) && //
-            Objects.equals( getExam(), epoch.getExam() ) && //
+            Objects.equals( getExamId(), epoch.getExamId() ) && //
             Objects.equals( getStartTime(), epoch.getStartTime() ) && //
             Objects.equals( getDuration(), epoch.getDuration() ) && //
-            Objects.equals( getDescription(), epoch.getDescription() ) && //
-            Objects.equals( getCreatedAt(), epoch.getCreatedAt() ) && //
-            Objects.equals( getCreatedBy(), epoch.getCreatedBy() ) && //
-            Objects.equals( getUpdatedAt(), epoch.getUpdatedAt() ) && //
-            Objects.equals( getUpdatedBy(), epoch.getUpdatedBy() );
+            Objects.equals( getDescription(), epoch.getDescription() );
     }
 
 
@@ -78,7 +71,7 @@ public class Activity {
     public int hashCode() {
 
         return Objects
-            .hash( getId(), getExam(), getStartTime(), getDuration(), getDescription(), getCreatedAt(), getCreatedBy(), getUpdatedAt(), getUpdatedBy() );
+            .hash( getId(), getExamId(), getStartTime(), getDuration(), getDescription(), getCreatedAt(), getCreatedBy(), getUpdatedAt(), getUpdatedBy() );
     }
 
 
@@ -94,15 +87,15 @@ public class Activity {
     }
 
 
-    public Exam getExam() {
+    public Long getExamId() {
 
-        return exam;
+        return examId;
     }
 
 
-    public void setExam( Exam exam ) {
+    public void setExamId( Long examId ) {
 
-        this.exam = exam;
+        this.examId = examId;
     }
 
 
@@ -193,7 +186,7 @@ public class Activity {
     @Override
     public String toString() {
 
-        return "Activity{" + "id=" + id + ", exam=" + exam + ", startTime=" + startTime + ", duration=" + duration + ", description='" + description + '\''
+        return "Activity{" + "id=" + id + ", examId=" + examId + ", startTime=" + startTime + ", duration=" + duration + ", description='" + description + '\''
             + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

@@ -20,6 +20,8 @@ import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import br.com.ufu.ppgeb.eeg.utils.CompareDate;
+
 
 /**
  * Created by joaol on 08/09/17.
@@ -55,6 +57,12 @@ public class Exam {
 
     @Column( name = "BED", length = 256 )
     private String bed;
+
+    @Column( name = "HEIGHT" )
+    private Long height;
+
+    @Column( name = "WEIGHT" )
+    private Double weight;
 
     @Column( name = "CLINICAL_DATA", length = 256 )
     private String clinicalData;
@@ -101,15 +109,18 @@ public class Exam {
         if ( !( o instanceof Exam ) )
             return false;
         Exam exam = (Exam) o;
-        return Objects.equals( getExamRequest(), exam.getExamRequest() ) //
-            && Objects.equals( getPatient(), exam.getPatient() ) //
-            && Objects.equals( getAchievementDate(), exam.getAchievementDate() ) //
-            && Objects.equals( getMedicalReport(), exam.getMedicalReport() ) //
-            && Objects.equals( getConclusion(), exam.getConclusion() ) //
-            && Objects.equals( getBed(), exam.getBed() ) //
-            && Objects.equals( getClinicalData(), exam.getClinicalData() ) //
-            && Objects.equals( getExamMedicaments(), exam.getExamMedicaments() ) //
-            && Objects.equals( getExamEquipments(), exam.getExamEquipments() );
+        return Objects.equals( getId(), exam.getId() ) && //
+            Objects.equals( getExamRequest(), exam.getExamRequest() ) && //
+            Objects.equals( getPatient(), exam.getPatient() ) && //
+            CompareDate.compareDates( getAchievementDate(), exam.getAchievementDate() ) && //
+            Objects.equals( getMedicalReport(), exam.getMedicalReport() ) && //
+            Objects.equals( getConclusion(), exam.getConclusion() ) && //
+            Objects.equals( getBed(), exam.getBed() ) && //
+            Objects.equals( getHeight(), exam.getHeight() ) && //
+            Objects.equals( getWeight(), exam.getWeight() ) && //
+            Objects.equals( getClinicalData(), exam.getClinicalData() ) && //
+            Objects.equals( getCreatedBy(), exam.getCreatedBy() ) && //
+            Objects.equals( getUpdatedBy(), exam.getUpdatedBy() );
     }
 
 
@@ -117,15 +128,20 @@ public class Exam {
     public int hashCode() {
 
         return Objects.hash(
+            getId(),
             getExamRequest(),
             getPatient(),
             getAchievementDate(),
             getMedicalReport(),
             getConclusion(),
             getBed(),
+            getHeight(),
+            getWeight(),
             getClinicalData(),
             getExamMedicaments(),
-            getExamEquipments() );
+            getExamEquipments(),
+            getCreatedBy(),
+            getUpdatedBy() );
     }
 
 
@@ -210,6 +226,30 @@ public class Exam {
     public void setBed( String bed ) {
 
         this.bed = bed;
+    }
+
+
+    public Long getHeight() {
+
+        return height;
+    }
+
+
+    public void setHeight( Long height ) {
+
+        this.height = height;
+    }
+
+
+    public Double getWeight() {
+
+        return weight;
+    }
+
+
+    public void setWeight( Double weight ) {
+
+        this.weight = weight;
     }
 
 
@@ -301,8 +341,8 @@ public class Exam {
     public String toString() {
 
         return "Exam{" + "id=" + id + ", examRequest=" + examRequest + ", patient=" + patient + ", achievementDate=" + achievementDate + ", medicalReport='"
-            + medicalReport + '\'' + ", conclusion='" + conclusion + '\'' + ", bed='" + bed + '\'' + ", clinicalData='" + clinicalData + '\''
-            + ", examMedicaments=" + examMedicaments + ", examEquipments=" + examEquipments + ", createdAt=" + createdAt + ", createdBy='" + createdBy + '\''
-            + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
+            + medicalReport + '\'' + ", conclusion='" + conclusion + '\'' + ", bed='" + bed + '\'' + ", height=" + height + ", weight=" + weight
+            + ", clinicalData='" + clinicalData + '\'' + ", examMedicaments=" + examMedicaments + ", examEquipments=" + examEquipments + ", createdAt="
+            + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
     }
 }

@@ -14,7 +14,7 @@ import TabsContent from '../common/tab/tabsContent'
 import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
 import SystemInfo from '../common/form/systemInfo'
-import { upper } from '../common/form/formatValues'
+import { upper, onlyNumbers } from '../common/form/formatValues'
 import ExamMedicamentListForm from '../examMedicament/examMedicamentListForm'
 import ExamEquipmentListForm from '../examEquipment/examEquipmentListForm'
 import EpochListForm from '../epoch/epochListForm'
@@ -46,8 +46,8 @@ class ExamForm extends Component {
             examId,
             examMedicaments,
             examEquipments,
-            examRequest,
-            patientId } = this.props;
+            examRequest
+        } = this.props;
 
         return (
             <div>
@@ -59,7 +59,11 @@ class ExamForm extends Component {
                                 <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                     label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
                                 <Field name='bed' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Leito' cols='12 6' placeholder='Informe o Leito' />
+                                    label='Leito' cols='12 3' placeholder='Informe o Leito' />
+                                <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
+                                    label='Altura (cm)' cols='12 3' placeholder='Altura em CM' />
+                                <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    label='Peso (Kg)' cols='12 3' placeholder='Peso em Kg' />
                                 <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
                                     label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
                                 <Field name='medicalReport' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
