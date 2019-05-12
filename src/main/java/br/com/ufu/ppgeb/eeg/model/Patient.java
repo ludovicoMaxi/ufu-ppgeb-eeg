@@ -7,10 +7,10 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -28,8 +28,8 @@ public class Patient {
 
     @Id
     @Column( name = "ID" )
-    @GeneratedValue( generator = "increment" )
-    @GenericGenerator( name = "increment", strategy = "increment" )
+    @SequenceGenerator( name = "PATIENT_SQ", sequenceName = "PATIENT_SQ", allocationSize = 1 )
+    @GeneratedValue( generator = "PATIENT_SQ", strategy = GenerationType.SEQUENCE )
     private Long id;
 
     @Column( name = "NAME", length = 512, nullable = false )
@@ -51,7 +51,7 @@ public class Patient {
     @Column( name = "CIVIL_STATUS", length = 20 )
     private String civilStatus;
 
-    @Column( name = "JOB", length = 20 )
+    @Column( name = "JOB", length = 256 )
     private String job;
 
     @Column( name = "CREATED_AT", nullable = false )
