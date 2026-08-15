@@ -77,7 +77,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Patient findById( Long id ) {
 
-        return patientRepository.findOne( id );
+        return patientRepository.findById( id ).orElse( null );
     }
 
 
@@ -100,7 +100,7 @@ public class PatientServiceImpl implements PatientService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        patientRepository.delete( id );
+        patientRepository.deleteById( id );
     }
 
 
@@ -113,7 +113,7 @@ public class PatientServiceImpl implements PatientService {
         validatePatient( patient );
         Assert.notNull( patient.getId(), "patient ID cannot be null." );
 
-        Patient oldPatient = patientRepository.getOne( patient.getId() );
+        Patient oldPatient = patientRepository.getReferenceById( patient.getId() );
 
         if ( oldPatient == null ) {
             throw new IllegalArgumentException( "Not exist patient with this Id=" + patient.getId() );

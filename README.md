@@ -3,38 +3,48 @@
 
 
 ## Instalação:
-Esta aplicação utiliza springboot e para executar bastar executar o comando:
+Esta aplicação utiliza Spring Boot 4.1.0 e Java 25. Para executar:
+
     mvn spring-boot:run
 
-Obs: É necessário ter o maven instalado e java8.
+Obs: É necessário ter o Maven instalado e Java 25.
 
-O banco de dados utilizado é na memoria java (MySql), para evitar complicações de instalação do banco de dados.
+O banco de dados utilizado é o H2 em memória (perfil `dev`), para evitar complicações de instalação do banco de dados.
 
 
 ## Exemplo de uso
-A pagina inicial: http://localhost:8090
-Será solicitado uma autenticação simples de usuário e nome.
-A lista de usuários cadastra é:
-joaol
-teste
-user
+A pagina inicial: http://localhost:8080
+Será solicitada uma autenticação básica (HTTP Basic) de usuário e senha.
+A lista de usuários cadastrados é (todos com senha `123`):
+- joaol
+- teste
+- user
 
 
 ## Configuração para Desenvolvimento
-O gerenciador de dependencia é o maven, para baixar todas as dependencias basta executar:
- mvn clean install
+O gerenciador de dependência é o Maven. Para baixar todas as dependências e compilar o frontend (Node/Webpack):
 
-Para rodas os testes unitários execute:
- mvn test
+    mvn clean install
+
+Para rodar os testes unitários execute:
+
+    mvn test
+
+
+## Empacotamento
+O build gera um jar executável com o frontend embutido:
+
+    mvn clean package
+    java -jar target/ufu-ppgeb-eeg-0.0.1-SNAPSHOT.jar
 
 
 ## Histórico de lançamentos
 
 * 0.0.1-SNAPSHOT
-    * Versão inicial
+    * Versão inicial (Spring Boot 1.5.6 / Java 8)
+    * Migração para Spring Boot 4.1.0 / Java 25 (Jakarta EE 11, Hibernate 7, Spring Security 7)
 
 
 ## Meta
  João Ludovico Maximiano Barbosa - joaolmbarbosa@gmail.com
  Rafael Caetan da Silva - engcaetano@outlook.com
-

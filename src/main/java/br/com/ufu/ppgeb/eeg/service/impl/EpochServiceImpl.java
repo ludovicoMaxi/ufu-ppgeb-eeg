@@ -69,7 +69,7 @@ public class EpochServiceImpl implements EpochService {
     @Override
     public Epoch findById( Long id ) {
 
-        return epochRepository.findOne( id );
+        return epochRepository.findById( id ).orElse( null );
     }
 
 
@@ -87,7 +87,7 @@ public class EpochServiceImpl implements EpochService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        epochRepository.delete( id );
+        epochRepository.deleteById( id );
     }
 
 

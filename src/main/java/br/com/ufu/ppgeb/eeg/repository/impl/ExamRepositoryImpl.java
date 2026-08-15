@@ -1,15 +1,17 @@
 package br.com.ufu.ppgeb.eeg.repository.impl;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ufu.ppgeb.eeg.model.Exam;
@@ -29,29 +31,30 @@ public class ExamRepositoryImpl implements ExamRepositoryCustom {
     @Override
     public List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId ) {
 
-        Session session = em.unwrap( Session.class );
-
-        Criteria criteria = session.createCriteria( Exam.class );
-
         if ( id == null && StringUtils.isBlank( bed ) && patientId == null && examRequestId == null ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery< Exam > cq = cb.createQuery( Exam.class );
+        Root< Exam > root = cq.from( Exam.class );
+
+        List< Predicate > predicates = new ArrayList<>();
         if ( StringUtils.isNotBlank( bed ) ) {
-            criteria.add( Restrictions.like( "bed", "%" + bed + "%" ) );
+            predicates.add( cb.like( root.get( "bed" ), "%" + bed + "%" ) );
         }
         if ( id != null ) {
-            criteria.add( Restrictions.eq( "id", id ) );
+            predicates.add( cb.equal( root.get( "id" ), id ) );
         }
         if ( patientId != null ) {
-            criteria.add( Restrictions.eq( "patient.id", patientId ) );
+            predicates.add( cb.equal( root.get( "patient" ).get( "id" ), patientId ) );
         }
         if ( examRequestId != null ) {
-            criteria.add( Restrictions.eq( "examRequest.id", examRequestId ) );
+            predicates.add( cb.equal( root.get( "examRequest" ).get( "id" ), examRequestId ) );
         }
 
-        List< Exam > list = criteria.list();
+        cq.where( predicates.toArray( new Predicate[ 0 ] ) );
 
-        return list;
+        return em.createQuery( cq ).getResultList();
     }
 }

@@ -1,14 +1,16 @@
 package br.com.ufu.ppgeb.eeg.repository.impl;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ufu.ppgeb.eeg.model.Contact;
@@ -28,19 +30,20 @@ public class ContactRepositoryImpl implements ContactRepositoryCustom {
     @Override
     public List< Contact > findByFilter( Long objectType, Long objectId ) {
 
-        Session session = em.unwrap( Session.class );
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery< Contact > cq = cb.createQuery( Contact.class );
+        Root< Contact > root = cq.from( Contact.class );
 
-        Criteria criteria = session.createCriteria( Contact.class );
-
+        List< Predicate > predicates = new ArrayList<>();
         if ( objectType != null ) {
-            criteria.add( Restrictions.eq( "objectType", objectType ) );
+            predicates.add( cb.equal( root.get( "objectType" ), objectType ) );
         }
         if ( objectId != null ) {
-            criteria.add( Restrictions.eq( "objectId", objectId ) );
+            predicates.add( cb.equal( root.get( "objectId" ), objectId ) );
         }
 
-        List< Contact > list = criteria.list();
+        cq.where( predicates.toArray( new Predicate[ 0 ] ) );
 
-        return list;
+        return em.createQuery( cq ).getResultList();
     }
 }
