@@ -1,15 +1,17 @@
 package br.com.ufu.ppgeb.eeg.repository.impl;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ufu.ppgeb.eeg.model.Patient;
@@ -29,23 +31,24 @@ public class PatientRepositoryImpl implements PatientRepositoryCustom {
     @Override
     public List< Patient > findByFilter( String name, String documentNumber ) {
 
-        Session session = em.unwrap( Session.class );
-
-        Criteria criteria = session.createCriteria( Patient.class );
-
         if ( StringUtils.isBlank( name ) && StringUtils.isBlank( documentNumber ) ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery< Patient > cq = cb.createQuery( Patient.class );
+        Root< Patient > root = cq.from( Patient.class );
+
+        List< Predicate > predicates = new ArrayList<>();
         if ( StringUtils.isNotBlank( name ) ) {
-            criteria.add( Restrictions.like( "name", "%" + name + "%" ) );
+            predicates.add( cb.like( root.get( "name" ), "%" + name + "%" ) );
         }
         if ( StringUtils.isNotBlank( documentNumber ) ) {
-            criteria.add( Restrictions.eq( "documentNumber", documentNumber ) );
+            predicates.add( cb.equal( root.get( "documentNumber" ), documentNumber ) );
         }
 
-        List< Patient > list = criteria.list();
+        cq.where( predicates.toArray( new Predicate[ 0 ] ) );
 
-        return list;
+        return em.createQuery( cq ).getResultList();
     }
 }

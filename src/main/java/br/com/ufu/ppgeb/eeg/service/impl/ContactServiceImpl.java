@@ -66,7 +66,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact findById( Long id ) {
 
-        return contactRepository.findOne( id );
+        return contactRepository.findById( id ).orElse( null );
     }
 
 
@@ -100,7 +100,7 @@ public class ContactServiceImpl implements ContactService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        contactRepository.delete( id );
+        contactRepository.deleteById( id );
     }
 
 
@@ -111,7 +111,7 @@ public class ContactServiceImpl implements ContactService {
         validateContact( contact );
         Assert.notNull( contact.getId(), "id cannot be null." );
 
-        Contact oldContact = contactRepository.getOne( contact.getId() );
+        Contact oldContact = contactRepository.getReferenceById( contact.getId() );
 
         if ( oldContact == null ) {
             throw new IllegalArgumentException( "Not exist contact with this Id=" + contact.getId() );

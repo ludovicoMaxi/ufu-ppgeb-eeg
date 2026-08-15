@@ -3,10 +3,10 @@ package br.com.ufu.ppgeb.eeg.model;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 
 /**
@@ -28,6 +28,11 @@ public class ObjectType {
 
     @Column( name = "DESCRIPTION" )
     private Long description;
+
+
+    public ObjectType() {
+
+    }
 
 
     public ObjectType( Long id ) {

@@ -92,7 +92,7 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public Exam findById( Long id ) {
 
-        return examRepository.findOne( id );
+        return examRepository.findById( id ).orElse( null );
     }
 
 
@@ -115,7 +115,7 @@ public class ExamServiceImpl implements ExamService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        examRepository.delete( id );
+        examRepository.deleteById( id );
     }
 
 
@@ -128,7 +128,7 @@ public class ExamServiceImpl implements ExamService {
         validateExam( exam );
         Assert.notNull( exam.getId(), "exam ID cannot be null." );
 
-        Exam oldExam = examRepository.getOne( exam.getId() );
+        Exam oldExam = examRepository.getReferenceById( exam.getId() );
 
         if ( oldExam == null ) {
             throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
@@ -182,7 +182,7 @@ public class ExamServiceImpl implements ExamService {
         registerUnregisteredMedicaments( exam.getExamMedicaments() );
         validateExamMedicamentList( exam.getExamMedicaments() );
 
-        Exam oldExam = examRepository.getOne( exam.getId() );
+        Exam oldExam = examRepository.getReferenceById( exam.getId() );
 
         if ( oldExam == null ) {
             throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
@@ -294,7 +294,7 @@ public class ExamServiceImpl implements ExamService {
         registerUnregisteredEquipments( exam.getExamEquipments() );
         validateExamEquipmentList( exam.getExamEquipments() );
 
-        Exam oldExam = examRepository.getOne( exam.getId() );
+        Exam oldExam = examRepository.getReferenceById( exam.getId() );
 
         if ( oldExam == null ) {
             throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );

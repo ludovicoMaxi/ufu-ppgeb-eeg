@@ -69,7 +69,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Activity findById( Long id ) {
 
-        return activityRepository.findOne( id );
+        return activityRepository.findById( id ).orElse( null );
     }
 
 
@@ -88,7 +88,7 @@ public class ActivityServiceImpl implements ActivityService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        activityRepository.delete( id );
+        activityRepository.deleteById( id );
     }
 
 

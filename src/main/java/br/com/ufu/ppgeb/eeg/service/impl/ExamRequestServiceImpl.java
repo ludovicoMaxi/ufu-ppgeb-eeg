@@ -69,7 +69,7 @@ public class ExamRequestServiceImpl implements ExamRequestService {
     @Override
     public ExamRequest findById( Long id ) {
 
-        return examRequestRepository.findOne( id );
+        return examRequestRepository.findById( id ).orElse( null );
     }
 
 
@@ -92,7 +92,7 @@ public class ExamRequestServiceImpl implements ExamRequestService {
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
-        examRequestRepository.delete( id );
+        examRequestRepository.deleteById( id );
     }
 
 
@@ -105,7 +105,7 @@ public class ExamRequestServiceImpl implements ExamRequestService {
         validateExamRequest( examRequest );
         Assert.notNull( examRequest.getId(), "examRequest ID cannot be null." );
 
-        ExamRequest oldExamRequest = examRequestRepository.getOne( examRequest.getId() );
+        ExamRequest oldExamRequest = examRequestRepository.getReferenceById( examRequest.getId() );
 
         if ( oldExamRequest == null ) {
             throw new IllegalArgumentException( "Not exist examRequest with this Id=" + examRequest.getId() );
