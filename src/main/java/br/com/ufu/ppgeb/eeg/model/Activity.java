@@ -6,17 +6,29 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
+@Getter
+@Setter
 @Entity
 @Table( name = "ACTIVITY" )
+@EntityListeners( AuditingEntityListener.class )
 public class Activity {
 
     @Id
@@ -36,17 +48,21 @@ public class Activity {
     @Column( name = "DESCRIPTION", length = 1024, nullable = false )
     private String description;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", length = 20, nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", length = 20, nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
 
@@ -56,14 +72,13 @@ public class Activity {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof Activity ) )
+        if ( !( o instanceof Activity activity ) )
             return false;
-        Activity epoch = (Activity) o;
-        return Objects.equals( getId(), epoch.getId() ) && //
-            Objects.equals( getExamId(), epoch.getExamId() ) && //
-            Objects.equals( getStartTime(), epoch.getStartTime() ) && //
-            Objects.equals( getDuration(), epoch.getDuration() ) && //
-            Objects.equals( getDescription(), epoch.getDescription() );
+        return Objects.equals( getId(), activity.getId() ) && //
+            Objects.equals( getExamId(), activity.getExamId() ) && //
+            Objects.equals( getStartTime(), activity.getStartTime() ) && //
+            Objects.equals( getDuration(), activity.getDuration() ) && //
+            Objects.equals( getDescription(), activity.getDescription() );
     }
 
 
@@ -72,114 +87,6 @@ public class Activity {
 
         return Objects
             .hash( getId(), getExamId(), getStartTime(), getDuration(), getDescription(), getCreatedAt(), getCreatedBy(), getUpdatedAt(), getUpdatedBy() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public Long getExamId() {
-
-        return examId;
-    }
-
-
-    public void setExamId( Long examId ) {
-
-        this.examId = examId;
-    }
-
-
-    public Long getStartTime() {
-
-        return startTime;
-    }
-
-
-    public void setStartTime( Long startTime ) {
-
-        this.startTime = startTime;
-    }
-
-
-    public Long getDuration() {
-
-        return duration;
-    }
-
-
-    public void setDuration( Long duration ) {
-
-        this.duration = duration;
-    }
-
-
-    public String getDescription() {
-
-        return description;
-    }
-
-
-    public void setDescription( String description ) {
-
-        this.description = description;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
     }
 
 

@@ -1,8 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.ufu.ppgeb.eeg.model.Patient;
@@ -13,5 +11,5 @@ import br.com.ufu.ppgeb.eeg.model.Patient;
  */
 public interface PatientRepository extends JpaRepository< Patient, Long >, PatientRepositoryCustom {
 
-    List< Patient > findByDocumentNumber( String documentNumber );
+    boolean existsByDocumentNumber( String documentNumber );
 }

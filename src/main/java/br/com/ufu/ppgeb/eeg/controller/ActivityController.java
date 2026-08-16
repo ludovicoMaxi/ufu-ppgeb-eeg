@@ -3,10 +3,10 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,60 +14,54 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
 
 
-/**
- * Created by joaol on 10/01/18.
- */
-@Controller
+@RestController
 @RequestMapping( "/api/activity" )
+@AllArgsConstructor
 public class ActivityController {
 
-    private static final Logger logger = LogManager.getLogger( ActivityController.class );
+    private static final Logger logger = LoggerFactory.getLogger( ActivityController.class );
 
-    @Autowired
-    private ActivityService activityService;
+    private final ActivityService activityService;
 
 
     @GetMapping
-    @ResponseBody
-    public List< Activity > list( @RequestParam( value = "examId", required = true ) Long examId
+    public List< Activity > list( @RequestParam( value = "examId" ) Long examId ) {
 
-    ) {
-
-        logger.info( "Parametros{ examId=" + examId + " }" );
+        logger.info( "Consultando atividades do exame id={}", examId );
         return activityService.findByFilter( examId );
-
     }
 
 
     @GetMapping( "/{id}" )
-    public @ResponseBody Activity findById( @PathVariable( value = "id" ) Long id ) {
+    public Activity findById( @PathVariable( value = "id" ) Long id ) {
 
-        return this.activityService.findById( id );
+        logger.info( "Consultando atividade id={}", id );
+        return activityService.findById( id );
     }
 
 
     @PostMapping
-    public @ResponseBody Activity save( @RequestBody Activity activity ) {
+    @ResponseStatus( HttpStatus.CREATED )
+    public Activity save( @RequestBody Activity activity ) {
 
-        logger.info( "Saving " + activity );
-        return this.activityService.save( activity );
+        logger.info( "Recebendo criação de atividade" );
+        return activityService.save( activity );
     }
 
 
     @PutMapping
-    public @ResponseBody ActivityList updateList( @RequestBody ActivityList activityList )
-        throws Exception {
+    public ActivityList updateList( @RequestBody ActivityList activityList ) {
 
-        logger.info( "Updating " + activityList );
-        List< Activity > activities = this.activityService.updateList( activityList );
-        activityList.setActivities( activities );
+        logger.info( "Recebendo atualização de atividades do exame id={}", activityList.getExamId() );
+        activityList.setActivities( activityService.updateList( activityList ) );
         return activityList;
     }
 }

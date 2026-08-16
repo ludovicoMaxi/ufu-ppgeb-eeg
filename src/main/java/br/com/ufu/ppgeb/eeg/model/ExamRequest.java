@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,6 +14,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -22,11 +31,12 @@ import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 /**
  * Created by joaol on 08/09/17.
  */
+@Getter
+@Setter
 @Entity
 @Table( name = "EXAM_REQUEST" )
+@EntityListeners( AuditingEntityListener.class )
 public class ExamRequest {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @SequenceGenerator( name = "EXAM_REQUEST_SQ", sequenceName = "EXAM_REQUEST_SQ", allocationSize = 1 )
@@ -69,17 +79,21 @@ public class ExamRequest {
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date achievementDate;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
 
@@ -89,9 +103,8 @@ public class ExamRequest {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof ExamRequest ) )
+        if ( !( o instanceof ExamRequest examRequest ) )
             return false;
-        ExamRequest examRequest = (ExamRequest) o;
         return Objects.equals( getMedicalRecord(), examRequest.getMedicalRecord() ) && //
             Objects.equals( getMedicalRequest(), examRequest.getMedicalRequest() ) && //
             Objects.equals( getSector(), examRequest.getSector() ) && //
@@ -120,203 +133,7 @@ public class ExamRequest {
             getCityOrigin(),
             getPatient(),
             getRequestDate(),
-            getAchievementDate(),
-            getCreatedAt(),
-            getCreatedBy(),
-            getUpdatedAt(),
-            getUpdatedBy() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public Long getMedicalRecord() {
-
-        return medicalRecord;
-    }
-
-
-    public void setMedicalRecord( Long medicalRecord ) {
-
-        this.medicalRecord = medicalRecord;
-    }
-
-
-    public Long getMedicalRequest() {
-
-        return medicalRequest;
-    }
-
-
-    public void setMedicalRequest( Long medicalRequest ) {
-
-        this.medicalRequest = medicalRequest;
-    }
-
-
-    public String getSector() {
-
-        return sector;
-    }
-
-
-    public void setSector( String sector ) {
-
-        this.sector = sector;
-    }
-
-
-    public String getAgreement() {
-
-        return agreement;
-    }
-
-
-    public void setAgreement( String agreement ) {
-
-        this.agreement = agreement;
-    }
-
-
-    public String getDoctorRequestant() {
-
-        return doctorRequestant;
-    }
-
-
-    public void setDoctorRequestant( String doctorRequestant ) {
-
-        this.doctorRequestant = doctorRequestant;
-    }
-
-
-    public String getUser() {
-
-        return user;
-    }
-
-
-    public void setUser( String user ) {
-
-        this.user = user;
-    }
-
-
-    public String getClinicOrigin() {
-
-        return clinicOrigin;
-    }
-
-
-    public void setClinicOrigin( String clinicOrigin ) {
-
-        this.clinicOrigin = clinicOrigin;
-    }
-
-
-    public String getCityOrigin() {
-
-        return cityOrigin;
-    }
-
-
-    public void setCityOrigin( String cityOrigin ) {
-
-        this.cityOrigin = cityOrigin;
-    }
-
-
-    public Patient getPatient() {
-
-        return patient;
-    }
-
-
-    public void setPatient( Patient patient ) {
-
-        this.patient = patient;
-    }
-
-
-    public Date getRequestDate() {
-
-        return requestDate;
-    }
-
-
-    public void setRequestDate( Date requestDate ) {
-
-        this.requestDate = requestDate;
-    }
-
-
-    public Date getAchievementDate() {
-
-        return achievementDate;
-    }
-
-
-    public void setAchievementDate( Date achievementDate ) {
-
-        this.achievementDate = achievementDate;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
+            getAchievementDate() );
     }
 
 

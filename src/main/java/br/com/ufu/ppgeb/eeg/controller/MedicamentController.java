@@ -3,37 +3,31 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 
 
-/**
- * Created by joaol on 10/01/19.
- */
-@Controller
+@RestController
 @RequestMapping( "/api/medicament" )
+@AllArgsConstructor
 public class MedicamentController {
 
-    private static final Logger logger = LogManager.getLogger( MedicamentController.class );
+    private static final Logger logger = LoggerFactory.getLogger( MedicamentController.class );
 
-    @Autowired
-    private MedicamentService medicamentService;
+    private final MedicamentService medicamentService;
 
 
     @GetMapping
-    @ResponseBody
     public List< Medicament > list() {
 
+        logger.info( "Consultando medicamentos" );
         return medicamentService.findAll();
-
     }
-
 }
