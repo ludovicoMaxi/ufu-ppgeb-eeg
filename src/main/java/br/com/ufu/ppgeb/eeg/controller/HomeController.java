@@ -2,7 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 
 /**
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HomeController {
 
-    @RequestMapping( value = { "/", "/login", "/customers/*" } )
+    @GetMapping( value = { "/", "/login", "/customers/*" } )
     public String index() {
 
         return "index";

@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +19,18 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -26,11 +40,13 @@ import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 /**
  * Created by joaol on 08/09/17.
  */
+@Getter
+@Setter
+@NoArgsConstructor( access = AccessLevel.PROTECTED )
 @Entity
 @Table( name = "EXAM" )
+@EntityListeners( AuditingEntityListener.class )
 public class Exam {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @SequenceGenerator( name = "EXAM_SQ", sequenceName = "EXAM_SQ", allocationSize = 1 )
@@ -67,32 +83,33 @@ public class Exam {
     @Column( name = "CLINICAL_DATA", length = 256 )
     private String clinicalData;
 
-    @OneToMany( mappedBy = "exam" )
+    @OneToMany( mappedBy = "exam", fetch = FetchType.EAGER )
+    @Fetch( FetchMode.SUBSELECT )
     @JsonManagedReference
     private List< ExamMedicament > examMedicaments;
 
-    @OneToMany( mappedBy = "exam" )
+    @OneToMany( mappedBy = "exam", fetch = FetchType.EAGER )
+    @Fetch( FetchMode.SUBSELECT )
     @JsonManagedReference
     private List< ExamEquipment > examEquipments;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
-
-
-    public Exam() {
-
-    }
 
 
     public Exam( Long id ) {
@@ -106,9 +123,8 @@ public class Exam {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof Exam ) )
+        if ( !( o instanceof Exam exam ) )
             return false;
-        Exam exam = (Exam) o;
         return Objects.equals( getId(), exam.getId() ) && //
             Objects.equals( getExamRequest(), exam.getExamRequest() ) && //
             Objects.equals( getPatient(), exam.getPatient() ) && //
@@ -118,9 +134,7 @@ public class Exam {
             Objects.equals( getBed(), exam.getBed() ) && //
             Objects.equals( getHeight(), exam.getHeight() ) && //
             Objects.equals( getWeight(), exam.getWeight() ) && //
-            Objects.equals( getClinicalData(), exam.getClinicalData() ) && //
-            Objects.equals( getCreatedBy(), exam.getCreatedBy() ) && //
-            Objects.equals( getUpdatedBy(), exam.getUpdatedBy() );
+            Objects.equals( getClinicalData(), exam.getClinicalData() );
     }
 
 
@@ -129,7 +143,6 @@ public class Exam {
 
         return Objects.hash(
             getId(),
-            getExamRequest(),
             getPatient(),
             getAchievementDate(),
             getMedicalReport(),
@@ -137,203 +150,7 @@ public class Exam {
             getBed(),
             getHeight(),
             getWeight(),
-            getClinicalData(),
-            getExamMedicaments(),
-            getExamEquipments(),
-            getCreatedBy(),
-            getUpdatedBy() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public ExamRequest getExamRequest() {
-
-        return examRequest;
-    }
-
-
-    public void setExamRequest( ExamRequest examRequest ) {
-
-        this.examRequest = examRequest;
-    }
-
-
-    public Patient getPatient() {
-
-        return patient;
-    }
-
-
-    public void setPatient( Patient patient ) {
-
-        this.patient = patient;
-    }
-
-
-    public Date getAchievementDate() {
-
-        return achievementDate;
-    }
-
-
-    public void setAchievementDate( Date achievementDate ) {
-
-        this.achievementDate = achievementDate;
-    }
-
-
-    public String getMedicalReport() {
-
-        return medicalReport;
-    }
-
-
-    public void setMedicalReport( String medicalReport ) {
-
-        this.medicalReport = medicalReport;
-    }
-
-
-    public String getConclusion() {
-
-        return conclusion;
-    }
-
-
-    public void setConclusion( String conclusion ) {
-
-        this.conclusion = conclusion;
-    }
-
-
-    public String getBed() {
-
-        return bed;
-    }
-
-
-    public void setBed( String bed ) {
-
-        this.bed = bed;
-    }
-
-
-    public Long getHeight() {
-
-        return height;
-    }
-
-
-    public void setHeight( Long height ) {
-
-        this.height = height;
-    }
-
-
-    public Double getWeight() {
-
-        return weight;
-    }
-
-
-    public void setWeight( Double weight ) {
-
-        this.weight = weight;
-    }
-
-
-    public String getClinicalData() {
-
-        return clinicalData;
-    }
-
-
-    public void setClinicalData( String clinicalData ) {
-
-        this.clinicalData = clinicalData;
-    }
-
-
-    public List< ExamMedicament > getExamMedicaments() {
-
-        return examMedicaments;
-    }
-
-
-    public void setExamMedicaments( List< ExamMedicament > examMedicaments ) {
-
-        this.examMedicaments = examMedicaments;
-    }
-
-
-    public List< ExamEquipment > getExamEquipments() {
-
-        return examEquipments;
-    }
-
-
-    public void setExamEquipments( List< ExamEquipment > examEquipments ) {
-
-        this.examEquipments = examEquipments;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
+            getClinicalData() );
     }
 
 

@@ -6,11 +6,20 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -20,11 +29,12 @@ import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 /**
  * Created by joaol on 08/09/17.
  */
+@Getter
+@Setter
 @Entity
 @Table( name = "PATIENT" )
+@EntityListeners( AuditingEntityListener.class )
 public class Patient {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @Column( name = "ID" )
@@ -33,13 +43,13 @@ public class Patient {
     private Long id;
 
     @Column( name = "NAME", length = 512, nullable = false )
-    String name;
+    private String name;
 
     @Column( name = "DOCUMENT_NUMBER", length = 20, nullable = false )
     private String documentNumber;
 
     @Column( name = "SEX" )
-    char sex;
+    private char sex;
 
     @Column( name = "BIRTHDATE", nullable = false )
     @JsonFormat( pattern = "dd/MM/yyyy" )
@@ -54,17 +64,21 @@ public class Patient {
     @Column( name = "JOB", length = 256 )
     private String job;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
 
@@ -74,16 +88,15 @@ public class Patient {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof Patient ) )
+        if ( !( o instanceof Patient patient ) )
             return false;
-        Patient patient = (Patient) o;
-        return getSex() == patient.getSex() //
-            && Objects.equals( getName(), patient.getName() ) //
-            && Objects.equals( getDocumentNumber(), patient.getDocumentNumber() ) //
-            && CompareDate.compareDates( getBirthDate(), patient.getBirthDate() ) //
-            && Objects.equals( getNacionality(), patient.getNacionality() ) //
-            && Objects.equals( getCivilStatus(), patient.getCivilStatus() ) //
-            && Objects.equals( getJob(), patient.getJob() );
+        return getSex() == patient.getSex() && //
+            Objects.equals( getName(), patient.getName() ) && //
+            Objects.equals( getDocumentNumber(), patient.getDocumentNumber() ) && //
+            CompareDate.compareDates( getBirthDate(), patient.getBirthDate() ) && //
+            Objects.equals( getNacionality(), patient.getNacionality() ) && //
+            Objects.equals( getCivilStatus(), patient.getCivilStatus() ) && //
+            Objects.equals( getJob(), patient.getJob() );
     }
 
 
@@ -97,155 +110,7 @@ public class Patient {
             getBirthDate(),
             getNacionality(),
             getCivilStatus(),
-            getJob(),
-            getCreatedAt(),
-            getCreatedBy(),
-            getUpdatedAt(),
-            getUpdatedBy() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public String getName() {
-
-        return name;
-    }
-
-
-    public void setName( String name ) {
-
-        this.name = name;
-    }
-
-
-    public String getDocumentNumber() {
-
-        return documentNumber;
-    }
-
-
-    public void setDocumentNumber( String documentNumber ) {
-
-        this.documentNumber = documentNumber;
-    }
-
-
-    public char getSex() {
-
-        return sex;
-    }
-
-
-    public void setSex( char sexo ) {
-
-        this.sex = sexo;
-    }
-
-
-    public Date getBirthDate() {
-
-        return birthDate;
-    }
-
-
-    public void setBirthDate( Date birthDate ) {
-
-        this.birthDate = birthDate;
-    }
-
-
-    public String getNacionality() {
-
-        return nacionality;
-    }
-
-
-    public void setNacionality( String nacionality ) {
-
-        this.nacionality = nacionality;
-    }
-
-
-    public String getCivilStatus() {
-
-        return civilStatus;
-    }
-
-
-    public void setCivilStatus( String civilStatus ) {
-
-        this.civilStatus = civilStatus;
-    }
-
-
-    public String getJob() {
-
-        return job;
-    }
-
-
-    public void setJob( String job ) {
-
-        this.job = job;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
+            getJob() );
     }
 
 

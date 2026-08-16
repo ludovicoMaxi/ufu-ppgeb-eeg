@@ -15,4 +15,7 @@ public interface MedicamentRepository extends JpaRepository< Medicament, Long > 
 
     List< Medicament > findByName( String name );
 
+
+    boolean existsByName( String name );
+
 }

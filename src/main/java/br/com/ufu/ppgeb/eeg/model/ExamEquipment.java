@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,12 +15,23 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
+@Getter
+@Setter
 @Entity
 @Table( name = "EXAM_EQUIPMENT" )
+@EntityListeners( AuditingEntityListener.class )
 public class ExamEquipment {
 
     @Id
@@ -43,17 +55,21 @@ public class ExamEquipment {
     @JoinColumn( name = "UNIT_ID", nullable = false )
     private Unit unit;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
 
@@ -63,9 +79,8 @@ public class ExamEquipment {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof ExamEquipment ) )
+        if ( !( o instanceof ExamEquipment that ) )
             return false;
-        ExamEquipment that = (ExamEquipment) o;
         return Objects.equals( getExamId(), that.getExamId() ) && Objects.equals( getEquipment(), that.getEquipment() )
             && Objects.equals( getAmount(), that.getAmount() ) && Objects.equals( getUnit(), that.getUnit() );
     }
@@ -75,114 +90,6 @@ public class ExamEquipment {
     public int hashCode() {
 
         return Objects.hash( getExam(), getEquipment(), getAmount() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public Exam getExam() {
-
-        return exam;
-    }
-
-
-    public void setExam( Exam exam ) {
-
-        this.exam = exam;
-    }
-
-
-    public Equipment getEquipment() {
-
-        return equipment;
-    }
-
-
-    public void setEquipment( Equipment equipment ) {
-
-        this.equipment = equipment;
-    }
-
-
-    public Long getAmount() {
-
-        return amount;
-    }
-
-
-    public void setAmount( Long amount ) {
-
-        this.amount = amount;
-    }
-
-
-    public Unit getUnit() {
-
-        return unit;
-    }
-
-
-    public void setUnit( Unit unit ) {
-
-        this.unit = unit;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
     }
 
 

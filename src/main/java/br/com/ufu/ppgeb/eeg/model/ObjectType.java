@@ -8,15 +8,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * Created by joaol on 12/09/18.
  */
+@Getter
+@Setter
 @Entity
 @Table( name = "OBJECT_TYPE" )
 public class ObjectType {
-
-    private static final long serialVersionUID = 1L;
 
     public static final ObjectType PATIENT = new ObjectType( 1L );
 
@@ -46,9 +49,8 @@ public class ObjectType {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof ObjectType ) )
+        if ( !( o instanceof ObjectType that ) )
             return false;
-        ObjectType that = (ObjectType) o;
         return Objects.equals( id, that.id ) && Objects.equals( name, that.name ) && Objects.equals( description, that.description );
     }
 
@@ -57,42 +59,6 @@ public class ObjectType {
     public int hashCode() {
 
         return Objects.hash( id, name, description );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public String getName() {
-
-        return name;
-    }
-
-
-    public void setName( String name ) {
-
-        this.name = name;
-    }
-
-
-    public Long getDescription() {
-
-        return description;
-    }
-
-
-    public void setDescription( Long description ) {
-
-        this.description = description;
     }
 
 

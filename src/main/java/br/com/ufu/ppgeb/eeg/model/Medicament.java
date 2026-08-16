@@ -6,11 +6,20 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -18,8 +27,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * Created by joaol on 08/12/18.
  */
+@Getter
+@Setter
 @Entity
 @Table( name = "MEDICAMENT" )
+@EntityListeners( AuditingEntityListener.class )
 public class Medicament {
 
     @Id
@@ -33,19 +45,29 @@ public class Medicament {
     @Column( name = "DESCRIPTION" )
     private String description;
 
-    @Column( name = "CREATED_AT", nullable = false )
+    @CreatedDate
+    @Column( name = "CREATED_AT", nullable = false, updatable = false )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date createdAt;
 
-    @Column( name = "CREATED_BY", nullable = false )
+    @CreatedBy
+    @Column( name = "CREATED_BY", nullable = false, updatable = false )
     private String createdBy;
 
+    @LastModifiedDate
     @Column( name = "UPDATED_AT" )
     @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
     private Date updatedAt;
 
+    @LastModifiedBy
     @Column( name = "UPDATED_BY", length = 20 )
     private String updatedBy;
+
+
+    public void setName( String name ) {
+
+        this.name = name == null ? null : name.toUpperCase();
+    }
 
 
     @Override
@@ -53,9 +75,8 @@ public class Medicament {
 
         if ( this == o )
             return true;
-        if ( !( o instanceof Medicament ) )
+        if ( !( o instanceof Medicament that ) )
             return false;
-        Medicament that = (Medicament) o;
         return Objects.equals( getName(), that.getName() ) && Objects.equals( getDescription(), that.getDescription() );
     }
 
@@ -64,93 +85,6 @@ public class Medicament {
     public int hashCode() {
 
         return Objects.hash( getName(), getDescription() );
-    }
-
-
-    public Long getId() {
-
-        return id;
-    }
-
-
-    public void setId( Long id ) {
-
-        this.id = id;
-    }
-
-
-    public String getName() {
-
-        return name;
-    }
-
-
-    public void setName( String name ) {
-
-        this.name = name;
-        if ( this.name != null ) {
-            this.name = this.name.toUpperCase();
-        }
-    }
-
-
-    public String getDescription() {
-
-        return description;
-    }
-
-
-    public void setDescription( String description ) {
-
-        this.description = description;
-    }
-
-
-    public Date getCreatedAt() {
-
-        return createdAt;
-    }
-
-
-    public void setCreatedAt( Date createdAt ) {
-
-        this.createdAt = createdAt;
-    }
-
-
-    public String getCreatedBy() {
-
-        return createdBy;
-    }
-
-
-    public void setCreatedBy( String createdBy ) {
-
-        this.createdBy = createdBy;
-    }
-
-
-    public Date getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-
-    public void setUpdatedAt( Date updatedAt ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-
-    public String getUpdatedBy() {
-
-        return updatedBy;
-    }
-
-
-    public void setUpdatedBy( String updatedBy ) {
-
-        this.updatedBy = updatedBy;
     }
 
 
