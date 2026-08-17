@@ -35,8 +35,7 @@ public class PatientController {
     public List< Patient > list( @RequestParam( value = "name", required = false ) String name,
                                  @RequestParam( value = "documentNumber", required = false ) String documentNumber ) {
 
-        logger.info( "Consultando pacientes; nameInformado={}, documentNumberInformado={}", name != null && !name.isBlank(),
-            documentNumber != null && !documentNumber.isBlank() );
+        logger.info( "Consultando pacientes; name={}, documentNumber={}", name, documentNumber );
         return patientService.findByFilter( name, documentNumber );
     }
 

@@ -15,10 +15,15 @@ O banco de dados utilizado é o H2 em memória (perfil `dev`), para evitar compl
 ## Exemplo de uso
 A pagina inicial: http://localhost:8080
 Será solicitada uma autenticação básica (HTTP Basic) de usuário e senha.
-A lista de usuários cadastrados é (todos com senha `123`):
+A lista de usuários cadastrados no perfil `dev` é (senha padrão apenas para desenvolvimento local: `123`):
 - joaol
 - teste
 - user
+
+Em produção, ative `SPRING_PROFILES_ACTIVE=prod` e defina `SPRING_DATASOURCE_URL`,
+`SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`,
+`APP_SECURITY_JOAO_PASSWORD`, `APP_SECURITY_TESTE_PASSWORD` e
+`APP_SECURITY_USER_PASSWORD`. Não use as credenciais padrão em produção.
 
 
 ## Configuração para Desenvolvimento

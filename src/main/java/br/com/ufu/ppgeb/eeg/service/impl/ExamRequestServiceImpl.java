@@ -1,27 +1,29 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
 
-import java.util.Date;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import static java.util.Objects.isNull;
+
+import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.repository.ExamRequestRepository;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ExamRequestServiceImpl implements ExamRequestService {
 
-    @Autowired
-    private ExamRequestRepository examRequestRepository;
+    private final ExamRequestRepository examRequestRepository;
 
 
     @Override
@@ -32,18 +34,9 @@ public class ExamRequestServiceImpl implements ExamRequestService {
 
         validateExamRequest( examRequest );
 
-        examRequest.setCreatedAt( new Date() );
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            examRequest.setCreatedBy( auth.getName() );
-        }
-
-        examRequest.setUpdatedAt( null );
-        examRequest.setUpdatedBy( null );
-
-        ExamRequest examRequestSaved = examRequestRepository.save( examRequest );
-
-        return examRequestSaved;
+        ExamRequest saved = examRequestRepository.save( examRequest );
+        log.info( "Solicitação de exame criada com id={}", saved.getId() );
+        return saved;
     }
 
 
@@ -56,10 +49,13 @@ public class ExamRequestServiceImpl implements ExamRequestService {
         Assert.hasText( examRequest.getDoctorRequestant(), "doctorRequestant cannot be empty." );
         Assert.hasText( examRequest.getUser(), "user cannot be empty." );
         Assert.notNull( examRequest.getRequestDate(), "requestDate cannot be empty." );
+        Assert.notNull( examRequest.getPatient(), "patient cannot be null." );
+        Assert.notNull( examRequest.getPatient().getId(), "patient id cannot be null." );
     }
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< ExamRequest > findAll() {
 
         return examRequestRepository.findAll();
@@ -67,9 +63,11 @@ public class ExamRequestServiceImpl implements ExamRequestService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public ExamRequest findById( Long id ) {
 
-        return examRequestRepository.findById( id ).orElse( null );
+        Assert.notNull( id, "id cannot be null." );
+        return examRequestRepository.findById( id ).orElseThrow( () -> new ResourceNotFoundException( "ExamRequest", id ) );
     }
 
 
@@ -77,22 +75,24 @@ public class ExamRequestServiceImpl implements ExamRequestService {
     @Transactional( readOnly = true )
     public List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant ) {
 
-        if ( StringUtils.isBlank( doctorRequestant ) && medicalRequest == null && patientId == null && medicalRecord == null ) {
+        if ( StringUtils.isBlank( doctorRequestant ) && isNull( medicalRequest ) && isNull( patientId ) && isNull( medicalRecord ) ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
-        List< ExamRequest > list = null;
-
-        list = examRequestRepository.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
-        return list;
+        return examRequestRepository.findByFilter( medicalRecord, medicalRequest, patientId, doctorRequestant );
     }
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
+        if ( !examRequestRepository.existsById( id ) ) {
+            throw new ResourceNotFoundException( "ExamRequest", id );
+        }
         examRequestRepository.deleteById( id );
+        log.info( "Solicitação de exame removida com id={}", id );
     }
 
 
@@ -105,17 +105,15 @@ public class ExamRequestServiceImpl implements ExamRequestService {
         validateExamRequest( examRequest );
         Assert.notNull( examRequest.getId(), "examRequest ID cannot be null." );
 
-        ExamRequest oldExamRequest = examRequestRepository.getReferenceById( examRequest.getId() );
-
-        if ( oldExamRequest == null ) {
-            throw new IllegalArgumentException( "Not exist examRequest with this Id=" + examRequest.getId() );
-        }
+        Long examRequestId = examRequest.getId();
+        ExamRequest oldExamRequest = examRequestRepository.findById( examRequestId )
+            .orElseThrow( () -> new ResourceNotFoundException( "ExamRequest", examRequestId ) );
 
         if ( !oldExamRequest.equals( examRequest ) ) {
 
             if ( !examRequest.getPatient().getId().equals( oldExamRequest.getPatient().getId() ) ) {
                 throw new IllegalArgumentException(
-                    "Patient ID is different. Neew=" + examRequest.getPatient().getId() + ", Old=" + oldExamRequest.getPatient().getId() );
+                    "Patient ID is different. New=" + examRequest.getPatient().getId() + ", Old=" + oldExamRequest.getPatient().getId() );
             }
 
             oldExamRequest.setMedicalRecord( examRequest.getMedicalRecord() );
@@ -129,16 +127,10 @@ public class ExamRequestServiceImpl implements ExamRequestService {
             oldExamRequest.setSector( examRequest.getSector() );
             oldExamRequest.setUser( examRequest.getUser() );
 
-            oldExamRequest.setUpdatedAt( new Date() );
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if ( auth != null ) {
-                oldExamRequest.setUpdatedBy( auth.getName() );
-            }
-
             examRequest = examRequestRepository.save( oldExamRequest );
+            log.info( "Solicitação de exame atualizada com id={}", examRequestId );
         }
 
         return examRequest;
-
     }
 }

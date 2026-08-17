@@ -2,54 +2,59 @@ const webpack = require('webpack')
 const { resolve } = require('path')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
-module.exports = {
-    entry: './src/main/webapp/index.jsx',
-    output: {
-        path: resolve(__dirname, 'src', 'main', 'webapp', 'public'),
-        filename: './app.js'
-    },
-    devServer: {
-        port: 8080,
-        contentBase: resolve(__dirname, 'src', 'main', 'webapp', 'public')
-    },
-    resolve: {
-        extensions: ['*', '.js', '.jsx'],
-        alias: {
-            modules: resolve(__dirname, 'node_modules'),
-            jquery: 'modules/admin-lte/bower_components/jquery/dist/jquery.min.js',
-            bootstrap: 'modules/admin-lte/bower_components/bootstrap/js/bootstrap.js'
-        }
-    },
-    plugins: [
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
-            'window.jQuery': 'jquery'
-        }),
-        new MiniCssExtractPlugin({
-            filename: "app.css"
-        })
-    ],
-    module: {
-        rules: [{
-            test: /.js[x]?$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: {
-                presets: ['es2015', 'react'],
-                plugins: ['transform-object-rest-spread']
+module.exports = (env, argv) => {
+    const isProduction = argv.mode === 'production'
+
+    return {
+        entry: './src/main/webapp/index.jsx',
+        output: {
+            path: resolve(__dirname, 'src', 'main', 'webapp', 'public'),
+            filename: 'app.js',
+            clean: isProduction
+        },
+        devServer: {
+            port: 8080,
+            static: {
+                directory: resolve(__dirname, 'src', 'main', 'webapp', 'public')
+            },
+            hot: true
+        },
+        resolve: {
+            extensions: ['.js', '.jsx'],
+            alias: {
+                modules: resolve(__dirname, 'node_modules')
             }
-        }, {
-            test: /\.css$/,
-            use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader']
-        }, {
-            test: /\.woff|.woff2|.ttf|.eot|.svg|.png|.jpg*.*$/,
-            loader: 'file-loader'
-        }]
-    },
-    watchOptions: {
-        aggregateTimeout: 300, // The default
-        ignored: /node_modules/,
-        poll: 1000
+        },
+        plugins: [
+            new MiniCssExtractPlugin({
+                filename: "app.css"
+            })
+        ],
+        module: {
+            rules: [{
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            ['@babel/preset-env', { targets: { browsers: ['last 2 versions', 'not dead'] } }],
+                            ['@babel/preset-react', { runtime: 'classic' }]
+                        ]
+                    }
+                }
+            }, {
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader']
+            }, {
+                test: /\.(woff|woff2|ttf|eot|svg|png|jpg|gif)$/,
+                type: 'asset/resource'
+            }]
+        },
+        watchOptions: {
+            aggregateTimeout: 300,
+            ignored: /node_modules/,
+            poll: 1000
+        }
     }
 }

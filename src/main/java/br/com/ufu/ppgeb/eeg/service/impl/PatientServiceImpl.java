@@ -1,27 +1,27 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
 
-import java.util.Date;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.repository.PatientRepository;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class PatientServiceImpl implements PatientService {
 
-    @Autowired
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
 
 
     @Override
@@ -32,24 +32,13 @@ public class PatientServiceImpl implements PatientService {
 
         validatePatient( patient );
 
-        patient.setCreatedAt( new Date() );
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            patient.setCreatedBy( auth.getName() );
-        }
-
-        patient.setUpdatedAt( null );
-        patient.setUpdatedBy( null );
-
-        List< Patient > listPatientSameDocumentNumber = patientRepository.findByDocumentNumber( patient.getDocumentNumber() );
-
-        if ( listPatientSameDocumentNumber != null && listPatientSameDocumentNumber.size() > 0 ) {
+        if ( patientRepository.existsByDocumentNumber( patient.getDocumentNumber() ) ) {
             throw new IllegalArgumentException( "CPF já foi cadastrado, por favor informe outro." );
         }
 
-        Patient patientSaved = patientRepository.save( patient );
-
-        return patientSaved;
+        Patient saved = patientRepository.save( patient );
+        log.info( "Paciente criado com id={}", saved.getId() );
+        return saved;
     }
 
 
@@ -68,6 +57,7 @@ public class PatientServiceImpl implements PatientService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Patient > findAll() {
 
         return patientRepository.findAll();
@@ -75,9 +65,11 @@ public class PatientServiceImpl implements PatientService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public Patient findById( Long id ) {
 
-        return patientRepository.findById( id ).orElse( null );
+        Assert.notNull( id, "id cannot be null." );
+        return patientRepository.findById( id ).orElseThrow( () -> new ResourceNotFoundException( "Patient", id ) );
     }
 
 
@@ -85,22 +77,24 @@ public class PatientServiceImpl implements PatientService {
     @Transactional( readOnly = true )
     public List< Patient > findByFilter( String name, String documentNumber ) {
 
-        List< Patient > list = null;
         if ( StringUtils.isBlank( name ) && StringUtils.isBlank( documentNumber ) ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
-        } else {
-
-            list = patientRepository.findByFilter( name, documentNumber );
         }
-        return list;
+
+        return patientRepository.findByFilter( name, documentNumber );
     }
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
+        if ( !patientRepository.existsById( id ) ) {
+            throw new ResourceNotFoundException( "Patient", id );
+        }
         patientRepository.deleteById( id );
+        log.info( "Paciente removido com id={}", id );
     }
 
 
@@ -113,35 +107,27 @@ public class PatientServiceImpl implements PatientService {
         validatePatient( patient );
         Assert.notNull( patient.getId(), "patient ID cannot be null." );
 
-        Patient oldPatient = patientRepository.getReferenceById( patient.getId() );
-
-        if ( oldPatient == null ) {
-            throw new IllegalArgumentException( "Not exist patient with this Id=" + patient.getId() );
-        }
+        Long patientId = patient.getId();
+        Patient oldPatient = patientRepository.findById( patientId )
+            .orElseThrow( () -> new ResourceNotFoundException( "Patient", patientId ) );
 
         if ( !oldPatient.equals( patient ) ) {
-            oldPatient.setName( patient.getName() );
 
             if ( !oldPatient.getDocumentNumber().equals( patient.getDocumentNumber() ) ) {
                 throw new IllegalArgumentException( "CPF/CNPJ está divergente." );
             }
 
+            oldPatient.setName( patient.getName() );
             oldPatient.setSex( patient.getSex() );
             oldPatient.setBirthDate( patient.getBirthDate() );
             oldPatient.setNacionality( patient.getNacionality() );
             oldPatient.setCivilStatus( patient.getCivilStatus() );
             oldPatient.setJob( patient.getJob() );
 
-            oldPatient.setUpdatedAt( new Date() );
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if ( auth != null ) {
-                oldPatient.setUpdatedBy( auth.getName() );
-            }
-
             patient = patientRepository.save( oldPatient );
+            log.info( "Paciente atualizado com id={}", patientId );
         }
 
         return patient;
-
     }
 }

@@ -1,13 +1,13 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
 
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import br.com.ufu.ppgeb.eeg.repository.MedicamentRepository;
@@ -15,13 +15,15 @@ import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class MedicamentServiceImpl implements MedicamentService {
 
-    @Autowired
-    private MedicamentRepository medicamentRepository;
+    private final MedicamentRepository medicamentRepository;
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Medicament > findAll() {
 
         return medicamentRepository.findAll();
@@ -29,6 +31,7 @@ public class MedicamentServiceImpl implements MedicamentService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Medicament > findByName( String name ) {
 
         return medicamentRepository.findByName( name );
@@ -36,25 +39,20 @@ public class MedicamentServiceImpl implements MedicamentService {
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public Medicament save( Medicament medicament ) {
 
+        Assert.notNull( medicament, "medicament cannot be null." );
+        Assert.hasText( medicament.getName(), "medicament name cannot be empty." );
+
         medicament.setName( medicament.getName().toUpperCase() );
-        List< Medicament > medicamentList = findByName( medicament.getName() );
 
-        if ( medicamentList != null && medicamentList.size() > 0 ) {
+        if ( medicamentRepository.existsByName( medicament.getName() ) ) {
             throw new IllegalArgumentException( "Medicamento já cadastrado: " + medicament.getName() );
-        } else {
-            Medicament medicamentSave = new Medicament();
-            medicamentSave.setCreatedAt( new Date() );
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if ( auth != null ) {
-                medicamentSave.setCreatedBy( auth.getName() );
-            }
-            medicamentSave.setName( medicament.getName() );
-            medicamentSave.setDescription( medicament.getDescription() );
-            medicament = medicamentRepository.save( medicamentSave );
         }
-        return medicament;
-    }
 
+        Medicament saved = medicamentRepository.save( medicament );
+        log.info( "Medicamento criado com id={}", saved.getId() );
+        return saved;
+    }
 }

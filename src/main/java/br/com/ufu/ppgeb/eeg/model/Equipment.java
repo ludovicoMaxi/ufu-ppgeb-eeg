@@ -4,6 +4,8 @@ package br.com.ufu.ppgeb.eeg.model;
 import java.util.Date;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -66,7 +68,7 @@ public class Equipment {
 
     public void setName( String name ) {
 
-        this.name = name == null ? null : name.toUpperCase();
+        this.name = isNull( name ) ? null : name.toUpperCase();
     }
 
 

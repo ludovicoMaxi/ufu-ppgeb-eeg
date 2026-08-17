@@ -2,17 +2,22 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
+import org.apache.commons.collections4.CollectionUtils;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
@@ -20,10 +25,11 @@ import br.com.ufu.ppgeb.eeg.view.ActivityList;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ActivityServiceImpl implements ActivityService {
 
-    @Autowired
-    private ActivityRepository activityRepository;
+    private final ActivityRepository activityRepository;
 
 
     @Override
@@ -34,32 +40,23 @@ public class ActivityServiceImpl implements ActivityService {
 
         validateActivity( activity );
 
-        activity.setCreatedAt( new Date() );
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            activity.setCreatedBy( auth.getName() );
-        }
-
-        activity.setUpdatedAt( null );
-        activity.setUpdatedBy( null );
-
-        Activity activitySaved = activityRepository.save( activity );
-
-        return activitySaved;
+        Activity saved = activityRepository.save( activity );
+        log.info( "Atividade criada com id={}", saved.getId() );
+        return saved;
     }
 
 
     private void validateActivity( Activity activity ) {
 
         Assert.notNull( activity, "Activity cannot be null." );
-        Assert.notNull( activity.getStartTime(), "start time cannot be nulll." );
-        Assert.notNull( activity.getDuration(), "duration cannot be nulll." );
+        Assert.notNull( activity.getStartTime(), "start time cannot be null." );
+        Assert.notNull( activity.getDuration(), "duration cannot be null." );
         Assert.hasText( activity.getDescription(), "description cannot be empty." );
     }
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Activity > findAll() {
 
         return activityRepository.findAll();
@@ -67,9 +64,11 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public Activity findById( Long id ) {
 
-        return activityRepository.findById( id ).orElse( null );
+        Assert.notNull( id, "id cannot be null." );
+        return activityRepository.findById( id ).orElseThrow( () -> new ResourceNotFoundException( "Activity", id ) );
     }
 
 
@@ -79,16 +78,20 @@ public class ActivityServiceImpl implements ActivityService {
 
         Assert.notNull( examId, "examId cannot be null." );
 
-        List< Activity > list = activityRepository.findByExamId( examId );
-        return list;
+        return activityRepository.findByExamId( examId );
     }
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
+        if ( !activityRepository.existsById( id ) ) {
+            throw new ResourceNotFoundException( "Activity", id );
+        }
         activityRepository.deleteById( id );
+        log.info( "Atividade removida com id={}", id );
     }
 
 
@@ -99,72 +102,48 @@ public class ActivityServiceImpl implements ActivityService {
         Assert.notNull( activityList, "ActivityList cannot be null." );
         Assert.notNull( activityList.getExamId(), "ExamId cannot be null." );
 
-        List< Activity > oldActivities = activityRepository.findByExamId( activityList.getExamId() );
+        Map< Long, Activity > oldActivitiesById = new HashMap<>();
+        for ( Activity oldActivity : activityRepository.findByExamId( activityList.getExamId() ) ) {
+            oldActivitiesById.put( oldActivity.getId(), oldActivity );
+        }
 
-        List< Activity > activityUpdateList = new ArrayList<>();
         List< Activity > currentActivities = activityList.getActivities();
+        List< Activity > savedActivities = new ArrayList<>();
 
-        if ( !CollectionUtils.isEmpty( currentActivities ) ) {
+        if ( CollectionUtils.isNotEmpty( currentActivities ) ) {
 
-            for ( int i = 0; i < currentActivities.size(); i++ ) {
+            for ( Activity activity : currentActivities ) {
 
-                if ( currentActivities.get( i ).getExamId() != null && !currentActivities.get( i ).getExamId().equals( activityList.getExamId() ) ) {
-                    throw new IllegalArgumentException( currentActivities.get( i ) + " is not same examId in update=" + activityList.getExamId() );
+                if ( nonNull( activity.getExamId() ) && !activity.getExamId().equals( activityList.getExamId() ) ) {
+                    throw new IllegalArgumentException( activity + " is not same examId in update=" + activityList.getExamId() );
                 }
 
-                if ( currentActivities.get( i ).getId() != null ) {
-                    Boolean existActivity = false;
+                activity.setExamId( activityList.getExamId() );
 
-                    if ( !CollectionUtils.isEmpty( oldActivities ) ) {
-                        for ( Activity oldActivity : oldActivities ) {
-                            if ( currentActivities.get( i ).getId().equals( oldActivity.getId() ) ) {
-                                existActivity = true;
+                if ( nonNull( activity.getId() ) ) {
 
-                                if ( !currentActivities.get( i ).equals( oldActivity ) ) {
-                                    currentActivities.get( i ).setCreatedAt( oldActivity.getCreatedAt() );
-                                    currentActivities.get( i ).setCreatedBy( oldActivity.getCreatedBy() );
-                                    currentActivities.get( i ).setUpdatedAt( new Date() );
-                                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                    if ( auth != null ) {
-                                        currentActivities.get( i ).setUpdatedBy( auth.getName() );
-                                    }
-                                    validateActivity( currentActivities.get( i ) );
-                                    currentActivities.set( i, activityRepository.save( currentActivities.get( i ) ) );
-                                }
-                                activityUpdateList.add( currentActivities.get( i ) );
-                                oldActivities.remove( oldActivity );
-                                break;
-                            }
-                        }
-                    }
-
-                    if ( existActivity == false ) {
+                    Activity oldActivity = oldActivitiesById.remove( activity.getId() );
+                    if ( isNull( oldActivity ) ) {
                         throw new IllegalArgumentException(
-                            "Activity with id=" + currentActivities.get( i ).getId() + " not exist by examID=" + activityList.getExamId() );
+                            "Activity with id=" + activity.getId() + " not exist by examID=" + activityList.getExamId() );
                     }
-                }
-            }
 
-            currentActivities.removeAll( activityUpdateList );
-            if ( !CollectionUtils.isEmpty( currentActivities ) ) {
-                for ( Activity newActivity : currentActivities ) {
-                    newActivity.setExamId( activityList.getExamId() );
-                    newActivity.setCreatedAt( new Date() );
-                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                    if ( auth != null ) {
-                        newActivity.setCreatedBy( auth.getName() );
+                    if ( !activity.equals( oldActivity ) ) {
+                        validateActivity( activity );
+                        activity = activityRepository.save( activity );
                     }
-                    save( newActivity );
+                } else {
+                    validateActivity( activity );
+                    activity = activityRepository.save( activity );
                 }
+
+                savedActivities.add( activity );
             }
         }
 
-        for ( Activity oldActivity : oldActivities ) {
-            activityRepository.delete( oldActivity );
-        }
+        activityRepository.deleteAll( oldActivitiesById.values() );
 
-        currentActivities.addAll( activityUpdateList );
-
-        return currentActivities;
+        log.info( "Atividades do exame atualizadas; examId={}, quantidade={}", activityList.getExamId(), savedActivities.size() );
+        return savedActivities;
     }
 }

@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -11,9 +12,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping( value = { "/", "/login", "/customers/*" } )
-    public String index() {
+    private final String cacheVersion = Long.toString( System.currentTimeMillis() );
 
+    @GetMapping( value = { "/", "/customers/*" } )
+    public String index( Model model ) {
+
+        model.addAttribute( "cacheVersion", cacheVersion );
         return "index";
+    }
+
+    @GetMapping( "/login" )
+    public String login() {
+
+        return "login";
     }
 }

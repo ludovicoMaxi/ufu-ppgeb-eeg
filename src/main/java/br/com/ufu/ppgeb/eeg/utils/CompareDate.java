@@ -1,19 +1,25 @@
 package br.com.ufu.ppgeb.eeg.utils;
 
 import java.util.Date;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 
-public class CompareDate {
+public final class CompareDate {
+
+    private CompareDate() {
+
+    }
+
 
     static public boolean compareDates(Date a, Date b) {
 
-        if (a == null && b == null) {
-            return true;
-        } else if (a != null) {
-            return a.compareTo(b) == 0;
+        if ( isNull( a ) || isNull( b ) ) {
+            return a == b;
         }
 
-        return false;
+        return Objects.equals(a, b);
     }
 }
 

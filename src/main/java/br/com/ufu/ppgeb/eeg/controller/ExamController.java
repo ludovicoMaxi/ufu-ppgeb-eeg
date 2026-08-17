@@ -37,7 +37,7 @@ public class ExamController {
                               @RequestParam( value = "patientId", required = false ) Long patientId,
                               @RequestParam( value = "examRequestId", required = false ) Long examRequestId ) {
 
-        logger.info( "Consultando exames; id={}, bedInformado={}, patientId={}, examRequestId={}", id, bed != null && !bed.isBlank(), patientId,
+        logger.info( "Consultando exames; id={}, bed={}, patientId={}, examRequestId={}", id, bed, patientId,
             examRequestId );
         return examService.findByFilter( id, bed, patientId, examRequestId );
     }
