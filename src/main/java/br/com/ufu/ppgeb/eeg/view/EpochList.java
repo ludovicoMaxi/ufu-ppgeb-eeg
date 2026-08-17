@@ -3,38 +3,19 @@ package br.com.ufu.ppgeb.eeg.view;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 
 
+@Getter
+@Setter
 public class EpochList {
 
-    Long examId;
+    private Long examId;
 
-    List< Epoch > epochs;
-
-
-    public Long getExamId() {
-
-        return examId;
-    }
-
-
-    public void setExamId( Long examId ) {
-
-        this.examId = examId;
-    }
-
-
-    public List< Epoch > getEpochs() {
-
-        return epochs;
-    }
-
-
-    public void setEpochs( List< Epoch > epochs ) {
-
-        this.epochs = epochs;
-    }
+    private List< Epoch > epochs;
 
 
     @Override

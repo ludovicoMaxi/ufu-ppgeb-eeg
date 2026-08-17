@@ -3,38 +3,19 @@ package br.com.ufu.ppgeb.eeg.view;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import br.com.ufu.ppgeb.eeg.model.Activity;
 
 
+@Getter
+@Setter
 public class ActivityList {
 
-    Long examId;
+    private Long examId;
 
-    List< Activity > activities;
-
-
-    public Long getExamId() {
-
-        return examId;
-    }
-
-
-    public void setExamId( Long examId ) {
-
-        this.examId = examId;
-    }
-
-
-    public List< Activity > getActivities() {
-
-        return activities;
-    }
-
-
-    public void setActivities( List< Activity > activities ) {
-
-        this.activities = activities;
-    }
+    private List< Activity > activities;
 
 
     @Override

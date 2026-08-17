@@ -4,6 +4,8 @@ package br.com.ufu.ppgeb.eeg.model;
 import java.util.Date;
 import java.util.Objects;
 
+import static java.util.Objects.nonNull;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -95,7 +97,7 @@ public class ExamEquipment {
 
     public Long getExamId() {
 
-        if ( exam != null ) {
+        if ( nonNull( exam ) ) {
             return exam.getId();
         }
         return null;

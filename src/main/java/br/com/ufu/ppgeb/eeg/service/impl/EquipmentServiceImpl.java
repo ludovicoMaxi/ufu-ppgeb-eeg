@@ -1,13 +1,13 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
 
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.repository.EquipmentRepository;
@@ -15,13 +15,15 @@ import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class EquipmentServiceImpl implements EquipmentService {
 
-    @Autowired
-    private EquipmentRepository equipmentRepository;
+    private final EquipmentRepository equipmentRepository;
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Equipment > findAll() {
 
         return equipmentRepository.findAll();
@@ -29,6 +31,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Equipment > findByName( String name ) {
 
         return equipmentRepository.findByName( name );
@@ -36,25 +39,20 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public Equipment save( Equipment equipment ) {
 
+        Assert.notNull( equipment, "equipment cannot be null." );
+        Assert.hasText( equipment.getName(), "equipment name cannot be empty." );
+
         equipment.setName( equipment.getName().toUpperCase() );
-        List< Equipment > equipmentList = findByName( equipment.getName() );
 
-        if ( equipmentList != null && equipmentList.size() > 0 ) {
+        if ( equipmentRepository.existsByName( equipment.getName() ) ) {
             throw new IllegalArgumentException( "Equipamento já cadastrado: " + equipment.getName() );
-        } else {
-            Equipment equipmentSave = new Equipment();
-            equipmentSave.setCreatedAt( new Date() );
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if ( auth != null ) {
-                equipmentSave.setCreatedBy( auth.getName() );
-            }
-            equipmentSave.setName( equipment.getName() );
-            equipmentSave.setDescription( equipment.getDescription() );
-            equipment = equipmentRepository.save( equipmentSave );
         }
-        return equipment;
-    }
 
+        Equipment saved = equipmentRepository.save( equipment );
+        log.info( "Equipamento criado com id={}", saved.getId() );
+        return saved;
+    }
 }

@@ -1,47 +1,46 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
 
-import java.util.Date;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
+import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ContactServiceImpl implements ContactService {
 
-    @Autowired
-    private ContactRepository contactRepository;
+    private final ContactRepository contactRepository;
 
 
+    @Override
+    @Transactional( rollbackFor = Exception.class )
     public Contact save( Contact contact ) {
 
         validateContact( contact );
 
-        contact.setCreatedAt( new Date() );
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            contact.setCreatedBy( auth.getName() );
-        }
-
-        contact.setUpdatedAt( null );
-        contact.setUpdatedBy( null );
-
-        return contactRepository.save( contact );
-
+        Contact saved = contactRepository.save( contact );
+        log.info( "Contato criado com id={}", saved.getId() );
+        return saved;
     }
 
 
+    @Override
+    @Transactional( rollbackFor = Exception.class )
     public void saveContactList( List< Contact > contactList, ObjectType objectType, Long objectId ) {
 
         Assert.notEmpty( contactList, "contactList cannot be empty." );
@@ -53,10 +52,12 @@ public class ContactServiceImpl implements ContactService {
             contact.setObjectType( objectType.getId() );
             save( contact );
         }
+        log.info( "Lista de contatos salva; objectType={}, objectId={}, quantidade={}", objectType.getId(), objectId, contactList.size() );
     }
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Contact > findAll() {
 
         return contactRepository.findAll();
@@ -64,9 +65,11 @@ public class ContactServiceImpl implements ContactService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public Contact findById( Long id ) {
 
-        return contactRepository.findById( id ).orElse( null );
+        Assert.notNull( id, "id cannot be null." );
+        return contactRepository.findById( id ).orElseThrow( () -> new ResourceNotFoundException( "Contact", id ) );
     }
 
 
@@ -74,33 +77,35 @@ public class ContactServiceImpl implements ContactService {
     @Transactional( readOnly = true )
     public List< Contact > findByFilter( Long objectType, Long objectId ) {
 
-        List< Contact > list = null;
-        if ( objectType == null && objectId == null ) {
-            list = findAll();
-
-        } else {
-            validateSearchContact( objectType, objectId );
-            list = contactRepository.findByFilter( objectType, objectId );
+        if ( isNull( objectType ) && isNull( objectId ) ) {
+            return findAll();
         }
-        return list;
+
+        validateSearchContact( objectType, objectId );
+        return contactRepository.findByFilter( objectType, objectId );
     }
 
 
     private void validateSearchContact( Long objectType, Long objectId ) {
 
-        if ( objectType == null && objectId != null ) {
+        if ( isNull( objectType ) ) {
             throw new IllegalArgumentException( "ObjectType deve ser informado!" );
-        } else if ( objectType != null && objectId == null ) {
+        } else if ( isNull( objectId ) ) {
             throw new IllegalArgumentException( "ObjectId deve ser informado!" );
         }
     }
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
+        if ( !contactRepository.existsById( id ) ) {
+            throw new ResourceNotFoundException( "Contact", id );
+        }
         contactRepository.deleteById( id );
+        log.info( "Contato removido com id={}", id );
     }
 
 
@@ -111,11 +116,8 @@ public class ContactServiceImpl implements ContactService {
         validateContact( contact );
         Assert.notNull( contact.getId(), "id cannot be null." );
 
-        Contact oldContact = contactRepository.getReferenceById( contact.getId() );
-
-        if ( oldContact == null ) {
-            throw new IllegalArgumentException( "Not exist contact with this Id=" + contact.getId() );
-        }
+        Contact oldContact = contactRepository.findById( contact.getId() )
+            .orElseThrow( () -> new ResourceNotFoundException( "Contact", contact.getId() ) );
 
         oldContact.setName( contact.getName() );
         oldContact.setActive( contact.getActive() );
@@ -127,16 +129,9 @@ public class ContactServiceImpl implements ContactService {
         oldContact.setPhone( contact.getPhone() );
         oldContact.setWhatsapp( contact.getWhatsapp() );
 
-        oldContact.setUpdatedAt( new Date() );
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            contact.setUpdatedBy( auth.getName() );
-        }
-
-        contact = contactRepository.save( oldContact );
-
-        return contact;
-
+        Contact updated = contactRepository.save( oldContact );
+        log.info( "Contato atualizado com id={}", updated.getId() );
+        return updated;
     }
 
 
@@ -145,15 +140,14 @@ public class ContactServiceImpl implements ContactService {
 
         Assert.notEmpty( contactList, "contactList cannot be empty." );
 
-        Boolean hasMain = Boolean.FALSE;
+        boolean hasMain = false;
         for ( Contact contact : contactList ) {
             validateContact( contact );
-            if ( contact.getMain() != null && contact.getMain() ) {
+            if ( nonNull( contact.getMain() ) && contact.getMain() ) {
                 if ( hasMain ) {
                     throw new IllegalArgumentException( "Allowed only one main." );
-                } else {
-                    hasMain = Boolean.TRUE;
                 }
+                hasMain = true;
             }
         }
 
@@ -163,11 +157,10 @@ public class ContactServiceImpl implements ContactService {
     }
 
 
-    public void validateContact( Contact contact ) {
+    private void validateContact( Contact contact ) {
 
         Assert.notNull( contact, "contact cannot be null." );
         Assert.hasText( contact.getName(), "name cannot be empty." );
         Assert.hasText( contact.getCellphone(), "cellphone cannot be empty." );
     }
-
 }

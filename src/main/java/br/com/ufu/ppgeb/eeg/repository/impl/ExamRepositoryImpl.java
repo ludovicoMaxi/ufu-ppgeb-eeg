@@ -14,6 +14,9 @@ import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepositoryCustom;
 
@@ -31,7 +34,7 @@ public class ExamRepositoryImpl implements ExamRepositoryCustom {
     @Override
     public List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId ) {
 
-        if ( id == null && StringUtils.isBlank( bed ) && patientId == null && examRequestId == null ) {
+        if ( isNull( id ) && StringUtils.isBlank( bed ) && isNull( patientId ) && isNull( examRequestId ) ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
@@ -43,13 +46,13 @@ public class ExamRepositoryImpl implements ExamRepositoryCustom {
         if ( StringUtils.isNotBlank( bed ) ) {
             predicates.add( cb.like( root.get( "bed" ), "%" + bed + "%" ) );
         }
-        if ( id != null ) {
+        if ( nonNull( id ) ) {
             predicates.add( cb.equal( root.get( "id" ), id ) );
         }
-        if ( patientId != null ) {
+        if ( nonNull( patientId ) ) {
             predicates.add( cb.equal( root.get( "patient" ).get( "id" ), patientId ) );
         }
-        if ( examRequestId != null ) {
+        if ( nonNull( examRequestId ) ) {
             predicates.add( cb.equal( root.get( "examRequest" ).get( "id" ), examRequestId ) );
         }
 

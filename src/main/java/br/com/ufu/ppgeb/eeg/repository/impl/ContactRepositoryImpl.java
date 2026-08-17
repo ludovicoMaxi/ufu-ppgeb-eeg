@@ -13,6 +13,8 @@ import jakarta.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 
+import static java.util.Objects.nonNull;
+
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.repository.ContactRepositoryCustom;
 
@@ -35,10 +37,10 @@ public class ContactRepositoryImpl implements ContactRepositoryCustom {
         Root< Contact > root = cq.from( Contact.class );
 
         List< Predicate > predicates = new ArrayList<>();
-        if ( objectType != null ) {
+        if ( nonNull( objectType ) ) {
             predicates.add( cb.equal( root.get( "objectType" ), objectType ) );
         }
-        if ( objectId != null ) {
+        if ( nonNull( objectId ) ) {
             predicates.add( cb.equal( root.get( "objectId" ), objectId ) );
         }
 
