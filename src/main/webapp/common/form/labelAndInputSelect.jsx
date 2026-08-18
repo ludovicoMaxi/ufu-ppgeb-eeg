@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Select from 'react-select'
 import Grid from '../layout/grid'
 
-import deepCompare from './deepCompare' 
+import deepCompare from './deepCompare'
 
 export default class LabelAndInputSelect extends Component {
 
@@ -39,9 +39,9 @@ export default class LabelAndInputSelect extends Component {
 
         return (
             <Grid cols={cols}>
-                <div className={`form-group ${!!error ? 'has-error' : ''}`}>
-                    <label htmlFor={input.name}>{label}</label>
-                    <Select {...this.input}
+                <div className={`mb-3 ${!!error ? 'has-error' : ''}`}>
+                    <label htmlFor={input.name} className='form-label'>{label}</label>
+                    <Select {...input}
                         id={input.name}
                         isDisabled={readOnly}
                         placeholder={placeholder}
@@ -49,8 +49,26 @@ export default class LabelAndInputSelect extends Component {
                         onChange={this.onChange.bind(this)}
                         options={options}
                         value={this.defaultOption()}
+                        styles={{
+                            control: base => ({
+                                ...base,
+                                borderRadius: 0,
+                                backgroundColor: 'transparent',
+                                borderColor: error ? 'var(--bs-danger)' : 'var(--bs-border-color)',
+                            }),
+                            menu: base => ({
+                                ...base,
+                                backgroundColor: 'var(--bs-body-bg)',
+                            }),
+                            option: base => ({
+                                ...base,
+                                backgroundColor: 'var(--bs-body-bg)',
+                                color: 'var(--bs-body-color)',
+                                ':hover': { backgroundColor: 'var(--bs-secondary-bg)' },
+                            }),
+                        }}
                     />
-                    {error && <span className="help-block">{error}</span>}
+                    {error && <span className="invalid-feedback d-block">{error}</span>}
                 </div>
             </Grid>
         );

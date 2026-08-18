@@ -13,8 +13,7 @@ import {
     init,
     addItemList,
     removeItemList,
-    submitEpochList,
-    updateFinalTime
+    submitEpochList
 } from './epochActions'
 
 
@@ -113,7 +112,7 @@ class EpochListForm extends Component {
         }
 
         return list.map((item, index) => (
-            <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
+            <div className='card mb-3' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
                 <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
                     label='Minutos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
@@ -168,9 +167,9 @@ class EpochListForm extends Component {
         const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitEpochList } = this.props;
 
         return (
-            <form role='form' onSubmit={handleSubmit(submitEpochList)} className='box box-solid'>
-                <div className='box'>
-                    <div className='box-body' style={{ 'paddingLeft': '0px' }}>
+            <form role='form' onSubmit={handleSubmit(submitEpochList)} className='card'>
+                <div>
+                    <div className='card-body' style={{ 'paddingLeft': '0px' }}>
                         <div style={{ 'display': 'none' }}>
                             <Field name={'examI'} component={LabelAndInput} readOnly={true} normalize={onlyNumbers} />
                         </div>
@@ -184,7 +183,7 @@ class EpochListForm extends Component {
                         </div>
                     </If>
                     <If test={!readOnly}>
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>
@@ -212,7 +211,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     init,
     removeItemList,
     addItemList,
-    submitEpochList,
-    updateFinalTime
+    submitEpochList
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(EpochListForm)
