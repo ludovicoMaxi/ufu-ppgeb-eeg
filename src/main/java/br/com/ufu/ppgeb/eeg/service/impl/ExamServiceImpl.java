@@ -2,17 +2,25 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
+
+import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
@@ -27,22 +35,19 @@ import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ExamServiceImpl implements ExamService {
 
-    @Autowired
-    private ExamRepository examRepository;
+    private final ExamRepository examRepository;
 
-    @Autowired
-    private ExamMedicamentRepository examMedicamentRepository;
+    private final ExamMedicamentRepository examMedicamentRepository;
 
-    @Autowired
-    private ExamEquipmentRepository examEquipmentRepository;
+    private final ExamEquipmentRepository examEquipmentRepository;
 
-    @Autowired
-    private MedicamentService medicamentService;
+    private final MedicamentService medicamentService;
 
-    @Autowired
-    private EquipmentService equipmentService;
+    private final EquipmentService equipmentService;
 
 
     @Override
@@ -53,36 +58,22 @@ public class ExamServiceImpl implements ExamService {
 
         validateExam( exam );
 
-        exam.setCreatedAt( new Date() );
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if ( auth != null ) {
-            exam.setCreatedBy( auth.getName() );
-        }
-
-        exam.setUpdatedAt( null );
-        exam.setUpdatedBy( null );
-
-        Exam examSaved = examRepository.save( exam );
-
-        return examSaved;
+        Exam saved = examRepository.save( exam );
+        log.info( "Exame criado com id={}", saved.getId() );
+        return saved;
     }
 
 
     private void validateExam( Exam exam ) {
 
         Assert.notNull( exam, "Exam cannot be null." );
-        // Assert.notNull( exam.getMedicalRecord(), "medicalRecord cannot be empty." );
-        // Assert.notNull( exam.getMedicalRequest(), "medicalRequest cannot be empty."
-        // );
-        // Assert.hasText( exam.getSector(), "sector cannot be empty." );
-        // Assert.hasText( exam.getDoctorRequestant(), "doctorRequestant cannot be
-        // empty." );
-        // Assert.hasText( exam.getUser(), "user cannot be empty." );
-        // Assert.notNull( exam.getRequestDate(), "requestDate cannot be empty." );
+        Assert.notNull( exam.getPatient(), "patient cannot be null." );
+        Assert.notNull( exam.getPatient().getId(), "patient id cannot be null." );
     }
 
 
     @Override
+    @Transactional( readOnly = true )
     public List< Exam > findAll() {
 
         return examRepository.findAll();
@@ -90,9 +81,11 @@ public class ExamServiceImpl implements ExamService {
 
 
     @Override
+    @Transactional( readOnly = true )
     public Exam findById( Long id ) {
 
-        return examRepository.findById( id ).orElse( null );
+        Assert.notNull( id, "id cannot be null." );
+        return examRepository.findById( id ).orElseThrow( () -> new ResourceNotFoundException( "Exam", id ) );
     }
 
 
@@ -100,22 +93,24 @@ public class ExamServiceImpl implements ExamService {
     @Transactional( readOnly = true )
     public List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId ) {
 
-        if ( id == null && StringUtils.isBlank( bed ) && patientId == null && examRequestId == null ) {
+        if ( isNull( id ) && StringUtils.isBlank( bed ) && isNull( patientId ) && isNull( examRequestId ) ) {
             throw new IllegalArgumentException( "Informe pelo menos um campo para consultar!" );
         }
 
-        List< Exam > list = null;
-
-        list = examRepository.findByFilter( id, bed, patientId, examRequestId );
-        return list;
+        return examRepository.findByFilter( id, bed, patientId, examRequestId );
     }
 
 
     @Override
+    @Transactional( rollbackFor = Exception.class )
     public void delete( Long id ) {
 
         Assert.notNull( id, "id cannot be null." );
+        if ( !examRepository.existsById( id ) ) {
+            throw new ResourceNotFoundException( "Exam", id );
+        }
         examRepository.deleteById( id );
+        log.info( "Exame removido com id={}", id );
     }
 
 
@@ -128,11 +123,9 @@ public class ExamServiceImpl implements ExamService {
         validateExam( exam );
         Assert.notNull( exam.getId(), "exam ID cannot be null." );
 
-        Exam oldExam = examRepository.getReferenceById( exam.getId() );
-
-        if ( oldExam == null ) {
-            throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
-        }
+        Long examId = exam.getId();
+        Exam oldExam = examRepository.findById( examId )
+            .orElseThrow( () -> new ResourceNotFoundException( "Exam", examId ) );
 
         if ( !oldExam.equals( exam ) ) {
 
@@ -140,31 +133,38 @@ public class ExamServiceImpl implements ExamService {
                 throw new IllegalArgumentException( "Patient ID is different. New=" + exam.getPatient().getId() + ", Old=" + oldExam.getPatient().getId() );
             }
 
-            exam.setCreatedAt( oldExam.getCreatedAt() );
-            exam.setCreatedBy( oldExam.getCreatedBy() );
-            exam.setUpdatedAt( new Date() );
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if ( auth != null ) {
-                exam.setUpdatedBy( auth.getName() );
+            Long newExamRequestId = isNull( exam.getExamRequest() ) ? null : exam.getExamRequest().getId();
+            Long oldExamRequestId = isNull( oldExam.getExamRequest() ) ? null : oldExam.getExamRequest().getId();
+            if ( notEqual( newExamRequestId, oldExamRequestId ) ) {
+                throw new IllegalArgumentException( "Exam request ID cannot be changed." );
             }
-            validateExam( exam );
-            exam = examRepository.save( exam );
+
+            oldExam.setAchievementDate( exam.getAchievementDate() );
+            oldExam.setMedicalReport( exam.getMedicalReport() );
+            oldExam.setConclusion( exam.getConclusion() );
+            oldExam.setBed( exam.getBed() );
+            oldExam.setHeight( exam.getHeight() );
+            oldExam.setWeight( exam.getWeight() );
+            oldExam.setClinicalData( exam.getClinicalData() );
+
+            validateExam( oldExam );
+            oldExam = examRepository.save( oldExam );
+            log.info( "Exame atualizado com id={}", examId );
         }
 
-        return exam;
-
+        return oldExam;
     }
 
 
     private void registerUnregisteredMedicaments( List< ExamMedicament > examMedicamentList ) {
 
-        if ( examMedicamentList != null && examMedicamentList.size() > 0 ) {
+        if ( isNotEmpty( examMedicamentList ) ) {
             for ( ExamMedicament examMedicament : examMedicamentList ) {
                 Medicament medicament = examMedicament.getMedicament();
                 Assert.notNull( medicament, "medicament cannot be null." );
                 Assert.hasText( medicament.getName(), "medicament name cannot be empty." );
 
-                if ( medicament.getId() == null ) {
+                if ( isNull( medicament.getId() ) ) {
                     examMedicament.setMedicament( medicamentService.save( medicament ) );
                 }
             }
@@ -182,74 +182,50 @@ public class ExamServiceImpl implements ExamService {
         registerUnregisteredMedicaments( exam.getExamMedicaments() );
         validateExamMedicamentList( exam.getExamMedicaments() );
 
-        Exam oldExam = examRepository.getReferenceById( exam.getId() );
+        Exam oldExam = examRepository.findById( exam.getId() )
+            .orElseThrow( () -> new ResourceNotFoundException( "Exam", exam.getId() ) );
 
-        if ( oldExam == null ) {
-            throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
+        List< ExamMedicament > currentMedicaments = isNull( exam.getExamMedicaments() ) ? new ArrayList<>() : exam.getExamMedicaments();
+
+        Map< Long, ExamMedicament > oldMedicamentsById = new HashMap<>();
+        if ( nonNull( oldExam.getExamMedicaments() ) ) {
+            for ( ExamMedicament oldMedicament : oldExam.getExamMedicaments() ) {
+                oldMedicamentsById.put( oldMedicament.getId(), oldMedicament );
+            }
         }
 
-        List< ExamMedicament > oldExamMedicamentList = oldExam.getExamMedicaments();
+        List< ExamMedicament > savedMedicaments = new ArrayList<>();
+        for ( ExamMedicament medicamentItem : currentMedicaments ) {
 
-        List< ExamMedicament > examMedicamentUpdateList = new ArrayList<>();
+            medicamentItem.setExam( oldExam );
 
-        if ( exam.getExamMedicaments() != null && exam.getExamMedicaments().size() > 0 ) {
+            if ( nonNull( medicamentItem.getId() ) ) {
 
-            List< ExamMedicament > examMedicamentList = exam.getExamMedicaments();
-            for ( int i = 0; i < examMedicamentList.size(); i++ ) {
-
-                if ( examMedicamentList.get( i ).getId() != null ) {
-                    Boolean existExamMedicament = false;
-
-                    if ( oldExamMedicamentList != null && oldExamMedicamentList.size() > 0 ) {
-                        for ( ExamMedicament oldMedicament : oldExamMedicamentList ) {
-                            if ( examMedicamentList.get( i ).getId().equals( oldMedicament.getId() ) ) {
-                                existExamMedicament = true;
-
-                                if ( !examMedicamentList.get( i ).equals( oldMedicament ) ) {
-                                    examMedicamentList.get( i ).setUpdatedAt( new Date() );
-                                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                    if ( auth != null ) {
-                                        examMedicamentList.get( i ).setUpdatedBy( auth.getName() );
-                                    }
-                                    examMedicamentList.set( i, examMedicamentRepository.save( examMedicamentList.get( i ) ) );
-                                }
-                                examMedicamentUpdateList.add( examMedicamentList.get( i ) );
-                                oldExamMedicamentList.remove( oldMedicament );
-                                break;
-                            }
-                        }
-                    }
-
-                    if ( existExamMedicament == false ) {
-                        throw new IllegalArgumentException(
-                            "Exam Medicament with id=" + examMedicamentList.get( i ).getId() + " not exist by examID=" + exam.getId() );
-                    }
+                ExamMedicament oldMedicament = oldMedicamentsById.remove( medicamentItem.getId() );
+                if ( isNull( oldMedicament ) ) {
+                    throw new IllegalArgumentException( "Exam Medicament with id=" + medicamentItem.getId() + " not exist by examID=" + exam.getId() );
                 }
+
+                if ( !medicamentItem.equals( oldMedicament ) ) {
+                    medicamentItem = examMedicamentRepository.save( medicamentItem );
+                }
+            } else {
+                medicamentItem = examMedicamentRepository.save( medicamentItem );
             }
+            savedMedicaments.add( medicamentItem );
         }
 
-        exam.getExamMedicaments().removeAll( examMedicamentUpdateList );
-        if ( exam.getExamMedicaments() != null && exam.getExamMedicaments().size() > 0 ) {
-            for ( ExamMedicament newExamMedicament : exam.getExamMedicaments() ) {
-                newExamMedicament.setCreatedAt( new Date() );
-                newExamMedicament.setCreatedBy( "SYSTEM" );
-                examMedicamentRepository.save( newExamMedicament );
-            }
-        }
+        examMedicamentRepository.deleteAll( oldMedicamentsById.values() );
 
-        for ( ExamMedicament oldExamMedicament : oldExamMedicamentList ) {
-            examMedicamentRepository.delete( oldExamMedicament );
-        }
-
-        exam.getExamMedicaments().addAll( examMedicamentUpdateList );
-
+        exam.setExamMedicaments( savedMedicaments );
+        log.info( "Medicamentos do exame atualizados; examId={}, quantidade={}", exam.getId(), savedMedicaments.size() );
         return exam;
     }
 
 
     private void validateExamMedicamentList( List< ExamMedicament > examMedicamentList ) {
 
-        if ( examMedicamentList != null && examMedicamentList.size() > 0 ) {
+        if ( isNotEmpty( examMedicamentList ) ) {
             for ( ExamMedicament examMedicament : examMedicamentList ) {
                 validateExamMedicament( examMedicament );
             }
@@ -270,13 +246,13 @@ public class ExamServiceImpl implements ExamService {
 
     private void registerUnregisteredEquipments( List< ExamEquipment > examEquipmentList ) {
 
-        if ( examEquipmentList != null && examEquipmentList.size() > 0 ) {
+        if ( isNotEmpty( examEquipmentList ) ) {
             for ( ExamEquipment examEquipment : examEquipmentList ) {
                 Equipment equipment = examEquipment.getEquipment();
                 Assert.notNull( equipment, "equipment cannot be null." );
                 Assert.hasText( equipment.getName(), "equipment name cannot be empty." );
 
-                if ( equipment.getId() == null ) {
+                if ( isNull( equipment.getId() ) ) {
                     examEquipment.setEquipment( equipmentService.save( equipment ) );
                 }
             }
@@ -294,81 +270,50 @@ public class ExamServiceImpl implements ExamService {
         registerUnregisteredEquipments( exam.getExamEquipments() );
         validateExamEquipmentList( exam.getExamEquipments() );
 
-        Exam oldExam = examRepository.getReferenceById( exam.getId() );
+        Exam oldExam = examRepository.findById( exam.getId() )
+            .orElseThrow( () -> new ResourceNotFoundException( "Exam", exam.getId() ) );
 
-        if ( oldExam == null ) {
-            throw new IllegalArgumentException( "Not exist exam with this Id=" + exam.getId() );
-        }
+        List< ExamEquipment > currentEquipments = isNull( exam.getExamEquipments() ) ? new ArrayList<>() : exam.getExamEquipments();
 
-        List< ExamEquipment > oldExamEquipmentList = oldExam.getExamEquipments();
-
-        List< ExamEquipment > examEquipmentUpdateList = new ArrayList<>();
-
-        if ( exam.getExamEquipments() != null && exam.getExamEquipments().size() > 0 ) {
-
-            List< ExamEquipment > examEquipmentList = exam.getExamEquipments();
-            for ( int i = 0; i < examEquipmentList.size(); i++ ) {
-
-                if ( examEquipmentList.get( i ).getId() != null ) {
-                    Boolean existExamEquipment = false;
-
-                    if ( oldExamEquipmentList != null && oldExamEquipmentList.size() > 0 ) {
-                        for ( ExamEquipment oldEquipment : oldExamEquipmentList ) {
-                            if ( examEquipmentList.get( i ).getId().equals( oldEquipment.getId() ) ) {
-                                existExamEquipment = true;
-
-                                if ( !examEquipmentList.get( i ).equals( oldEquipment ) ) {
-
-                                    examEquipmentList.get( i ).setCreatedAt( oldEquipment.getCreatedAt() );
-                                    examEquipmentList.get( i ).setCreatedBy( oldEquipment.getCreatedBy() );
-                                    examEquipmentList.get( i ).setUpdatedAt( new Date() );
-                                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                    if ( auth != null ) {
-                                        examEquipmentList.get( i ).setUpdatedBy( auth.getName() );
-                                    }
-                                    examEquipmentList.set( i, examEquipmentRepository.save( examEquipmentList.get( i ) ) );
-                                }
-
-                                examEquipmentUpdateList.add( examEquipmentList.get( i ) );
-                                oldExamEquipmentList.remove( oldEquipment );
-                                break;
-                            }
-                        }
-                    }
-
-                    if ( existExamEquipment == false ) {
-                        throw new IllegalArgumentException(
-                            "Exam Equipment with id=" + examEquipmentList.get( i ).getId() + " not exist by examID=" + exam.getId() );
-                    }
-                }
+        Map< Long, ExamEquipment > oldEquipmentsById = new HashMap<>();
+        if ( nonNull( oldExam.getExamEquipments() ) ) {
+            for ( ExamEquipment oldEquipment : oldExam.getExamEquipments() ) {
+                oldEquipmentsById.put( oldEquipment.getId(), oldEquipment );
             }
         }
 
-        exam.getExamEquipments().removeAll( examEquipmentUpdateList );
-        if ( exam.getExamEquipments() != null && exam.getExamEquipments().size() > 0 ) {
-            for ( ExamEquipment newExamEquipment : exam.getExamEquipments() ) {
-                newExamEquipment.setCreatedAt( new Date() );
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                if ( auth != null ) {
-                    newExamEquipment.setCreatedBy( auth.getName() );
+        List< ExamEquipment > savedEquipments = new ArrayList<>();
+        for ( ExamEquipment equipmentItem : currentEquipments ) {
+
+            equipmentItem.setExam( oldExam );
+
+            if ( nonNull( equipmentItem.getId() ) ) {
+
+                ExamEquipment oldEquipment = oldEquipmentsById.remove( equipmentItem.getId() );
+                if ( isNull( oldEquipment ) ) {
+                    throw new IllegalArgumentException( "Exam Equipment with id=" + equipmentItem.getId() + " not exist by examID=" + exam.getId() );
                 }
-                examEquipmentRepository.save( newExamEquipment );
+
+                if ( !equipmentItem.equals( oldEquipment ) ) {
+                    equipmentItem = examEquipmentRepository.save( equipmentItem );
+                }
+            } else {
+                equipmentItem = examEquipmentRepository.save( equipmentItem );
             }
+            savedEquipments.add( equipmentItem );
         }
 
-        for ( ExamEquipment oldExamEquipment : oldExamEquipmentList ) {
-            examEquipmentRepository.delete( oldExamEquipment );
-        }
+        examEquipmentRepository.deleteAll( oldEquipmentsById.values() );
 
-        exam.getExamEquipments().addAll( examEquipmentUpdateList );
-
+        exam.setExamEquipments( savedEquipments );
+        log.info( "Equipamentos do exame atualizados; examId={}, quantidade={}", exam.getId(), savedEquipments.size() );
         return exam;
     }
 
 
     private void validateExamEquipmentList( List< ExamEquipment > examEquipmentList ) {
 
-        if ( examEquipmentList != null && examEquipmentList.size() > 0 ) {
+        if ( isNotEmpty( examEquipmentList ) ) {
             for ( ExamEquipment examEquipment : examEquipmentList ) {
                 validateExamEquipment( examEquipment );
             }

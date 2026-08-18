@@ -1,0 +1,18 @@
+package br.com.ufu.ppgeb.eeg.exception;
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+
+@ResponseStatus( HttpStatus.NOT_FOUND )
+public class ResourceNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+
+    public ResourceNotFoundException( String resource, Long id ) {
+
+        super( resource + " não encontrado(a) com id=" + id );
+    }
+}
