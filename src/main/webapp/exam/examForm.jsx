@@ -51,25 +51,27 @@ class ExamForm extends Component {
 
         return (
             <div>
-                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
                                 <legend>Exame</legend>
-                                <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                    label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                <Field name='bed' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Leito' cols='12 3' placeholder='Informe o Leito' />
-                                <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
-                                    label='Altura (cm)' cols='12 3' placeholder='Altura em CM' />
-                                <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Peso (Kg)' cols='12 3' placeholder='Peso em Kg' />
-                                <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
-                                    label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
-                                <Field name='medicalReport' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
-                                    label='Laudo' cols='12 12' placeholder='Informe o Laudo' />
-                                <Field name='conclusion' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
-                                    label='Conclusão' cols='12 12' placeholder='Informe a Conclusão' />
+                                <div className='row'>
+                                    <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
+                                        label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
+                                    <Field name='bed' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Leito' cols='12 3' placeholder='Informe o Leito' />
+                                    <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
+                                        label='Altura (cm)' cols='12 3' placeholder='Altura em CM' />
+                                    <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Peso (Kg)' cols='12 3' placeholder='Peso em Kg' />
+                                    <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
+                                        label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
+                                    <Field name='medicalReport' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
+                                        label='Laudo' cols='12 12' placeholder='Informe o Laudo' />
+                                    <Field name='conclusion' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
+                                        label='Conclusão' cols='12 12' placeholder='Informe a Conclusão' />
+                                </div>
                                 <If test={showSystemInfo}>
                                     <SystemInfo formName="examForm" />
                                 </If>
@@ -77,7 +79,7 @@ class ExamForm extends Component {
                             </fieldset>
                         </div>
                         <If test={!readOnly}>
-                            <div className='box-footer'>
+                            <div className='card-footer'>
                                 <button type='submit'
                                     className={`btn btn-${submitClass}`}
                                     disabled={submitting}>

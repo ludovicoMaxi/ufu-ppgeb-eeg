@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { init, getPatientById, submitPatient, showUpdate, getExamByPatientId, getExamRequestByPatientId } from './patientActions'
+import { init, getPatientById, submitPatient, getExamByPatientId, getExamRequestByPatientId } from './patientActions'
 import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
 import PatientForm from './patientForm'
+import withRouter from '../common/router/withRouter'
 
 class PatientEdit extends Component {
 
@@ -38,8 +39,7 @@ const mapDispatchToProps = dispatch => bindActionCreators(
         init,
         getPatientById,
         submitPatient,
-        showUpdate,
         getExamByPatientId,
         getExamRequestByPatientId
     }, dispatch)
-export default connect(null, mapDispatchToProps)(PatientEdit)
+export default withRouter(connect(null, mapDispatchToProps)(PatientEdit))

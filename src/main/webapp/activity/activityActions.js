@@ -13,7 +13,7 @@ const INITIAL_VALUES = { 'activities': [{}] };
 
 export function getActivitysByExamId(examId) {
     return dispatch => {
-        axios.get(`${BASE_URL_ACTIVITY}/?examId=${examId}`)
+        axios.get(`${BASE_URL_ACTIVITY}?examId=${examId}`)
             .then(resp => {
                 var activityList = { ...INITIAL_VALUES };
                 activityList.examId = examId;
@@ -60,7 +60,7 @@ export function removeItemList(index) {
 
 export function submitUpdateActivityList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_ACTIVITY}/`, values)
+        axios.put(`${BASE_URL_ACTIVITY}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Atividade(s) do exame atualizada(s) com sucesso.`);
                 var activities = convertSecondsInMinutesAndSeconds(resp.data.activities);

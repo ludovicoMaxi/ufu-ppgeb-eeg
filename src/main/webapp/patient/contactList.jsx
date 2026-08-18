@@ -31,7 +31,7 @@ class ContactList extends Component {
         const list = this.props.list || []
         
         return list.map((item, index) => (
-            <div className='panel panel-default display-table' key={index}>
+            <div className='card mb-3' key={index}>
                 <legend>{this.props.legend}</legend>
                 <Field name={`${this.props.field}[${index}].name`} component={LabelAndInput} readOnly={this.props.readOnly}
                     label='Nome' cols='12 4' placeholder='Informe o nome' />

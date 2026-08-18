@@ -7,6 +7,7 @@ import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
 import PatientForm from '../patient/patientForm'
 import ExamRequestForm from './examRequestForm'
+import withRouter from '../common/router/withRouter'
 
 class PatientEdit extends Component {
 
@@ -34,4 +35,4 @@ class PatientEdit extends Component {
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({ getExamRequestById, submitExamRequest, getExamByExamRequestId }, dispatch)
-export default connect(null, mapDispatchToProps)(PatientEdit)
+export default withRouter(connect(null, mapDispatchToProps)(PatientEdit))

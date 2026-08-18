@@ -1,24 +1,20 @@
 import React from 'react'
-import { Checkbox } from 'react-icheck'
 import Grid from '../layout/grid'
 
 export default props => {
-    const { cols, label, input, readOnly, typeStyle } = props;
+    const { cols, label, input, readOnly } = props;
 
     return (
         <Grid cols={cols}>
-            <div>
-                <br />
-                <Checkbox
-                    {...input} readOnly={readOnly}
+            <div className='form-check mt-4'>
+                <input {...input}
+                    type='checkbox'
+                    className='form-check-input'
                     id={input.name}
-                    checkboxClass={typeStyle}
-                    increaseArea="20%"
-                    label={`  ${label}`}
                     checked={input.value || false}
                     disabled={readOnly}
-                />
-                {error && <span className="help-block">{error}</span>}
+                    onChange={event => input.onChange(event.target.checked)} />
+                <label htmlFor={input.name} className='form-check-label'>{` ${label}`}</label>
             </div>
         </Grid>
     );

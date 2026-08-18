@@ -7,7 +7,7 @@ const INITIAL_VALUES = { 'examMedicaments': [{}] };
 
 export function getOptionsUnit() {
     return dispatch => {
-        axios.get(`${BASE_URL_UNIT}/`)
+        axios.get(`${BASE_URL_UNIT}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'OPTIONS_UNIT', payload: resp.data });
@@ -23,7 +23,7 @@ export function getOptionsUnit() {
 
 export function getOptionsMedicament() {
     return dispatch => {
-        axios.get(`${BASE_URL_MEDICAMENT}/`)
+        axios.get(`${BASE_URL_MEDICAMENT}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'OPTIONS_MEDICAMENT', payload: resp.data });

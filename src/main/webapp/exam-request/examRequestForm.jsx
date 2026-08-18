@@ -45,40 +45,37 @@ class ExamRequestForm extends Component {
 
         return (
             <div>
-                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
                                 <legend>Requerimento</legend>
-                                <Field name='medicalRecord' component={LabelAndInput} readOnly={readOnly}
-                                    label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
-                                <Field name='medicalRequest' component={LabelAndInput} readOnly={readOnly}
-                                    label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
-                                <Field name='requestDate' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                    label='Data do Pedido' cols='12 3' placeholder='Data Pedido' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                    label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
-                                <Field name='sector' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Setor' cols='12 6' placeholder='Informe o setor' />
-                                <Field name='agreement' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Convênio' cols='12 6' placeholder='Informe o convenio' />
-                                <Field name='clinicOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Clinica de Origem' cols='12 6' placeholder='Informe a Clinica Origem' />
-                                <Field name='CityOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Cidade de Origem' cols='12 6' placeholder='Informe a cidade de origem' />
-                                <Field name='doctorRequestant' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Medico Solicitante' cols='12 8' placeholder='Informe o Médico' />
-                                <Field name='user' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Usuario' cols='12 4' placeholder='Informe o usuário' />
-
-                                <If test={showSystemInfo}>
-                                    <SystemInfo formName="examRequestForm" />
-                                </If>
-                                <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
+                                <div className='row'>
+                                    <Field name='medicalRecord' component={LabelAndInput} readOnly={readOnly}
+                                        label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
+                                    <Field name='medicalRequest' component={LabelAndInput} readOnly={readOnly}
+                                        label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
+                                    <Field name='requestDate' component={DateTimeInput} readOnly={readOnly} mode='date'
+                                        label='Data do Pedido' cols='12 3' placeholder='Data Pedido' formatDate='DD/MM/YYYY HH:mm:ss' />
+                                    <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
+                                        label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
+                                    <Field name='sector' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Setor' cols='12 6' placeholder='Informe o setor' />
+                                    <Field name='agreement' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Convênio' cols='12 6' placeholder='Informe o convenio' />
+                                    <Field name='clinicOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Clinica de Origem' cols='12 6' placeholder='Informe a Clinica Origem' />
+                                    <Field name='CityOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Cidade de Origem' cols='12 6' placeholder='Informe a cidade de origem' />
+                                    <Field name='doctorRequestant' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Medico Solicitante' cols='12 8' placeholder='Informe o Médico' />
+                                    <Field name='user' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Usuario' cols='12 4' placeholder='Informe o usuário' />
+                                </div>
                             </fieldset>
                         </div>
                         <If test={!readOnly}>
-                            <div className='box-footer'>
+                            <div className='card-footer'>
                                 <button type='submit'
                                     className={`btn btn-${submitClass}`}
                                     disabled={submitting}>
@@ -95,8 +92,8 @@ class ExamRequestForm extends Component {
                 </form >
 
                 <If test={showTabs === true}>
-                    <div className='box'>
-                        <div className='box-body'>
+                    <div>
+                        <div className='card-body'>
                             <Tabs>
                                 <TabsHeader>
                                     <TabHeader label='Exames' icon='notes-medical' target='tabExams' />
@@ -117,7 +114,7 @@ class ExamRequestForm extends Component {
                                                     {this.renderExamRows()}
                                                 </tbody>
                                             </table>
-                                            <div className='box-footer'>
+                                            <div className='card-footer'>
                                                 <Link to={`/patient/${patientId}/exam/add?examRequestId=${examRequestId}`}>
                                                     <button type='submit'
                                                         className={`btn btn-success`}>

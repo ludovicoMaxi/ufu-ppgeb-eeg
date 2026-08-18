@@ -7,7 +7,7 @@ const INITIAL_VALUES = { 'examEquipments': [{}] };
 
 export function getOptionsUnit() {
     return dispatch => {
-        axios.get(`${BASE_URL_UNIT}/`)
+        axios.get(`${BASE_URL_UNIT}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'OPTIONS_UNIT', payload: resp.data });
@@ -23,7 +23,7 @@ export function getOptionsUnit() {
 
 export function getOptionsEquipment() {
     return dispatch => {
-        axios.get(`${BASE_URL_EQUIPMENT}/`)
+        axios.get(`${BASE_URL_EQUIPMENT}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'OPTIONS_EQUIPMENT', payload: resp.data });

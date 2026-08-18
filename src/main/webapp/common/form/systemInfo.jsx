@@ -18,22 +18,24 @@ class SystemInfo extends Component {
 
         return (
             <div className='clear-both'>
-                <If test={viewCreatedAt}>
-                    <Field name={`${prefix}createdAt`} component={DateTimeInput} readOnly={true}
-                        label='Criado em' cols='12 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                </If>
-                <If test={viewCreatedBy}>
-                    <Field name={`${prefix}createdBy`} component={LabelAndInput} readOnly={true}
-                        label='Criado por' cols='12 3' />
-                </If>
-                <If test={viewUpdatedAt}>
-                    <Field name={`${prefix}updatedAt`} component={DateTimeInput} readOnly={true}
-                        label='Atualizado em' cols='12 3' formatDate='DD/MM/YYYY HH:mm:ss' />
-                </If>
-                <If test={viewUpdatedBy}>
-                    <Field name={`${prefix}updatedBy`} component={LabelAndInput} readOnly={true}
-                        label='Atualizado por' cols='12 3' />
-                </If>
+                <div className='row'>
+                    <If test={viewCreatedAt}>
+                        <Field name={`${prefix}createdAt`} component={DateTimeInput} readOnly={true}
+                            label='Criado em' cols='12 3' formatDate='DD/MM/YYYY HH:mm:ss' />
+                    </If>
+                    <If test={viewCreatedBy}>
+                        <Field name={`${prefix}createdBy`} component={LabelAndInput} readOnly={true}
+                            label='Criado por' cols='12 3' />
+                    </If>
+                    <If test={viewUpdatedAt}>
+                        <Field name={`${prefix}updatedAt`} component={DateTimeInput} readOnly={true}
+                            label='Atualizado em' cols='12 3' formatDate='DD/MM/YYYY HH:mm:ss' />
+                    </If>
+                    <If test={viewUpdatedBy}>
+                        <Field name={`${prefix}updatedBy`} component={LabelAndInput} readOnly={true}
+                            label='Atualizado por' cols='12 3' />
+                    </If>
+                </div>
             </div>
         )
     }

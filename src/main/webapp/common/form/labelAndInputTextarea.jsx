@@ -9,13 +9,13 @@ class LabelAndInputTextarea extends Component {
 
         return (
             <Grid cols={cols}>
-                <div className={`form-group ${!!error ? 'has-error' : ''}`}>
-                    <label htmlFor={input.name}>{label}</label>
-                    <textarea {...input} className='form-control'
+                <div className={`mb-3 ${!!error ? 'has-error' : ''}`}>
+                    <label htmlFor={input.name} className='form-label'>{label}</label>
+                    <textarea {...input} className={`form-control ${!!error ? 'is-invalid' : ''}`}
                         id={input.name}
                         placeholder={placeholder}
                         readOnly={readOnly} type={type} />
-                    {error && <span className="help-block">{error}</span>}
+                    {error && <span className="invalid-feedback d-block">{error}</span>}
                 </div>
             </Grid>
         )

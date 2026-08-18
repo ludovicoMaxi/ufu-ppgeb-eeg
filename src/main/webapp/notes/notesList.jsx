@@ -27,7 +27,7 @@ class NotesList extends Component {
         const list = this.props.notesList || []
 
         return list.map((item, index) => (
-            <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }}>
+            <div className='card mb-3' key={index} style={{ 'width': '100%' }}>
                 <legend>{this.props.legend}</legend>
                 <Field name={`notesList[${index}].message`} component={LabelAndInputTextarea} readOnly={true}
                     label={<div>Nota <small>({this.props.notesList[index].createdBy} {this.props.notesList[index].createdAt})</small></div>} cols='12 12' placeholder='Informe a Nota' />
@@ -52,7 +52,7 @@ class NotesList extends Component {
         return (
             <div>
                 {this.renderRows()}
-                <div className='panel panel-default display-table' style={{ 'width': '100%' }}>
+                <div className='card mb-3' style={{ 'width': '100%' }}>
                     <legend>{this.props.legend}</legend>
                     <Field name={'note'} component={LabelAndInputTextarea} readOnly={this.props.readOnly}
                         label='Nota' cols='12 10 11' placeholder='Informe a Nota' />
