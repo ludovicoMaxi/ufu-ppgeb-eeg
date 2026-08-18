@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

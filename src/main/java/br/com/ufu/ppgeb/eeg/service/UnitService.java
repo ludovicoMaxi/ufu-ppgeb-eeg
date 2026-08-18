@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-import br.com.ufu.ppgeb.eeg.model.Unit;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Unit;
 
 /**
  * Service interface for Unit operations.

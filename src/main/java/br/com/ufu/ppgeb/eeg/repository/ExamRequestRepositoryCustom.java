@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 
 /**
  * Custom repository for ExamRequest queries.

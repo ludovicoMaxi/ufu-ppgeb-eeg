@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.service.EquipmentService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
