@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.view;
 
-import br.com.ufu.ppgeb.eeg.model.Epoch;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Epoch;
 import lombok.Getter;
 import lombok.Setter;
 

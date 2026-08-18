@@ -5,6 +5,11 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
@@ -17,11 +22,6 @@ import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
 import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,10 +65,8 @@ public class ExamServiceImpl implements ExamService {
   private void validateExam(Exam exam) {
 
     Assert.notNull(exam, "Exam cannot be null.");
-    Assert.notNull(
-        exam.getPatient(), "patient cannot be null.");
-    Assert.notNull(
-        exam.getPatient().getId(),
+    Assert.notNull(exam.getPatient(), "patient cannot be null.");
+    Assert.notNull(exam.getPatient().getId(),
         "patient id cannot be null.");
   }
 
@@ -98,12 +96,10 @@ public class ExamServiceImpl implements ExamService {
         && StringUtils.isBlank(bed)
         && isNull(patientId)
         && isNull(examRequestId)) {
-      throw new IllegalArgumentException(
-          "Informe pelo menos um campo para consultar!");
+      throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return examRepository.findByFilter(
-        id, bed, patientId, examRequestId);
+    return examRepository.findByFilter(id, bed, patientId, examRequestId);
   }
 
   @Override
@@ -125,8 +121,7 @@ public class ExamServiceImpl implements ExamService {
     Assert.notNull(exam, "exam cannot be null.");
 
     validateExam(exam);
-    Assert.notNull(
-        exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam.getId(), "exam ID cannot be null.");
 
     Long examId = exam.getId();
     Exam oldExam = examRepository.findById(examId)
@@ -137,8 +132,7 @@ public class ExamServiceImpl implements ExamService {
 
       if (!exam.getPatient().getId()
           .equals(oldExam.getPatient().getId())) {
-        throw new IllegalArgumentException(
-            "Patient ID is different. New="
+        throw new IllegalArgumentException("Patient ID is different. New="
                 + exam.getPatient().getId()
                 + ", Old="
                 + oldExam.getPatient().getId());
@@ -151,12 +145,10 @@ public class ExamServiceImpl implements ExamService {
           isNull(oldExam.getExamRequest())
               ? null : oldExam.getExamRequest().getId();
       if (notEqual(newExamRequestId, oldExamRequestId)) {
-        throw new IllegalArgumentException(
-            "Exam request ID cannot be changed.");
+        throw new IllegalArgumentException("Exam request ID cannot be changed.");
       }
 
-      oldExam.setAchievementDate(
-          exam.getAchievementDate());
+      oldExam.setAchievementDate(exam.getAchievementDate());
       oldExam.setMedicalReport(exam.getMedicalReport());
       oldExam.setConclusion(exam.getConclusion());
       oldExam.setBed(exam.getBed());
@@ -172,22 +164,18 @@ public class ExamServiceImpl implements ExamService {
     return oldExam;
   }
 
-  private void registerUnregisteredMedicaments(
-      List<ExamMedicament> examMedicamentList) {
+  private void registerUnregisteredMedicaments(List<ExamMedicament> examMedicamentList) {
 
     if (isNotEmpty(examMedicamentList)) {
       for (ExamMedicament examMedicament
           : examMedicamentList) {
         Medicament medicament =
             examMedicament.getMedicament();
-        Assert.notNull(
-            medicament, "medicament cannot be null.");
-        Assert.hasText(medicament.getName(),
-            "medicament name cannot be empty.");
+        Assert.notNull(medicament, "medicament cannot be null.");
+        Assert.hasText(medicament.getName(), "medicament name cannot be empty.");
 
         if (isNull(medicament.getId())) {
-          examMedicament.setMedicament(
-              medicamentService.save(medicament));
+          examMedicament.setMedicament(medicamentService.save(medicament));
         }
       }
     }
@@ -198,17 +186,14 @@ public class ExamServiceImpl implements ExamService {
   public Exam updateExamMedicament(Exam exam) {
 
     Assert.notNull(exam, "exam cannot be null.");
-    Assert.notNull(
-        exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam.getId(), "exam ID cannot be null.");
 
-    registerUnregisteredMedicaments(
-        exam.getExamMedicaments());
+    registerUnregisteredMedicaments(exam.getExamMedicaments());
     validateExamMedicamentList(exam.getExamMedicaments());
 
     Exam oldExam = examRepository.findById(exam.getId())
         .orElseThrow(() ->
-            new ResourceNotFoundException(
-                "Exam", exam.getId()));
+            new ResourceNotFoundException("Exam", exam.getId()));
 
     List<ExamMedicament> currentMedicaments =
         isNull(exam.getExamMedicaments())
@@ -220,8 +205,7 @@ public class ExamServiceImpl implements ExamService {
     if (nonNull(oldExam.getExamMedicaments())) {
       for (ExamMedicament oldMedicament
           : oldExam.getExamMedicaments()) {
-        oldMedicamentsById.put(
-            oldMedicament.getId(), oldMedicament);
+        oldMedicamentsById.put(oldMedicament.getId(), oldMedicament);
       }
     }
 
@@ -235,11 +219,9 @@ public class ExamServiceImpl implements ExamService {
       if (nonNull(medicamentItem.getId())) {
 
         ExamMedicament oldMedicament =
-            oldMedicamentsById.remove(
-                medicamentItem.getId());
+            oldMedicamentsById.remove(medicamentItem.getId());
         if (isNull(oldMedicament)) {
-          throw new IllegalArgumentException(
-              "Exam Medicament with id="
+          throw new IllegalArgumentException("Exam Medicament with id="
                   + medicamentItem.getId()
                   + " not exist by examID="
                   + exam.getId());
@@ -247,8 +229,7 @@ public class ExamServiceImpl implements ExamService {
 
         if (!medicamentItem.equals(oldMedicament)) {
           medicamentItem =
-              examMedicamentRepository.save(
-                  medicamentItem);
+              examMedicamentRepository.save(medicamentItem);
         }
       } else {
         medicamentItem =
@@ -257,19 +238,16 @@ public class ExamServiceImpl implements ExamService {
       savedMedicaments.add(medicamentItem);
     }
 
-    examMedicamentRepository.deleteAll(
-        oldMedicamentsById.values());
+    examMedicamentRepository.deleteAll(oldMedicamentsById.values());
 
     exam.setExamMedicaments(savedMedicaments);
-    log.info(
-        "Medicamentos do exame atualizados; "
+    log.info("Medicamentos do exame atualizados; "
             + "examId={}, quantidade={}",
         exam.getId(), savedMedicaments.size());
     return exam;
   }
 
-  private void validateExamMedicamentList(
-      List<ExamMedicament> examMedicamentList) {
+  private void validateExamMedicamentList(List<ExamMedicament> examMedicamentList) {
 
     if (isNotEmpty(examMedicamentList)) {
       for (ExamMedicament examMedicament
@@ -279,8 +257,7 @@ public class ExamServiceImpl implements ExamService {
     }
   }
 
-  private void validateExamMedicament(
-      ExamMedicament examMedicament) {
+  private void validateExamMedicament(ExamMedicament examMedicament) {
 
     Assert.notNull(examMedicament,
         "examMedicament cannot be null");
@@ -288,32 +265,27 @@ public class ExamServiceImpl implements ExamService {
         "examMedicament-amount cannot be null");
     Assert.notNull(examMedicament.getMedicament(),
         "examMedicament-medicament cannot be null");
-    Assert.notNull(
-        examMedicament.getMedicament().getId(),
+    Assert.notNull(examMedicament.getMedicament().getId(),
         "examMedicament-medicament-id cannot be null");
     Assert.notNull(examMedicament.getUnit(),
         "examMedicament-unit cannot be null");
-    Assert.notNull(
-        examMedicament.getUnit().getId(),
+    Assert.notNull(examMedicament.getUnit().getId(),
         "examMedicament-unit-id cannot be null");
   }
 
-  private void registerUnregisteredEquipments(
-      List<ExamEquipment> examEquipmentList) {
+  private void registerUnregisteredEquipments(List<ExamEquipment> examEquipmentList) {
 
     if (isNotEmpty(examEquipmentList)) {
       for (ExamEquipment examEquipment
           : examEquipmentList) {
         Equipment equipment =
             examEquipment.getEquipment();
-        Assert.notNull(
-            equipment, "equipment cannot be null.");
+        Assert.notNull(equipment, "equipment cannot be null.");
         Assert.hasText(equipment.getName(),
             "equipment name cannot be empty.");
 
         if (isNull(equipment.getId())) {
-          examEquipment.setEquipment(
-              equipmentService.save(equipment));
+          examEquipment.setEquipment(equipmentService.save(equipment));
         }
       }
     }
@@ -324,17 +296,14 @@ public class ExamServiceImpl implements ExamService {
   public Exam updateExamEquipment(Exam exam) {
 
     Assert.notNull(exam, "exam cannot be null.");
-    Assert.notNull(
-        exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam.getId(), "exam ID cannot be null.");
 
-    registerUnregisteredEquipments(
-        exam.getExamEquipments());
+    registerUnregisteredEquipments(exam.getExamEquipments());
     validateExamEquipmentList(exam.getExamEquipments());
 
     Exam oldExam = examRepository.findById(exam.getId())
         .orElseThrow(() ->
-            new ResourceNotFoundException(
-                "Exam", exam.getId()));
+            new ResourceNotFoundException("Exam", exam.getId()));
 
     List<ExamEquipment> currentEquipments =
         isNull(exam.getExamEquipments())
@@ -346,8 +315,7 @@ public class ExamServiceImpl implements ExamService {
     if (nonNull(oldExam.getExamEquipments())) {
       for (ExamEquipment oldEquipment
           : oldExam.getExamEquipments()) {
-        oldEquipmentsById.put(
-            oldEquipment.getId(), oldEquipment);
+        oldEquipmentsById.put(oldEquipment.getId(), oldEquipment);
       }
     }
 
@@ -361,11 +329,9 @@ public class ExamServiceImpl implements ExamService {
       if (nonNull(equipmentItem.getId())) {
 
         ExamEquipment oldEquipment =
-            oldEquipmentsById.remove(
-                equipmentItem.getId());
+            oldEquipmentsById.remove(equipmentItem.getId());
         if (isNull(oldEquipment)) {
-          throw new IllegalArgumentException(
-              "Exam Equipment with id="
+          throw new IllegalArgumentException("Exam Equipment with id="
                   + equipmentItem.getId()
                   + " not exist by examID="
                   + exam.getId());
@@ -373,8 +339,7 @@ public class ExamServiceImpl implements ExamService {
 
         if (!equipmentItem.equals(oldEquipment)) {
           equipmentItem =
-              examEquipmentRepository.save(
-                  equipmentItem);
+              examEquipmentRepository.save(equipmentItem);
         }
       } else {
         equipmentItem =
@@ -383,19 +348,16 @@ public class ExamServiceImpl implements ExamService {
       savedEquipments.add(equipmentItem);
     }
 
-    examEquipmentRepository.deleteAll(
-        oldEquipmentsById.values());
+    examEquipmentRepository.deleteAll(oldEquipmentsById.values());
 
     exam.setExamEquipments(savedEquipments);
-    log.info(
-        "Equipamentos do exame atualizados; "
+    log.info("Equipamentos do exame atualizados; "
             + "examId={}, quantidade={}",
         exam.getId(), savedEquipments.size());
     return exam;
   }
 
-  private void validateExamEquipmentList(
-      List<ExamEquipment> examEquipmentList) {
+  private void validateExamEquipmentList(List<ExamEquipment> examEquipmentList) {
 
     if (isNotEmpty(examEquipmentList)) {
       for (ExamEquipment examEquipment
@@ -405,8 +367,7 @@ public class ExamServiceImpl implements ExamService {
     }
   }
 
-  private void validateExamEquipment(
-      ExamEquipment examEquipment) {
+  private void validateExamEquipment(ExamEquipment examEquipment) {
 
     Assert.notNull(examEquipment,
         "examEquipment cannot be null");
@@ -414,13 +375,11 @@ public class ExamServiceImpl implements ExamService {
         "examEquipment-amount cannot be null");
     Assert.notNull(examEquipment.getEquipment(),
         "examEquipment-equipment cannot be null");
-    Assert.notNull(
-        examEquipment.getEquipment().getId(),
+    Assert.notNull(examEquipment.getEquipment().getId(),
         "examEquipment-equipment-id cannot be null");
     Assert.notNull(examEquipment.getUnit(),
         "examEquipment-unit cannot be null");
-    Assert.notNull(
-        examEquipment.getUnit().getId(),
+    Assert.notNull(examEquipment.getUnit().getId(),
         "examEquipment-unit-id cannot be null");
   }
 }

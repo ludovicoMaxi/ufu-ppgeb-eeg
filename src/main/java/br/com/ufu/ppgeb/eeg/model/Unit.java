@@ -1,5 +1,7 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,8 +48,7 @@ public class Unit {
       return false;
     }
     return Objects.equals(getName(), unit.getName())
-        && Objects.equals(
-            getDescription(), unit.getDescription());
+        && Objects.equals(getDescription(), unit.getDescription());
   }
 
   @Override

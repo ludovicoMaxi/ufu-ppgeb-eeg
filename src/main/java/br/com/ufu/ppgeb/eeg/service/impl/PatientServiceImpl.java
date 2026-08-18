@@ -1,10 +1,11 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.repository.PatientRepository;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,11 +31,8 @@ public class PatientServiceImpl implements PatientService {
 
     validatePatient(patient);
 
-    if (patientRepository.existsByDocumentNumber(
-        patient.getDocumentNumber())) {
-      throw new IllegalArgumentException(
-          "CPF já foi cadastrado, "
-              + "por favor informe outro.");
+    if (patientRepository.existsByDocumentNumber(patient.getDocumentNumber())) {
+      throw new IllegalArgumentException("CPF já foi cadastrado, por favor informe outro.");
     }
 
     Patient saved = patientRepository.save(patient);
@@ -44,16 +42,11 @@ public class PatientServiceImpl implements PatientService {
 
   private void validatePatient(Patient patient) {
 
-    Assert.notNull(
-        patient, "Patient cannot be null.");
-    Assert.hasText(
-        patient.getName(), "name cannot be empty.");
-    Assert.hasText(patient.getDocumentNumber(),
-        "documentNumber cannot be empty.");
-    Assert.notNull(patient.getBirthDate(),
-        "birthDate cannot be empty.");
-    Assert.notNull(patient.getNacionality(),
-        "nacionality cannot be null.");
+    Assert.notNull(patient, "Patient cannot be null.");
+    Assert.hasText(patient.getName(), "name cannot be empty.");
+    Assert.hasText(patient.getDocumentNumber(), "documentNumber cannot be empty.");
+    Assert.notNull(patient.getBirthDate(), "birthDate cannot be empty.");
+    Assert.notNull(patient.getNacionality(), "nacionality cannot be null.");
 
     if (patient.getSex() != 'F'
         && patient.getSex() != 'M') {
@@ -80,17 +73,14 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Patient> findByFilter(
-      String name, String documentNumber) {
+  public List<Patient> findByFilter(String name, String documentNumber) {
 
     if (StringUtils.isBlank(name)
         && StringUtils.isBlank(documentNumber)) {
-      throw new IllegalArgumentException(
-          "Informe pelo menos um campo para consultar!");
+      throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return patientRepository.findByFilter(
-        name, documentNumber);
+    return patientRepository.findByFilter(name, documentNumber);
   }
 
   @Override
@@ -112,36 +102,30 @@ public class PatientServiceImpl implements PatientService {
     Assert.notNull(patient, "patient cannot be null.");
 
     validatePatient(patient);
-    Assert.notNull(
-        patient.getId(), "patient ID cannot be null.");
+    Assert.notNull(patient.getId(), "patient ID cannot be null.");
 
     Long patientId = patient.getId();
     Patient oldPatient = patientRepository
         .findById(patientId)
         .orElseThrow(() ->
-            new ResourceNotFoundException(
-                "Patient", patientId));
+            new ResourceNotFoundException("Patient", patientId));
 
     if (!oldPatient.equals(patient)) {
 
       if (!oldPatient.getDocumentNumber()
           .equals(patient.getDocumentNumber())) {
-        throw new IllegalArgumentException(
-            "CPF/CNPJ está divergente.");
+        throw new IllegalArgumentException("CPF/CNPJ está divergente.");
       }
 
       oldPatient.setName(patient.getName());
       oldPatient.setSex(patient.getSex());
       oldPatient.setBirthDate(patient.getBirthDate());
-      oldPatient.setNacionality(
-          patient.getNacionality());
-      oldPatient.setCivilStatus(
-          patient.getCivilStatus());
+      oldPatient.setNacionality(patient.getNacionality());
+      oldPatient.setCivilStatus(patient.getCivilStatus());
       oldPatient.setJob(patient.getJob());
 
       patient = patientRepository.save(oldPatient);
-      log.info(
-          "Paciente atualizado com id={}", patientId);
+      log.info("Paciente atualizado com id={}", patientId);
     }
 
     return patient;

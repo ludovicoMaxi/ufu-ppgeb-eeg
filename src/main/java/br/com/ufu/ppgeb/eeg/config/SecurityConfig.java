@@ -40,14 +40,12 @@ public class SecurityConfig {
       throws Exception {
 
     http.csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
         .exceptionHandling(e -> e
-            .defaultAuthenticationEntryPointFor(
-                apiUnauthorizedEntryPoint(),
+            .defaultAuthenticationEntryPointFor(apiUnauthorizedEntryPoint(),
                 PathPatternRequestMatcher.pathPattern("/api/**"))
-            .defaultAuthenticationEntryPointFor(
-                new LoginUrlAuthenticationEntryPoint("/login"),
+            .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/login"),
                 PathPatternRequestMatcher.pathPattern("/**")))
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
@@ -131,11 +129,9 @@ public class SecurityConfig {
 
       http.securityMatcher("/h2/**")
           .csrf(AbstractHttpConfigurer::disable)
-          .authorizeHttpRequests(
-              auth -> auth.anyRequest().permitAll())
+          .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
           .headers(headers ->
-              headers.frameOptions(
-                  HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+              headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
       return http.build();
     }

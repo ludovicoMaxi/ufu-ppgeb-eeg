@@ -1,5 +1,8 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Date;
+import java.util.Objects;
+
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -12,8 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -111,25 +112,20 @@ public class ExamRequest {
             examRequest.getMedicalRecord())
         && Objects.equals(getMedicalRequest(),
             examRequest.getMedicalRequest())
-        && Objects.equals(
-            getSector(), examRequest.getSector())
+        && Objects.equals(getSector(), examRequest.getSector())
         && Objects.equals(getAgreement(),
             examRequest.getAgreement())
         && Objects.equals(getDoctorRequestant(),
             examRequest.getDoctorRequestant())
-        && Objects.equals(
-            getUser(), examRequest.getUser())
+        && Objects.equals(getUser(), examRequest.getUser())
         && Objects.equals(getClinicOrigin(),
             examRequest.getClinicOrigin())
         && Objects.equals(getCityOrigin(),
             examRequest.getCityOrigin())
-        && Objects.equals(
-            getPatient(), examRequest.getPatient())
-        && CompareDate.compareDates(
-            getRequestDate(),
+        && Objects.equals(getPatient(), examRequest.getPatient())
+        && CompareDate.compareDates(getRequestDate(),
             examRequest.getRequestDate())
-        && CompareDate.compareDates(
-            getAchievementDate(),
+        && CompareDate.compareDates(getAchievementDate(),
             examRequest.getAchievementDate());
   }
 

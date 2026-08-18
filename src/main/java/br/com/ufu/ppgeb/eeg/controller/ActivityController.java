@@ -1,9 +1,10 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,7 @@ public class ActivityController {
    * @return the list of activities
    */
   @GetMapping
-  public List<Activity> list(
-      @RequestParam(value = "examId") Long examId) {
+  public List<Activity> list(@RequestParam(value = "examId") Long examId) {
 
     logger.info("Consultando atividades do exame id={}", examId);
     return activityService.findByFilter(examId);
@@ -79,14 +79,11 @@ public class ActivityController {
    * @return the updated activity list
    */
   @PutMapping
-  public ActivityList updateList(
-      @RequestBody ActivityList activityList) {
+  public ActivityList updateList(@RequestBody ActivityList activityList) {
 
-    logger.info(
-        "Recebendo atualização de atividades do exame id={}",
+    logger.info("Recebendo atualização de atividades do exame id={}",
         activityList.getExamId());
-    activityList.setActivities(
-        activityService.updateList(activityList));
+    activityList.setActivities(activityService.updateList(activityList));
     return activityList;
   }
 }

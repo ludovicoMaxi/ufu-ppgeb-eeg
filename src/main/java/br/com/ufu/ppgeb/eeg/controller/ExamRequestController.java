@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +51,13 @@ public class ExamRequestController {
       @RequestParam(value = "doctorRequestant",
           required = false) String doctorRequestant) {
 
-    logger.info(
-        "Consultando solicitações; medicalRecord={}, "
+    logger.info("Consultando solicitações; medicalRecord={}, "
             + "medicalRequest={}, patientId={}, "
             + "doctorRequestant={}",
         medicalRecord, medicalRequest,
         patientId, doctorRequestant);
     return examRequestService.findByFilter(
-        medicalRecord, medicalRequest,
-        patientId, doctorRequestant);
+        medicalRecord, medicalRequest, patientId, doctorRequestant);
   }
 
   /**
@@ -68,8 +67,7 @@ public class ExamRequestController {
    * @return the exam request
    */
   @GetMapping("/{id}")
-  public ExamRequest findById(
-      @PathVariable(value = "id") Long id) {
+  public ExamRequest findById(@PathVariable(value = "id") Long id) {
 
     logger.info("Consultando solicitação de exame id={}", id);
     return examRequestService.findById(id);
@@ -83,8 +81,7 @@ public class ExamRequestController {
    */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ExamRequest save(
-      @RequestBody ExamRequest examRequest) {
+  public ExamRequest save(@RequestBody ExamRequest examRequest) {
 
     logger.info("Recebendo criação de solicitação de exame");
     return examRequestService.save(examRequest);
@@ -97,11 +94,9 @@ public class ExamRequestController {
    * @return the updated exam request
    */
   @PutMapping
-  public ExamRequest update(
-      @RequestBody ExamRequest examRequest) {
+  public ExamRequest update(@RequestBody ExamRequest examRequest) {
 
-    logger.info(
-        "Recebendo atualização de solicitação de exame id={}",
+    logger.info("Recebendo atualização de solicitação de exame id={}",
         examRequest.getId());
     return examRequestService.update(examRequest);
   }

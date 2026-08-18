@@ -1,5 +1,8 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Date;
+import java.util.Objects;
+
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -10,8 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -94,12 +95,10 @@ public class Patient {
       return false;
     }
     return getSex() == patient.getSex()
-        && Objects.equals(
-            getName(), patient.getName())
+        && Objects.equals(getName(), patient.getName())
         && Objects.equals(getDocumentNumber(),
             patient.getDocumentNumber())
-        && CompareDate.compareDates(
-            getBirthDate(), patient.getBirthDate())
+        && CompareDate.compareDates(getBirthDate(), patient.getBirthDate())
         && Objects.equals(getNacionality(),
             patient.getNacionality())
         && Objects.equals(getCivilStatus(),

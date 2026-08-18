@@ -2,6 +2,9 @@ package br.com.ufu.ppgeb.eeg.model;
 
 import static java.util.Objects.isNull;
 
+import java.util.Date;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -87,8 +88,7 @@ public class Medicament {
       return false;
     }
     return Objects.equals(getName(), that.getName())
-        && Objects.equals(
-            getDescription(), that.getDescription());
+        && Objects.equals(getDescription(), that.getDescription());
   }
 
   @Override

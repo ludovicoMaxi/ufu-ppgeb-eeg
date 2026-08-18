@@ -1,5 +1,9 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,9 +20,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -132,24 +133,16 @@ public class Exam {
       return false;
     }
     return Objects.equals(getId(), exam.getId())
-        && Objects.equals(
-            getExamRequest(), exam.getExamRequest())
-        && Objects.equals(
-            getPatient(), exam.getPatient())
-        && CompareDate.compareDates(
-            getAchievementDate(),
+        && Objects.equals(getExamRequest(), exam.getExamRequest())
+        && Objects.equals(getPatient(), exam.getPatient())
+        && CompareDate.compareDates(getAchievementDate(),
             exam.getAchievementDate())
-        && Objects.equals(
-            getMedicalReport(), exam.getMedicalReport())
-        && Objects.equals(
-            getConclusion(), exam.getConclusion())
+        && Objects.equals(getMedicalReport(), exam.getMedicalReport())
+        && Objects.equals(getConclusion(), exam.getConclusion())
         && Objects.equals(getBed(), exam.getBed())
-        && Objects.equals(
-            getHeight(), exam.getHeight())
-        && Objects.equals(
-            getWeight(), exam.getWeight())
-        && Objects.equals(
-            getClinicalData(), exam.getClinicalData());
+        && Objects.equals(getHeight(), exam.getHeight())
+        && Objects.equals(getWeight(), exam.getWeight())
+        && Objects.equals(getClinicalData(), exam.getClinicalData());
   }
 
   @Override

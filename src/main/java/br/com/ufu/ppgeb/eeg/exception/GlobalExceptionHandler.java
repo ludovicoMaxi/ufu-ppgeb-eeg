@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.exception;
 
 import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,13 +26,11 @@ public class GlobalExceptionHandler {
   /**
    * Represents an API error response.
    */
-  public record ApiError(
-      Instant timestamp, int status, String error, String message) {
+  public record ApiError(Instant timestamp, int status, String error, String message) {
 
     static ApiError of(HttpStatus status, String message) {
 
-      return new ApiError(
-          Instant.now(), status.value(),
+      return new ApiError(Instant.now(), status.value(),
           status.getReasonPhrase(), message);
     }
   }
@@ -43,8 +42,7 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<ApiError> handleNotFound(
-      ResourceNotFoundException ex) {
+  public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(ApiError.of(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -71,12 +69,10 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(NoResourceFoundException.class)
-  public ResponseEntity<ApiError> handleMissingResource(
-      NoResourceFoundException ex) {
+  public ResponseEntity<ApiError> handleMissingResource(NoResourceFoundException ex) {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiError.of(
-            HttpStatus.NOT_FOUND, "Recurso não encontrado."));
+        .body(ApiError.of(HttpStatus.NOT_FOUND, "Recurso não encontrado."));
   }
 
   /**
@@ -86,8 +82,7 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ApiError> handleIllegalArgument(
-      IllegalArgumentException ex) {
+  public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
 
     return ResponseEntity.badRequest()
         .body(ApiError.of(HttpStatus.BAD_REQUEST, ex.getMessage()));
@@ -100,15 +95,11 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ApiError> handleUnreadableMessage(
-      HttpMessageNotReadableException ex) {
+  public ResponseEntity<ApiError> handleUnreadableMessage(HttpMessageNotReadableException ex) {
 
-    logger.warn("Requisição com corpo inválido: {}",
-        ex.getMostSpecificCause().getMessage());
+    logger.warn("Requisição com corpo inválido: {}", ex.getMostSpecificCause().getMessage());
     return ResponseEntity.badRequest()
-        .body(ApiError.of(
-            HttpStatus.BAD_REQUEST,
-            "Corpo da requisição inválido."));
+        .body(ApiError.of(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido."));
   }
 
   /**
@@ -134,8 +125,7 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<ApiError> handleDataIntegrity(
-      DataIntegrityViolationException ex) {
+  public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex) {
 
     logger.warn("Violação de integridade de dados", ex);
     return ResponseEntity.status(HttpStatus.CONFLICT)
