@@ -8,6 +8,7 @@ import { submitExamRequest, setPatientInForm, init } from './examRequestActions'
 import { init as initPatient, getPatientById } from '../patient/patientActions'
 import PatientForm from '../patient/patientForm'
 import ExamRequestForm from './examRequestForm'
+import withRouter from '../common/router/withRouter'
 
 class ExamRequestRegister extends Component {
 
@@ -36,4 +37,4 @@ class ExamRequestRegister extends Component {
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({ initPatient, getPatientById, submitExamRequest, setPatientInForm, init }, dispatch)
-export default connect(null, mapDispatchToProps)(ExamRequestRegister)
+export default withRouter(connect(null, mapDispatchToProps)(ExamRequestRegister))

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as qs from 'query-string'
+import qs from 'query-string'
 
 import ContentHeader from '../common/template/contentHeader'
 import Content from '../common/template/content'
@@ -9,6 +9,7 @@ import { init, submitExam, setPatientInForm } from './examActions'
 import { init as initPatient, getPatientById } from '../patient/patientActions'
 import PatientForm from '../patient/patientForm'
 import ExamForm from './examForm'
+import withRouter from '../common/router/withRouter'
 
 class ExamRegister extends Component {
 
@@ -38,4 +39,4 @@ class ExamRegister extends Component {
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({ init, initPatient, getPatientById, submitExam, setPatientInForm }, dispatch)
-export default connect(null, mapDispatchToProps)(ExamRegister)
+export default withRouter(connect(null, mapDispatchToProps)(ExamRegister))

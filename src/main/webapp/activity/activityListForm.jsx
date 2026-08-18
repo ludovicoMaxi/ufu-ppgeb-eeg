@@ -13,8 +13,7 @@ import {
     init,
     addItemList,
     removeItemList,
-    submitActivityList,
-    updateFinalTime
+    submitActivityList
 } from './activityActions'
 
 
@@ -113,7 +112,7 @@ class ActivityListForm extends Component {
         }
 
         return list.map((item, index) => (
-            <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
+            <div className='card mb-3' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
                 <Field name={`activities[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
                     label='Minutos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
@@ -168,9 +167,9 @@ class ActivityListForm extends Component {
         const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitActivityList } = this.props;
 
         return (
-            <form role='form' onSubmit={handleSubmit(submitActivityList)} className='box box-solid'>
-                <div className='box'>
-                    <div className='box-body' style={{ 'paddingLeft': '0px' }}>
+            <form role='form' onSubmit={handleSubmit(submitActivityList)} className='card'>
+                <div>
+                    <div className='card-body' style={{ 'paddingLeft': '0px' }}>
                         <div style={{ 'display': 'none' }}>
                             <Field name={'examI'} component={LabelAndInput} readOnly={true} normalize={onlyNumbers} />
                         </div>
@@ -184,7 +183,7 @@ class ActivityListForm extends Component {
                         </div>
                     </If>
                     <If test={!readOnly}>
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>
@@ -212,7 +211,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     init,
     removeItemList,
     addItemList,
-    submitActivityList,
-    updateFinalTime
+    submitActivityList
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityListForm)

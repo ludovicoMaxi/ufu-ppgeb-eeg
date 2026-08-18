@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { Route, Routes, Navigate } from 'react-router-dom';
 
 import ContentHeader from './common/template/contentHeader'
 import Content from './common/template/content'
@@ -15,72 +15,49 @@ import ExamRequestRegister from './exam-request/examRequestRegister'
 import ExamEdit from './exam/examEdit'
 import ExamSearch from './exam/examSearch'
 import ExamRegister from './exam/examRegister'
-import { init, submitPatient, remove, initRegisterPatient } from './patient/patientActions'
+import { submitPatient, initRegisterPatient } from './patient/patientActions'
 
-class Routes extends Component {
-    render() {
-        return (
-            <HashRouter>
-                <Switch>
-                    <Route exact path='/' component={Dashboard} />
-                    <Route path='/patient/add' render={
-                        () => {
-                            this.props.initRegisterPatient()
-                            return (
-                                <div><ContentHeader title='Pacientes' small='Cadastro' />
-                                    <Content>
-                                        <PatientForm submitLabel='Adicionar'
-                                            submitClass='primary' onSubmit={this.props.submitPatient} />
-                                    </Content>
-                                </div>
-                            )
-                        }
-                    } />
-                    <Route path='/patient/search' render={() => {
-                        return (
-                            <div><ContentHeader title='Pacientes' small='Busca' />
-                                <Content>
-                                    <PatientSearch />
-                                </Content>
-                            </div>
-                        )
-                    }
-                    } />
-                    <Route path='/patient/:patientId/exam-request/add' component={ExamRequestRegister} />
-                    <Route path='/exam-request/search' render={() => {
-                        return (
-                            <div><ContentHeader title='Requerimentos' small='Busca' />
-                                <Content>
-                                    <ExamRequestSearch />
-                                </Content>
-                            </div>
-                        )
-                    }
-                    } />
-                    <Route path='/exam-request/:examRequestId' component={ExamRequestEdit} />
-                    <Route path='/patient/:patientId/exam/add' component={ExamRegister} />
-                    <Route path='/exam/search' render={() => {
-                        return (
-                            <div><ContentHeader title='Exames' small='Busca' />
-                                <Content>
-                                    <ExamSearch />
-                                </Content>
-                            </div>
-                        )
-                    }
-                    } />
-                    <Route path='/exam/:examId' component={ExamEdit} />
-                    <Redirect from='/patient/*/*' to='/' />
-                    <Route path='/patient/:patientId' component={PatientEdit} />
-                    <Redirect from='*' to='/' />
-                </Switch>
-            </HashRouter>
-        )
-    }
+const Page = ({ title, small, children }) => (
+    <div>
+        <ContentHeader title={title} small={small} />
+        <Content>{children}</Content>
+    </div>
+)
+
+function PatientAddPage() {
+    const dispatch = useDispatch()
+    const actions = bindActionCreators({ submitPatient, initRegisterPatient }, dispatch)
+    useEffect(() => {
+        actions.initRegisterPatient()
+    }, [])
+    return (
+        <Page title='Pacientes' small='Cadastro'>
+            <PatientForm submitLabel='Adicionar'
+                submitClass='primary' onSubmit={actions.submitPatient} />
+        </Page>
+    )
 }
 
-const mapDispatchToPros = dispatch =>
-    bindActionCreators({
-        init, submitPatient, remove, initRegisterPatient
-    }, dispatch)
-export default connect(null, mapDispatchToPros)(Routes)
+const AppRoutes = () => (
+    <Routes>
+            <Route path='/' element={<Dashboard />} />
+            <Route path='/patient/add' element={<PatientAddPage />} />
+            <Route path='/patient/search' element={
+                <Page title='Pacientes' small='Busca'><PatientSearch /></Page>
+            } />
+            <Route path='/patient/:patientId/exam-request/add' element={<ExamRequestRegister />} />
+            <Route path='/exam-request/search' element={
+                <Page title='Requerimentos' small='Busca'><ExamRequestSearch /></Page>
+            } />
+            <Route path='/exam-request/:examRequestId' element={<ExamRequestEdit />} />
+            <Route path='/patient/:patientId/exam/add' element={<ExamRegister />} />
+            <Route path='/exam/search' element={
+                <Page title='Exames' small='Busca'><ExamSearch /></Page>
+            } />
+            <Route path='/exam/:examId' element={<ExamEdit />} />
+            <Route path='/patient/:patientId' element={<PatientEdit />} />
+            <Route path='*' element={<Navigate to='/' replace />} />
+    </Routes>
+)
+
+export default AppRoutes

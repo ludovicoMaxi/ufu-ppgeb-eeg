@@ -30,19 +30,21 @@ class ExamSearch extends Component {
 
         return (
             <div>
-                <Form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <Form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
-                                <Field name='id' component={LabelAndInput} readOnly={false}
-                                    label='Exame id' cols='4 2' placeholder='Identificador' normalize={onlyNumbers} />
-                                <Field name='bed' component={LabelAndInput} readOnly={false}
-                                    label='Leito' cols='8 6' placeholder='Leito' normalize={upper} />
+                                <div className='row'>
+                                    <Field name='id' component={LabelAndInput} readOnly={false}
+                                        label='Exame id' cols='4 2' placeholder='Identificador' normalize={onlyNumbers} />
+                                    <Field name='bed' component={LabelAndInput} readOnly={false}
+                                        label='Leito' cols='8 6' placeholder='Leito' normalize={upper} />
+                                </div>
                                 <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                             </fieldset>
                         </div>
                         {this.props.error && <strong style={{ 'color': 'red' }}>{this.props.error}</strong>}
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>

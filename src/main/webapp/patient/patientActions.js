@@ -25,7 +25,7 @@ export function getPatientById(id) {
 
 export function getExamByPatientId(id) {
     return dispatch => {
-        axios.get(`${BASE_URL_EXAM}/?patientId=${id}`)
+        axios.get(`${BASE_URL_EXAM}?patientId=${id}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'PATIENT_EXAM_FETCHED', payload: resp.data });
@@ -39,7 +39,7 @@ export function getExamByPatientId(id) {
 
 export function getExamRequestByPatientId(id) {
     return dispatch => {
-        axios.get(`${BASE_URL_EXAM_REQUEST}/?patientId=${id}`)
+        axios.get(`${BASE_URL_EXAM_REQUEST}?patientId=${id}`)
             .then(resp => {
                 if (!!resp.data) {
                     dispatch({ type: 'PATIENT_EXAM_REQUEST_FETCHED', payload: resp.data });

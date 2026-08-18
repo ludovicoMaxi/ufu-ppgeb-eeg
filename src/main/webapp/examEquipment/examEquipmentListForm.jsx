@@ -61,7 +61,7 @@ class ExamEquipmentListForm extends Component {
         const list = this.props.list || [{}];
 
         return list.map((item, index) => (
-            <div className='panel panel-default display-table' key={index} style={{ 'width': '100%' }} >
+            <div className='card mb-3' key={index} style={{ 'width': '100%' }} >
                 <legend>{this.props.legend}</legend>
                 <Field name={`examEquipments[${index}].equipment`} component={LabelAndInputSelect} readOnly={readOnly}
                     label='Equipamento' cols='12 4' placeholder='Equipamento' options={optionsEquipment} />
@@ -114,9 +114,9 @@ class ExamEquipmentListForm extends Component {
         const { readOnly, pristine, reset, submitting, showSystemInfo, handleSubmit, submitExamEquipmentList } = this.props;
 
         return (
-            <form role='form' onSubmit={handleSubmit(submitExamEquipmentList)} className='box box-solid'>
-                <div className='box'>
-                    <div className='box-body' style={{ 'paddingLeft': '0px' }}>
+            <form role='form' onSubmit={handleSubmit(submitExamEquipmentList)} className='card'>
+                <div>
+                    <div className='card-body' style={{ 'paddingLeft': '0px' }}>
                         {this.renderRows()}
                     </div>
                     <If test={this.props.error != undefined} >
@@ -127,7 +127,7 @@ class ExamEquipmentListForm extends Component {
                         </div>
                     </If>
                     <If test={!readOnly}>
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>

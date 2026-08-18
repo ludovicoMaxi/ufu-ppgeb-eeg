@@ -31,21 +31,23 @@ class ExamRequestSearch extends Component {
 
         return (
             <div>
-                <Form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <Form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
-                                <Field name='medicalRecord' component={LabelAndInput} readOnly={false}
-                                    label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
-                                <Field name='medicalRequest' component={LabelAndInput} readOnly={false}
-                                    label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
-                                <Field name='doctorRequestant' component={LabelAndInput} readOnly={false} normalize={upper}
-                                    label='Medico Solicitante' cols='12 6' placeholder='Informe o Médico' />
+                                <div className='row'>
+                                    <Field name='medicalRecord' component={LabelAndInput} readOnly={false}
+                                        label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
+                                    <Field name='medicalRequest' component={LabelAndInput} readOnly={false}
+                                        label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
+                                    <Field name='doctorRequestant' component={LabelAndInput} readOnly={false} normalize={upper}
+                                        label='Medico Solicitante' cols='12 6' placeholder='Informe o Médico' />
+                                </div>
                                 <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                             </fieldset>
                         </div>
                         {this.props.error && <strong style={{ 'color': 'red' }}>{this.props.error}</strong>}
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>

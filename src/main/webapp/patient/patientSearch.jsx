@@ -30,19 +30,21 @@ class PatientSearch extends Component {
 
         return (
             <div>
-                <Form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <Form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
-                                <Field name='name' component={LabelAndInput} readOnly={false}
-                                    label='Nome' cols='12 8' placeholder='Informe o nome' normalize={upper} />
-                                <Field name='documentNumber' component={LabelAndInput} readOnly={false}
-                                    label='CPF' cols='12 4' placeholder='Informe o CPF' />
+                                <div className='row'>
+                                    <Field name='name' component={LabelAndInput} readOnly={false}
+                                        label='Nome' cols='12 8' placeholder='Informe o nome' normalize={upper} />
+                                    <Field name='documentNumber' component={LabelAndInput} readOnly={false}
+                                        label='CPF' cols='12 4' placeholder='Informe o CPF' />
+                                </div>
                                 <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                             </fieldset>
                         </div>
                         {this.props.error && <strong style={{ 'color': 'red' }}>{this.props.error}</strong>}
-                        <div className='box-footer'>
+                        <div className='card-footer'>
                             <button type='submit'
                                 className={`btn btn-primary`}
                                 disabled={submitting}>

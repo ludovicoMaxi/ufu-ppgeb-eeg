@@ -1,5 +1,3 @@
-import { createNumberMask, createTextMask } from 'redux-form-input-masks'
-
 export const upper = value => value && value.toUpperCase();
 
 export function onlyNumbers(value) {
@@ -11,20 +9,19 @@ export function onlyNumbers(value) {
     return value
 }
 
-export const currencyMask = createNumberMask({
-    prefix: 'R$ ',
-    decimalPlaces: 2,
-    locale: 'pt-BR',
-});
-
-export const phoneMask = createTextMask({
-    pattern: '(999) 9999-9999',
-});
-
-export const cellPhoneMask = createTextMask({
-    pattern: '(999) 99999-9999',
-});
-
-export const documentNumber = createTextMask({
-    pattern: '999.999.999-99',
-});
+export const documentNumber = value => {
+    if (!value) {
+        return value;
+    }
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) {
+        return digits;
+    }
+    if (digits.length <= 6) {
+        return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    }
+    if (digits.length <= 9) {
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    }
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}

@@ -58,41 +58,38 @@ class PatientForm extends Component {
 
         return (
             <div>
-                <form role='form' onSubmit={handleSubmit} className='box box-solid'>
-                    <div className='box'>
-                        <div className='box-body'>
+                <form role='form' onSubmit={handleSubmit} className='card'>
+                    <div>
+                        <div className='card-body'>
                             <fieldset>
                                 <legend>Paciente</legend>
-                                <Field name='name' component={LabelAndInput} readOnly={readOnly}
-                                    label='Nome' cols='12 10' placeholder='Informe o nome' normalize={upper} />
-                                <Field name='documentNumber' component={LabelAndInput} readOnly={readOnly}
-                                    label='CPF' cols='12 2' placeholder='Informe o CPF' {...documentNumberMask} />
+                                <div className='row'>
+                                    <Field name='name' component={LabelAndInput} readOnly={readOnly}
+                                        label='Nome' cols='12 10' placeholder='Informe o nome' normalize={upper} />
+                                    <Field name='documentNumber' component={LabelAndInput} readOnly={readOnly}
+                                        label='CPF' cols='12 2' placeholder='Informe o CPF' normalize={documentNumberMask} />
 
-                                <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
-                                    label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
-                                <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
-                                <Field name='sex' component={LabelAndInputSelect}
-                                    label='Sexo' cols='12 2'
-                                    readOnly={readOnly}
-                                    placeholder='Sexo'
-                                    options={[{ 'value': 'M', 'label': 'MASCULINO' },
-                                    { 'value': 'F', 'label': 'FEMININO' }]}>
-                                </Field>
+                                    <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
+                                        label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
+                                    <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
+                                    <Field name='sex' component={LabelAndInputSelect}
+                                        label='Sexo' cols='12 2'
+                                        readOnly={readOnly}
+                                        placeholder='Sexo'
+                                        options={[{ 'value': 'M', 'label': 'MASCULINO' },
+                                        { 'value': 'F', 'label': 'FEMININO' }]}>
+                                    </Field>
 
-                                <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
-                                <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                    label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
-
-                                <If test={showSystemInfo}>
-                                    <SystemInfo formName="patientForm" />
-                                </If>
-                                <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
+                                    <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
+                                    <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                        label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
+                                </div>
                             </fieldset>
                         </div>
                         <If test={!readOnly}>
-                            <div className='box-footer'>
+                            <div className='card-footer'>
                                 <button type='submit'
                                     className={`btn btn-${submitClass}`}
                                     disabled={submitting}>
@@ -109,8 +106,8 @@ class PatientForm extends Component {
                 </form >
 
                 <If test={showTabs === true}>
-                    <div className='box'>
-                        <div className='box-body'>
+                    <div>
+                        <div className='card-body'>
                             <Tabs>
                                 <TabsHeader>
                                     <TabHeader label='Exames' icon='notes-medical' target='tabExams' />
@@ -132,7 +129,7 @@ class PatientForm extends Component {
                                                     {this.renderExamRows()}
                                                 </tbody>
                                             </table>
-                                            <div className='box-footer'>
+                                            <div className='card-footer'>
                                                 <Link to={`/patient/${patientId}/exam/add`}>
                                                     <button type='submit'
                                                         className={`btn btn-success`}>
@@ -156,7 +153,7 @@ class PatientForm extends Component {
                                                     {this.renderExamRequestRows()}
                                                 </tbody>
                                             </table>
-                                            <div className='box-footer'>
+                                            <div className='card-footer'>
                                                 <Link to={`/patient/${patientId}/exam-request/add`}>
                                                     <button type='submit'
                                                         className={`btn btn-success`}>
