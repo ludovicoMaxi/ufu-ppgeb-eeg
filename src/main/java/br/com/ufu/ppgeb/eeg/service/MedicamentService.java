@@ -1,19 +1,34 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-
+import br.com.ufu.ppgeb.eeg.model.Medicament;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Medicament;
-
-
+/**
+ * Service interface for Medicament operations.
+ */
 public interface MedicamentService {
 
-    List< Medicament > findAll();
+  /**
+   * Finds all medicaments.
+   *
+   * @return the list of medicaments
+   */
+  List<Medicament> findAll();
 
+  /**
+   * Finds medicaments by name.
+   *
+   * @param name the medicament name
+   * @return the list of medicaments
+   */
+  List<Medicament> findByName(String name);
 
-    List< Medicament > findByName( String name );
-
-
-    Medicament save( Medicament medicament );
+  /**
+   * Saves a medicament.
+   *
+   * @param medicament the medicament to save
+   * @return the saved medicament
+   */
+  Medicament save(Medicament medicament);
 
 }

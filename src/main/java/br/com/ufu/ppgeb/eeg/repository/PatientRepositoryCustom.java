@@ -1,16 +1,21 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Patient;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Patient;
-
-
 /**
- * Created by joaol on 10/12/18.
+ * Custom repository for Patient queries.
  */
 public interface PatientRepositoryCustom {
 
-    List< Patient > findByFilter( String name, String documentNumber );
+  /**
+   * Finds patients by filter.
+   *
+   * @param name the name
+   * @param documentNumber the document number
+   * @return the list of patients
+   */
+  List<Patient> findByFilter(
+      String name, String documentNumber);
 
 }

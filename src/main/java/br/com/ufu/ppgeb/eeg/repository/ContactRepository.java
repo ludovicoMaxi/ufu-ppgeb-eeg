@@ -1,13 +1,11 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Contact;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.ufu.ppgeb.eeg.model.Contact;
-
-
 /**
- * Created by joaol on 13/09/18.
+ * Repository for Contact entities.
  */
-public interface ContactRepository extends JpaRepository< Contact, Long >, ContactRepositoryCustom {
+public interface ContactRepository
+    extends JpaRepository<Contact, Long>, ContactRepositoryCustom {
 }

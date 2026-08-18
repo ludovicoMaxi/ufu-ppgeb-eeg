@@ -1,8 +1,8 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-
+import br.com.ufu.ppgeb.eeg.model.Unit;
+import br.com.ufu.ppgeb.eeg.service.UnitService;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,24 +10,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.ufu.ppgeb.eeg.model.Unit;
-import br.com.ufu.ppgeb.eeg.service.UnitService;
-
-
+/**
+ * REST controller for unit operations.
+ */
 @RestController
-@RequestMapping( "/api/unit" )
+@RequestMapping("/api/unit")
 @AllArgsConstructor
 public class UnitController {
 
-    private static final Logger logger = LoggerFactory.getLogger( UnitController.class );
+  private static final Logger logger =
+      LoggerFactory.getLogger(UnitController.class);
 
-    private final UnitService unitService;
+  private final UnitService unitService;
 
+  /**
+   * Lists all units.
+   *
+   * @return the list of units
+   */
+  @GetMapping
+  public List<Unit> list() {
 
-    @GetMapping
-    public List< Unit > list() {
-
-        logger.info( "Consultando unidades" );
-        return unitService.findAll();
-    }
+    logger.info("Consultando unidades");
+    return unitService.findAll();
+  }
 }

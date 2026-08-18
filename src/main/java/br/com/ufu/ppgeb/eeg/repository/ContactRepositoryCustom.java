@@ -1,16 +1,20 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Contact;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Contact;
-
-
 /**
- * Created by joaol on 17/09/18.
+ * Custom repository for Contact queries.
  */
 public interface ContactRepositoryCustom {
 
-    List< Contact > findByFilter( Long objectType, Long objectId );
+  /**
+   * Finds contacts by filter.
+   *
+   * @param objectType the object type
+   * @param objectId the object id
+   * @return the list of contacts
+   */
+  List<Contact> findByFilter(Long objectType, Long objectId);
 
 }

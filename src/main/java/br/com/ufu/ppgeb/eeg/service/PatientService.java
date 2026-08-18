@@ -1,28 +1,59 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-
+import br.com.ufu.ppgeb.eeg.model.Patient;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Patient;
-
-
+/**
+ * Service interface for Patient operations.
+ */
 public interface PatientService {
 
-    Patient save( Patient patient );
+  /**
+   * Saves a patient.
+   *
+   * @param patient the patient to save
+   * @return the saved patient
+   */
+  Patient save(Patient patient);
 
+  /**
+   * Finds a patient by id.
+   *
+   * @param id the patient id
+   * @return the patient
+   */
+  Patient findById(Long id);
 
-    Patient findById( Long id );
+  /**
+   * Finds patients by filter.
+   *
+   * @param name the name
+   * @param documentNumber the document number
+   * @return the list of patients
+   */
+  List<Patient> findByFilter(
+      String name, String documentNumber);
 
+  /**
+   * Finds all patients.
+   *
+   * @return the list of patients
+   */
+  List<Patient> findAll();
 
-    List< Patient > findByFilter( String name, String documentNumber );
+  /**
+   * Deletes a patient by id.
+   *
+   * @param id the patient id
+   */
+  void delete(Long id);
 
-
-    List< Patient > findAll();
-
-
-    void delete( Long id );
-
-
-    Patient update( Patient patient );
+  /**
+   * Updates a patient.
+   *
+   * @param patient the patient to update
+   * @return the updated patient
+   */
+  Patient update(Patient patient);
 
 }

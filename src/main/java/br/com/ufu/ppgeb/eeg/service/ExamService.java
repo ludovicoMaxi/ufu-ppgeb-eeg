@@ -1,34 +1,77 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-
+import br.com.ufu.ppgeb.eeg.model.Exam;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Exam;
-
-
+/**
+ * Service interface for Exam operations.
+ */
 public interface ExamService {
 
-    Exam save( Exam exam );
+  /**
+   * Saves an exam.
+   *
+   * @param exam the exam to save
+   * @return the saved exam
+   */
+  Exam save(Exam exam);
 
+  /**
+   * Finds an exam by id.
+   *
+   * @param id the exam id
+   * @return the exam
+   */
+  Exam findById(Long id);
 
-    Exam findById( Long id );
+  /**
+   * Finds exams by filter.
+   *
+   * @param id the exam id
+   * @param bed the bed
+   * @param patientId the patient id
+   * @param examRequestId the exam request id
+   * @return the list of exams
+   */
+  List<Exam> findByFilter(Long id, String bed,
+      Long patientId, Long examRequestId);
 
+  /**
+   * Finds all exams.
+   *
+   * @return the list of exams
+   */
+  List<Exam> findAll();
 
-    List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId );
+  /**
+   * Deletes an exam by id.
+   *
+   * @param id the exam id
+   */
+  void delete(Long id);
 
+  /**
+   * Updates an exam.
+   *
+   * @param exam the exam to update
+   * @return the updated exam
+   */
+  Exam update(Exam exam);
 
-    List< Exam > findAll();
+  /**
+   * Updates exam medicaments.
+   *
+   * @param exam the exam with medicaments
+   * @return the updated exam
+   */
+  Exam updateExamMedicament(Exam exam);
 
-
-    void delete( Long id );
-
-
-    Exam update( Exam exam );
-
-
-    Exam updateExamMedicament( Exam exam );
-
-
-    Exam updateExamEquipment( Exam exam );
+  /**
+   * Updates exam equipment.
+   *
+   * @param exam the exam with equipment
+   * @return the updated exam
+   */
+  Exam updateExamEquipment(Exam exam);
 
 }

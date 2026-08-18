@@ -1,16 +1,24 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Exam;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.Exam;
-
-
 /**
- * Created by joaol on 24/12/18.
+ * Custom repository for Exam queries.
  */
 public interface ExamRepositoryCustom {
 
-    List< Exam > findByFilter( Long id, String bed, Long patientId, Long examRequestId );
+  /**
+   * Finds exams by filter.
+   *
+   * @param id the exam id
+   * @param bed the bed
+   * @param patientId the patient id
+   * @param examRequestId the exam request id
+   * @return the list of exams
+   */
+  List<Exam> findByFilter(
+      Long id, String bed, Long patientId,
+      Long examRequestId);
 
 }
