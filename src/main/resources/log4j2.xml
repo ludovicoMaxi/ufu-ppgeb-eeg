@@ -11,7 +11,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.example.log4j2demo" level="debug" additivity="false">
+        <Logger name="br.com.ufu.ppgeb.eeg" level="info" additivity="false">
             <AppenderRef ref="ConsoleAppender" />
         </Logger>
 

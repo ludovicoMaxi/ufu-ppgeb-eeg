@@ -5,12 +5,15 @@
   <meta charset='utf-8' />
   <meta name='viewport' content='width=device-width, initial-scale=1' />
   <title>UFU PPGEB EEG</title>
-  <link rel='stylesheet' href='/public/app.css' />
+  <link rel='icon' type='image/svg+xml' href='/public/favicon.svg' />
+  <link rel='stylesheet' th:href='@{/public/app.css(v=${cacheVersion})}' href='/public/app.css' />
 </head>
 
-<body class='skin-blue sidebar-mini'>
-  <div id="app"></div>
-  <script src='/public/app.js'></script>
+<body class='layout-fixed sidebar-expand-lg bg-body-tertiary'>
+  <div id="app">
+    <div style='font-family: sans-serif; padding: 2rem;'>Carregando aplicação...</div>
+  </div>
+  <script th:src='@{/public/app.js(v=${cacheVersion})}' src='/public/app.js'></script>
 </body>
 
 
