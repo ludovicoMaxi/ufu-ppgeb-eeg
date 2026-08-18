@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-import br.com.ufu.ppgeb.eeg.model.Contact;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Contact;
 
 /**
  * Custom repository for Contact queries.

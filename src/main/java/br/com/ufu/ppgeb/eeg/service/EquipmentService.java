@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-import br.com.ufu.ppgeb.eeg.model.Equipment;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Equipment;
 
 /**
  * Service interface for Equipment operations.

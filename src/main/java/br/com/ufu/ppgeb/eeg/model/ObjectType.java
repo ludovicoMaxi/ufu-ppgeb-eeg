@@ -1,10 +1,11 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 

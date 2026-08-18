@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.service;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.view.EpochList;
-import java.util.List;
 
 /**
  * Service interface for Epoch operations.

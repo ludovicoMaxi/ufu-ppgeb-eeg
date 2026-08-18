@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 
 /**
  * Service interface for ExamRequest operations.
