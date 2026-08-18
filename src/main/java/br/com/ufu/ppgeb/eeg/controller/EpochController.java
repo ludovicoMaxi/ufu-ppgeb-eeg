@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-
+import br.com.ufu.ppgeb.eeg.model.Epoch;
+import br.com.ufu.ppgeb.eeg.service.EpochService;
+import br.com.ufu.ppgeb.eeg.view.EpochList;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,51 +18,74 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.ufu.ppgeb.eeg.model.Epoch;
-import br.com.ufu.ppgeb.eeg.service.EpochService;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
-
-
+/**
+ * REST controller for epoch operations.
+ */
 @RestController
-@RequestMapping( "/api/epoch" )
+@RequestMapping("/api/epoch")
 @AllArgsConstructor
 public class EpochController {
 
-    private static final Logger logger = LoggerFactory.getLogger( EpochController.class );
+  private static final Logger logger =
+      LoggerFactory.getLogger(EpochController.class);
 
-    private final EpochService epochService;
+  private final EpochService epochService;
 
+  /**
+   * Lists epochs by exam id.
+   *
+   * @param examId the exam id
+   * @return the list of epochs
+   */
+  @GetMapping
+  public List<Epoch> list(
+      @RequestParam(value = "examId") Long examId) {
 
-    @GetMapping
-    public List< Epoch > list( @RequestParam( value = "examId" ) Long examId ) {
+    logger.info("Consultando épocas do exame id={}", examId);
+    return epochService.findByFilter(examId);
+  }
 
-        logger.info( "Consultando épocas do exame id={}", examId );
-        return epochService.findByFilter( examId );
-    }
+  /**
+   * Finds an epoch by id.
+   *
+   * @param id the epoch id
+   * @return the epoch
+   */
+  @GetMapping("/{id}")
+  public Epoch findById(@PathVariable(value = "id") Long id) {
 
+    logger.info("Consultando época id={}", id);
+    return epochService.findById(id);
+  }
 
-    @GetMapping( "/{id}" )
-    public Epoch findById( @PathVariable( value = "id" ) Long id ) {
+  /**
+   * Saves a new epoch.
+   *
+   * @param epoch the epoch to save
+   * @return the saved epoch
+   */
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public Epoch save(@RequestBody Epoch epoch) {
 
-        logger.info( "Consultando época id={}", id );
-        return epochService.findById( id );
-    }
+    logger.info("Recebendo criação de época");
+    return epochService.save(epoch);
+  }
 
+  /**
+   * Updates a list of epochs.
+   *
+   * @param epochList the epoch list to update
+   * @return the updated epoch list
+   */
+  @PutMapping
+  public EpochList updateList(
+      @RequestBody EpochList epochList) {
 
-    @PostMapping
-    @ResponseStatus( HttpStatus.CREATED )
-    public Epoch save( @RequestBody Epoch epoch ) {
-
-        logger.info( "Recebendo criação de época" );
-        return epochService.save( epoch );
-    }
-
-
-    @PutMapping
-    public EpochList updateList( @RequestBody EpochList epochList ) {
-
-        logger.info( "Recebendo atualização de épocas do exame id={}", epochList.getExamId() );
-        epochList.setEpochs( epochService.updateList( epochList ) );
-        return epochList;
-    }
+    logger.info(
+        "Recebendo atualização de épocas do exame id={}",
+        epochList.getExamId());
+    epochList.setEpochs(epochService.updateList(epochList));
+    return epochList;
+  }
 }

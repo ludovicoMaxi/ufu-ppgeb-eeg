@@ -1,15 +1,20 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.ufu.ppgeb.eeg.model.Patient;
-
-
 /**
- * Created by joaol on 05/12/18.
+ * Repository for Patient entities.
  */
-public interface PatientRepository extends JpaRepository< Patient, Long >, PatientRepositoryCustom {
+public interface PatientRepository
+    extends JpaRepository<Patient, Long>,
+    PatientRepositoryCustom {
 
-    boolean existsByDocumentNumber( String documentNumber );
+  /**
+   * Checks if patient exists by document number.
+   *
+   * @param documentNumber the document number
+   * @return true if exists
+   */
+  boolean existsByDocumentNumber(String documentNumber);
 }

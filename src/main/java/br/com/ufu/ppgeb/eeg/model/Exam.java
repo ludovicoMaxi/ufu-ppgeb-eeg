@@ -1,10 +1,8 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
+import br.com.ufu.ppgeb.eeg.utils.CompareDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -18,7 +16,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,135 +31,164 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import br.com.ufu.ppgeb.eeg.utils.CompareDate;
-
-
 /**
- * Created by joaol on 08/09/17.
+ * Represents an exam.
  */
 @Getter
 @Setter
-@NoArgsConstructor( access = AccessLevel.PROTECTED )
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table( name = "EXAM" )
-@EntityListeners( AuditingEntityListener.class )
+@Table(name = "EXAM")
+@EntityListeners(AuditingEntityListener.class)
 public class Exam {
 
-    @Id
-    @SequenceGenerator( name = "EXAM_SQ", sequenceName = "EXAM_SQ", allocationSize = 1 )
-    @GeneratedValue( generator = "EXAM_SQ", strategy = GenerationType.SEQUENCE )
-    private Long id;
+  @Id
+  @SequenceGenerator(
+      name = "EXAM_SQ",
+      sequenceName = "EXAM_SQ",
+      allocationSize = 1)
+  @GeneratedValue(
+      generator = "EXAM_SQ",
+      strategy = GenerationType.SEQUENCE)
+  private Long id;
 
-    @OneToOne
-    @JoinColumn( name = "EXAM_REQUEST_ID" )
-    private ExamRequest examRequest;
+  @OneToOne
+  @JoinColumn(name = "EXAM_REQUEST_ID")
+  private ExamRequest examRequest;
 
-    @ManyToOne
-    @JoinColumn( name = "PATIENT_ID", nullable = false )
-    private Patient patient;
+  @ManyToOne
+  @JoinColumn(name = "PATIENT_ID", nullable = false)
+  private Patient patient;
 
-    @Column( name = "ACHIEVEMENT_DATE", nullable = false )
-    @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
-    private Date achievementDate;
+  @Column(name = "ACHIEVEMENT_DATE", nullable = false)
+  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+  private Date achievementDate;
 
-    @Column( name = "MEDICAL_REPORT", length = 256 )
-    private String medicalReport;
+  @Column(name = "MEDICAL_REPORT", length = 256)
+  private String medicalReport;
 
-    @Column( name = "CONCLUSION", length = 256 )
-    private String conclusion;
+  @Column(name = "CONCLUSION", length = 256)
+  private String conclusion;
 
-    @Column( name = "BED", length = 256 )
-    private String bed;
+  @Column(name = "BED", length = 256)
+  private String bed;
 
-    @Column( name = "HEIGHT" )
-    private Long height;
+  @Column(name = "HEIGHT")
+  private Long height;
 
-    @Column( name = "WEIGHT" )
-    private Double weight;
+  @Column(name = "WEIGHT")
+  private Double weight;
 
-    @Column( name = "CLINICAL_DATA", length = 256 )
-    private String clinicalData;
+  @Column(name = "CLINICAL_DATA", length = 256)
+  private String clinicalData;
 
-    @OneToMany( mappedBy = "exam", fetch = FetchType.EAGER )
-    @Fetch( FetchMode.SUBSELECT )
-    @JsonManagedReference
-    private List< ExamMedicament > examMedicaments;
+  @OneToMany(mappedBy = "exam", fetch = FetchType.EAGER)
+  @Fetch(FetchMode.SUBSELECT)
+  @JsonManagedReference
+  private List<ExamMedicament> examMedicaments;
 
-    @OneToMany( mappedBy = "exam", fetch = FetchType.EAGER )
-    @Fetch( FetchMode.SUBSELECT )
-    @JsonManagedReference
-    private List< ExamEquipment > examEquipments;
+  @OneToMany(mappedBy = "exam", fetch = FetchType.EAGER)
+  @Fetch(FetchMode.SUBSELECT)
+  @JsonManagedReference
+  private List<ExamEquipment> examEquipments;
 
-    @CreatedDate
-    @Column( name = "CREATED_AT", nullable = false, updatable = false )
-    @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
-    private Date createdAt;
+  @CreatedDate
+  @Column(name = "CREATED_AT", nullable = false,
+      updatable = false)
+  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+  private Date createdAt;
 
-    @CreatedBy
-    @Column( name = "CREATED_BY", nullable = false, updatable = false )
-    private String createdBy;
+  @CreatedBy
+  @Column(name = "CREATED_BY", nullable = false,
+      updatable = false)
+  private String createdBy;
 
-    @LastModifiedDate
-    @Column( name = "UPDATED_AT" )
-    @JsonFormat( pattern = "dd/MM/yyyy HH:mm:ss" )
-    private Date updatedAt;
+  @LastModifiedDate
+  @Column(name = "UPDATED_AT")
+  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+  private Date updatedAt;
 
-    @LastModifiedBy
-    @Column( name = "UPDATED_BY", length = 20 )
-    private String updatedBy;
+  @LastModifiedBy
+  @Column(name = "UPDATED_BY", length = 20)
+  private String updatedBy;
 
+  /**
+   * Constructs an Exam with the given id.
+   *
+   * @param id the exam id
+   */
+  public Exam(Long id) {
 
-    public Exam( Long id ) {
+    this.id = id;
+  }
 
-        this.id = id;
+  @Override
+  public boolean equals(Object o) {
+
+    if (this == o) {
+      return true;
     }
-
-
-    @Override
-    public boolean equals( Object o ) {
-
-        if ( this == o )
-            return true;
-        if ( !( o instanceof Exam exam ) )
-            return false;
-        return Objects.equals( getId(), exam.getId() ) && //
-            Objects.equals( getExamRequest(), exam.getExamRequest() ) && //
-            Objects.equals( getPatient(), exam.getPatient() ) && //
-            CompareDate.compareDates( getAchievementDate(), exam.getAchievementDate() ) && //
-            Objects.equals( getMedicalReport(), exam.getMedicalReport() ) && //
-            Objects.equals( getConclusion(), exam.getConclusion() ) && //
-            Objects.equals( getBed(), exam.getBed() ) && //
-            Objects.equals( getHeight(), exam.getHeight() ) && //
-            Objects.equals( getWeight(), exam.getWeight() ) && //
-            Objects.equals( getClinicalData(), exam.getClinicalData() );
+    if (!(o instanceof Exam exam)) {
+      return false;
     }
-
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(
-            getId(),
-            getPatient(),
+    return Objects.equals(getId(), exam.getId())
+        && Objects.equals(
+            getExamRequest(), exam.getExamRequest())
+        && Objects.equals(
+            getPatient(), exam.getPatient())
+        && CompareDate.compareDates(
             getAchievementDate(),
-            getMedicalReport(),
-            getConclusion(),
-            getBed(),
-            getHeight(),
-            getWeight(),
-            getClinicalData() );
-    }
+            exam.getAchievementDate())
+        && Objects.equals(
+            getMedicalReport(), exam.getMedicalReport())
+        && Objects.equals(
+            getConclusion(), exam.getConclusion())
+        && Objects.equals(getBed(), exam.getBed())
+        && Objects.equals(
+            getHeight(), exam.getHeight())
+        && Objects.equals(
+            getWeight(), exam.getWeight())
+        && Objects.equals(
+            getClinicalData(), exam.getClinicalData());
+  }
 
+  @Override
+  public int hashCode() {
 
-    @Override
-    public String toString() {
+    return Objects.hash(getId(),
+        getPatient(),
+        getAchievementDate(),
+        getMedicalReport(),
+        getConclusion(),
+        getBed(),
+        getHeight(),
+        getWeight(),
+        getClinicalData());
+  }
 
-        return "Exam{" + "id=" + id + ", examRequest=" + examRequest + ", patient=" + patient + ", achievementDate=" + achievementDate + ", medicalReport='"
-            + medicalReport + '\'' + ", conclusion='" + conclusion + '\'' + ", bed='" + bed + '\'' + ", height=" + height + ", weight=" + weight
-            + ", clinicalData='" + clinicalData + '\'' + ", examMedicaments=" + examMedicaments + ", examEquipments=" + examEquipments + ", createdAt="
-            + createdAt + ", createdBy='" + createdBy + '\'' + ", updatedAt=" + updatedAt + ", updatedBy='" + updatedBy + '\'' + '}';
-    }
+  @Override
+  public String toString() {
+
+    return "Exam{"
+        + "id=" + id
+        + ", examRequest=" + examRequest
+        + ", patient=" + patient
+        + ", achievementDate=" + achievementDate
+        + ", medicalReport='"
+        + medicalReport + '\''
+        + ", conclusion='"
+        + conclusion + '\''
+        + ", bed='" + bed + '\''
+        + ", height=" + height
+        + ", weight=" + weight
+        + ", clinicalData='"
+        + clinicalData + '\''
+        + ", examMedicaments=" + examMedicaments
+        + ", examEquipments=" + examEquipments
+        + ", createdAt=" + createdAt
+        + ", createdBy='" + createdBy + '\''
+        + ", updatedAt=" + updatedAt
+        + ", updatedBy='" + updatedBy + '\''
+        + '}';
+  }
 }

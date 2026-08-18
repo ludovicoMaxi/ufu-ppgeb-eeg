@@ -1,28 +1,62 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-
+import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import java.util.List;
 
-import br.com.ufu.ppgeb.eeg.model.ExamRequest;
-
-
+/**
+ * Service interface for ExamRequest operations.
+ */
 public interface ExamRequestService {
 
-    ExamRequest save( ExamRequest examRequest );
+  /**
+   * Saves an exam request.
+   *
+   * @param examRequest the exam request to save
+   * @return the saved exam request
+   */
+  ExamRequest save(ExamRequest examRequest);
 
+  /**
+   * Finds an exam request by id.
+   *
+   * @param id the exam request id
+   * @return the exam request
+   */
+  ExamRequest findById(Long id);
 
-    ExamRequest findById( Long id );
+  /**
+   * Finds exam requests by filter.
+   *
+   * @param medicalRecord the medical record
+   * @param medicalRequest the medical request
+   * @param patientId the patient id
+   * @param doctorRequestant the doctor requestant
+   * @return the list of exam requests
+   */
+  List<ExamRequest> findByFilter(Long medicalRecord,
+      Long medicalRequest, Long patientId,
+      String doctorRequestant);
 
+  /**
+   * Finds all exam requests.
+   *
+   * @return the list of exam requests
+   */
+  List<ExamRequest> findAll();
 
-    List< ExamRequest > findByFilter( Long medicalRecord, Long medicalRequest, Long patientId, String doctorRequestant );
+  /**
+   * Deletes an exam request by id.
+   *
+   * @param id the exam request id
+   */
+  void delete(Long id);
 
-
-    List< ExamRequest > findAll();
-
-
-    void delete( Long id );
-
-
-    ExamRequest update( ExamRequest examRequest );
+  /**
+   * Updates an exam request.
+   *
+   * @param examRequest the exam request to update
+   * @return the updated exam request
+   */
+  ExamRequest update(ExamRequest examRequest);
 
 }

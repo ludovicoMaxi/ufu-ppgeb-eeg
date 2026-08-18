@@ -1,26 +1,25 @@
 package br.com.ufu.ppgeb.eeg.view;
 
-
+import br.com.ufu.ppgeb.eeg.model.Epoch;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
-import br.com.ufu.ppgeb.eeg.model.Epoch;
-
-
+/**
+ * View model for a list of epochs.
+ */
 @Getter
 @Setter
 public class EpochList {
 
-    private Long examId;
+  private Long examId;
 
-    private List< Epoch > epochs;
+  private List<Epoch> epochs;
 
+  @Override
+  public String toString() {
 
-    @Override
-    public String toString() {
-
-        return "EpochList{" + "examId=" + examId + ", epochs=" + epochs + '}';
-    }
+    return "EpochList{" + "examId=" + examId
+        + ", epochs=" + epochs + '}';
+  }
 }

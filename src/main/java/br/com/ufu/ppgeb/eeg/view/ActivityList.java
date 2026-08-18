@@ -1,26 +1,25 @@
 package br.com.ufu.ppgeb.eeg.view;
 
-
+import br.com.ufu.ppgeb.eeg.model.Activity;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
-import br.com.ufu.ppgeb.eeg.model.Activity;
-
-
+/**
+ * View model for a list of activities.
+ */
 @Getter
 @Setter
 public class ActivityList {
 
-    private Long examId;
+  private Long examId;
 
-    private List< Activity > activities;
+  private List<Activity> activities;
 
+  @Override
+  public String toString() {
 
-    @Override
-    public String toString() {
-
-        return "ActivityList{" + "examId=" + examId + ", activities=" + activities + '}';
-    }
+    return "ActivityList{" + "examId=" + examId
+        + ", activities=" + activities + '}';
+  }
 }

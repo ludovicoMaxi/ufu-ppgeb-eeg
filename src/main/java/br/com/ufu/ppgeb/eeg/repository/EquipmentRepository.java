@@ -1,21 +1,29 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
+import br.com.ufu.ppgeb.eeg.model.Equipment;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.ufu.ppgeb.eeg.model.Equipment;
-
-
 /**
- * Created by joaol on 10/01/19.
+ * Repository for Equipment entities.
  */
-public interface EquipmentRepository extends JpaRepository< Equipment, Long > {
+public interface EquipmentRepository
+    extends JpaRepository<Equipment, Long> {
 
-    List< Equipment > findByName( String name );
+  /**
+   * Finds equipment by name.
+   *
+   * @param name the equipment name
+   * @return the list of equipment
+   */
+  List<Equipment> findByName(String name);
 
-
-    boolean existsByName( String name );
+  /**
+   * Checks if equipment exists by name.
+   *
+   * @param name the equipment name
+   * @return true if exists
+   */
+  boolean existsByName(String name);
 
 }

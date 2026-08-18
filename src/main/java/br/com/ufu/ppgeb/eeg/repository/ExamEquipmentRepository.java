@@ -1,19 +1,22 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
-
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Created by joaol on 10/01/19.
+ * Repository for ExamEquipment entities.
  */
-public interface ExamEquipmentRepository extends JpaRepository< ExamEquipment, Long > {
+public interface ExamEquipmentRepository
+    extends JpaRepository<ExamEquipment, Long> {
 
-    List< ExamEquipment > findByExam( Exam exam );
+  /**
+   * Finds exam equipment by exam.
+   *
+   * @param exam the exam
+   * @return the list of exam equipment
+   */
+  List<ExamEquipment> findByExam(Exam exam);
 
 }
