@@ -3,6 +3,9 @@ package br.com.ufu.ppgeb.eeg.repository.impl;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.repository.ExamRequestRepositoryCustom;
 import jakarta.persistence.EntityManager;
@@ -11,8 +14,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -27,16 +28,14 @@ public class ExamRequestRepositoryImpl
   private EntityManager em;
 
   @Override
-  public List<ExamRequest> findByFilter(
-      Long medicalRecord, Long medicalRequest,
+  public List<ExamRequest> findByFilter(Long medicalRecord, Long medicalRequest,
       Long patientId, String doctorRequestant) {
 
     if (StringUtils.isBlank(doctorRequestant)
         && isNull(medicalRequest)
         && isNull(patientId)
         && isNull(medicalRecord)) {
-      throw new IllegalArgumentException(
-          "Informe pelo menos um campo para consultar!");
+      throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -46,21 +45,17 @@ public class ExamRequestRepositoryImpl
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(doctorRequestant)) {
-      predicates.add(cb.like(
-          root.get("doctorRequestant"),
+      predicates.add(cb.like(root.get("doctorRequestant"),
           "%" + doctorRequestant + "%"));
     }
     if (nonNull(medicalRecord)) {
-      predicates.add(cb.equal(
-          root.get("medicalRecord"), medicalRecord));
+      predicates.add(cb.equal(root.get("medicalRecord"), medicalRecord));
     }
     if (nonNull(medicalRequest)) {
-      predicates.add(cb.equal(
-          root.get("medicalRequest"), medicalRequest));
+      predicates.add(cb.equal(root.get("medicalRequest"), medicalRequest));
     }
     if (nonNull(patientId)) {
-      predicates.add(cb.equal(
-          root.get("patient").get("id"), patientId));
+      predicates.add(cb.equal(root.get("patient").get("id"), patientId));
     }
 
     cq.where(predicates.toArray(new Predicate[0]));

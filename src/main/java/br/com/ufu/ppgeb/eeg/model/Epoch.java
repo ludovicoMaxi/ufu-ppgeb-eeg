@@ -1,5 +1,8 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Date;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,8 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -30,12 +31,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Epoch {
 
   @Id
-  @SequenceGenerator(
-      name = "EPOCH_SQ",
+  @SequenceGenerator(name = "EPOCH_SQ",
       sequenceName = "EPOCH_SQ",
       allocationSize = 1)
-  @GeneratedValue(
-      generator = "EPOCH_SQ",
+  @GeneratedValue(generator = "EPOCH_SQ",
       strategy = GenerationType.SEQUENCE)
   private Long id;
 
@@ -82,12 +81,9 @@ public class Epoch {
     }
     return Objects.equals(getId(), epoch.getId())
         && Objects.equals(getExamId(), epoch.getExamId())
-        && Objects.equals(
-            getStartTime(), epoch.getStartTime())
-        && Objects.equals(
-            getDuration(), epoch.getDuration())
-        && Objects.equals(
-            getDescription(), epoch.getDescription());
+        && Objects.equals(getStartTime(), epoch.getStartTime())
+        && Objects.equals(getDuration(), epoch.getDuration())
+        && Objects.equals(getDescription(), epoch.getDescription());
   }
 
   @Override

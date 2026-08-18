@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.service;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
-import java.util.List;
 
 /**
  * Service interface for Contact operations.
@@ -42,8 +43,7 @@ public interface ContactService {
    * @param objectId the object id
    * @return the list of contacts
    */
-  List<Contact> findByFilter(
-      Long objectType, Long objectId);
+  List<Contact> findByFilter(Long objectType, Long objectId);
 
   /**
    * Finds all contacts.

@@ -41,8 +41,7 @@ class ApiIntegrationTest {
 
   @Test
   void shouldListUnits() throws Exception {
-    mockMvc.perform(
-            get("/api/unit").with(httpBasic("joaol", "123")))
+    mockMvc.perform(get("/api/unit").with(httpBasic("joaol", "123")))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(3))
         .andExpect(jsonPath("$[0].name").value("mg"));
@@ -168,13 +167,10 @@ class ApiIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.patient.name")
             .value("JOAO LUDOVICO"))
-        .andExpect(jsonPath(
-            "$.examMedicaments[0].amount").value(50))
-        .andExpect(jsonPath(
-            "$.examMedicaments[0].medicament.name")
+        .andExpect(jsonPath("$.examMedicaments[0].amount").value(50))
+        .andExpect(jsonPath("$.examMedicaments[0].medicament.name")
             .value("DIPIRONA"))
-        .andExpect(jsonPath(
-            "$.examEquipments[0].equipment.name")
+        .andExpect(jsonPath("$.examEquipments[0].equipment.name")
             .value("BRAINVISIAN"));
   }
 
@@ -185,8 +181,7 @@ class ApiIntegrationTest {
             .with(httpBasic("joaol", "123")))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath(
-            "$[0].examMedicaments[0].amount").value(50));
+        .andExpect(jsonPath("$[0].examMedicaments[0].amount").value(50));
   }
 
   @Test

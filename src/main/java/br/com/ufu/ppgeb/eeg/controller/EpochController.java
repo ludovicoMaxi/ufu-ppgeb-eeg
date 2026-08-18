@@ -1,9 +1,10 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
 import br.com.ufu.ppgeb.eeg.view.EpochList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,7 @@ public class EpochController {
    * @return the list of epochs
    */
   @GetMapping
-  public List<Epoch> list(
-      @RequestParam(value = "examId") Long examId) {
+  public List<Epoch> list(@RequestParam(value = "examId") Long examId) {
 
     logger.info("Consultando épocas do exame id={}", examId);
     return epochService.findByFilter(examId);
@@ -79,11 +79,9 @@ public class EpochController {
    * @return the updated epoch list
    */
   @PutMapping
-  public EpochList updateList(
-      @RequestBody EpochList epochList) {
+  public EpochList updateList(@RequestBody EpochList epochList) {
 
-    logger.info(
-        "Recebendo atualização de épocas do exame id={}",
+    logger.info("Recebendo atualização de épocas do exame id={}",
         epochList.getExamId());
     epochList.setEpochs(epochService.updateList(epochList));
     return epochList;

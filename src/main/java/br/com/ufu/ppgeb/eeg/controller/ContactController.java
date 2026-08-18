@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +40,12 @@ public class ContactController {
    * @return the list of contacts
    */
   @GetMapping
-  public List<Contact> list(
-      @RequestParam(value = "objectType",
+  public List<Contact> list(@RequestParam(value = "objectType",
           required = false) Long objectType,
       @RequestParam(value = "objectId",
           required = false) Long objectId) {
 
-    logger.info(
-        "Consultando contatos; objectType={}, objectId={}",
+    logger.info("Consultando contatos; objectType={}, objectId={}",
         objectType, objectId);
     return contactService.findByFilter(objectType, objectId);
   }
@@ -100,8 +99,7 @@ public class ContactController {
   @PutMapping
   public Contact update(@RequestBody Contact contact) {
 
-    logger.info(
-        "Recebendo atualização de contato id={}",
+    logger.info("Recebendo atualização de contato id={}",
         contact.getId());
     return contactService.update(contact);
   }

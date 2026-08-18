@@ -1,5 +1,8 @@
 package br.com.ufu.ppgeb.eeg.model;
 
+import java.util.Date;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,8 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -82,12 +83,9 @@ public class Activity {
     }
     return Objects.equals(getId(), activity.getId())
         && Objects.equals(getExamId(), activity.getExamId())
-        && Objects.equals(
-            getStartTime(), activity.getStartTime())
-        && Objects.equals(
-            getDuration(), activity.getDuration())
-        && Objects.equals(
-            getDescription(), activity.getDescription());
+        && Objects.equals(getStartTime(), activity.getStartTime())
+        && Objects.equals(getDuration(), activity.getDuration())
+        && Objects.equals(getDescription(), activity.getDescription());
   }
 
   @Override

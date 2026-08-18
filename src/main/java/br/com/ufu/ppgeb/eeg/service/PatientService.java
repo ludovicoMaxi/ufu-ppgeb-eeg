@@ -1,7 +1,8 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-import br.com.ufu.ppgeb.eeg.model.Patient;
 import java.util.List;
+
+import br.com.ufu.ppgeb.eeg.model.Patient;
 
 /**
  * Service interface for Patient operations.
@@ -31,8 +32,7 @@ public interface PatientService {
    * @param documentNumber the document number
    * @return the list of patients
    */
-  List<Patient> findByFilter(
-      String name, String documentNumber);
+  List<Patient> findByFilter(String name, String documentNumber);
 
   /**
    * Finds all patients.

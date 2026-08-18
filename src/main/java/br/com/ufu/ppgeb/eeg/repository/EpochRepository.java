@@ -1,9 +1,9 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 /**
  * Repository for Epoch entities.

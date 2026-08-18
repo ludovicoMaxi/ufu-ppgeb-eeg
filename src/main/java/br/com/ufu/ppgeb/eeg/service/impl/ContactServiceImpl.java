@@ -3,12 +3,13 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
 import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,20 +42,16 @@ public class ContactServiceImpl implements ContactService {
   public void saveContactList(List<Contact> contactList,
       ObjectType objectType, Long objectId) {
 
-    Assert.notEmpty(
-        contactList, "contactList cannot be empty.");
-    Assert.notNull(
-        objectType, "objectType cannot be null.");
-    Assert.notNull(
-        objectId, "objectId cannot be empty.");
+    Assert.notEmpty(contactList, "contactList cannot be empty.");
+    Assert.notNull(objectType, "objectType cannot be null.");
+    Assert.notNull(objectId, "objectId cannot be empty.");
 
     for (Contact contact : contactList) {
       contact.setObjectId(objectId);
       contact.setObjectType(objectType.getId());
       save(contact);
     }
-    log.info(
-        "Lista de contatos salva; "
+    log.info("Lista de contatos salva; "
             + "objectType={}, objectId={}, quantidade={}",
         objectType.getId(), objectId, contactList.size());
   }
@@ -78,27 +75,22 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Contact> findByFilter(
-      Long objectType, Long objectId) {
+  public List<Contact> findByFilter(Long objectType, Long objectId) {
 
     if (isNull(objectType) && isNull(objectId)) {
       return findAll();
     }
 
     validateSearchContact(objectType, objectId);
-    return contactRepository.findByFilter(
-        objectType, objectId);
+    return contactRepository.findByFilter(objectType, objectId);
   }
 
-  private void validateSearchContact(
-      Long objectType, Long objectId) {
+  private void validateSearchContact(Long objectType, Long objectId) {
 
     if (isNull(objectType)) {
-      throw new IllegalArgumentException(
-          "ObjectType deve ser informado!");
+      throw new IllegalArgumentException("ObjectType deve ser informado!");
     } else if (isNull(objectId)) {
-      throw new IllegalArgumentException(
-          "ObjectId deve ser informado!");
+      throw new IllegalArgumentException("ObjectId deve ser informado!");
     }
   }
 
@@ -119,14 +111,12 @@ public class ContactServiceImpl implements ContactService {
   public Contact update(Contact contact) {
 
     validateContact(contact);
-    Assert.notNull(
-        contact.getId(), "id cannot be null.");
+    Assert.notNull(contact.getId(), "id cannot be null.");
 
     Contact oldContact = contactRepository
         .findById(contact.getId())
         .orElseThrow(() ->
-            new ResourceNotFoundException(
-                "Contact", contact.getId()));
+            new ResourceNotFoundException("Contact", contact.getId()));
 
     oldContact.setName(contact.getName());
     oldContact.setActive(contact.getActive());
@@ -144,11 +134,9 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public void validateContactList(
-      List<Contact> contactList) {
+  public void validateContactList(List<Contact> contactList) {
 
-    Assert.notEmpty(
-        contactList, "contactList cannot be empty.");
+    Assert.notEmpty(contactList, "contactList cannot be empty.");
 
     boolean hasMain = false;
     for (Contact contact : contactList) {
@@ -156,27 +144,22 @@ public class ContactServiceImpl implements ContactService {
       if (nonNull(contact.getMain())
           && contact.getMain()) {
         if (hasMain) {
-          throw new IllegalArgumentException(
-              "Allowed only one main.");
+          throw new IllegalArgumentException("Allowed only one main.");
         }
         hasMain = true;
       }
     }
 
     if (!hasMain) {
-      throw new IllegalArgumentException(
-          "Must have a principal.");
+      throw new IllegalArgumentException("Must have a principal.");
     }
   }
 
   private void validateContact(Contact contact) {
 
-    Assert.notNull(
-        contact, "contact cannot be null.");
-    Assert.hasText(
-        contact.getName(), "name cannot be empty.");
-    Assert.hasText(
-        contact.getCellphone(),
+    Assert.notNull(contact, "contact cannot be null.");
+    Assert.hasText(contact.getName(), "name cannot be empty.");
+    Assert.hasText(contact.getCellphone(),
         "cellphone cannot be empty.");
   }
 }

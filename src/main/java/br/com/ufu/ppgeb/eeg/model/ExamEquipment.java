@@ -2,6 +2,9 @@ package br.com.ufu.ppgeb.eeg.model;
 
 import static java.util.Objects.nonNull;
 
+import java.util.Date;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -14,8 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -90,18 +91,15 @@ public class ExamEquipment {
       return false;
     }
     return Objects.equals(getExamId(), that.getExamId())
-        && Objects.equals(
-            getEquipment(), that.getEquipment())
-        && Objects.equals(
-            getAmount(), that.getAmount())
+        && Objects.equals(getEquipment(), that.getEquipment())
+        && Objects.equals(getAmount(), that.getAmount())
         && Objects.equals(getUnit(), that.getUnit());
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(
-        getExam(), getEquipment(), getAmount());
+    return Objects.hash(getExam(), getEquipment(), getAmount());
   }
 
   /**

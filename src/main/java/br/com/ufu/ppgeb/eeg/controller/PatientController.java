@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,7 @@ public class PatientController {
       @RequestParam(value = "documentNumber",
           required = false) String documentNumber) {
 
-    logger.info(
-        "Consultando pacientes; name={}, documentNumber={}",
+    logger.info("Consultando pacientes; name={}, documentNumber={}",
         name, documentNumber);
     return patientService.findByFilter(name, documentNumber);
   }
@@ -86,8 +86,7 @@ public class PatientController {
   @PutMapping
   public Patient update(@RequestBody Patient patient) {
 
-    logger.info(
-        "Recebendo atualização de paciente id={}",
+    logger.info("Recebendo atualização de paciente id={}",
         patient.getId());
     return patientService.update(patient);
   }

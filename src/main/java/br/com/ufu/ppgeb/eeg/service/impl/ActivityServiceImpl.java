@@ -3,15 +3,16 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,12 +46,9 @@ public class ActivityServiceImpl implements ActivityService {
   private void validateActivity(Activity activity) {
 
     Assert.notNull(activity, "Activity cannot be null.");
-    Assert.notNull(
-        activity.getStartTime(), "start time cannot be null.");
-    Assert.notNull(
-        activity.getDuration(), "duration cannot be null.");
-    Assert.hasText(
-        activity.getDescription(),
+    Assert.notNull(activity.getStartTime(), "start time cannot be null.");
+    Assert.notNull(activity.getDuration(), "duration cannot be null.");
+    Assert.hasText(activity.getDescription(),
         "description cannot be empty.");
   }
 
@@ -94,21 +92,16 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public List<Activity> updateList(
-      ActivityList activityList) {
+  public List<Activity> updateList(ActivityList activityList) {
 
-    Assert.notNull(
-        activityList, "ActivityList cannot be null.");
-    Assert.notNull(
-        activityList.getExamId(),
+    Assert.notNull(activityList, "ActivityList cannot be null.");
+    Assert.notNull(activityList.getExamId(),
         "ExamId cannot be null.");
 
     Map<Long, Activity> oldActivitiesById = new HashMap<>();
     for (Activity oldActivity
-        : activityRepository.findByExamId(
-            activityList.getExamId())) {
-      oldActivitiesById.put(
-          oldActivity.getId(), oldActivity);
+        : activityRepository.findByExamId(activityList.getExamId())) {
+      oldActivitiesById.put(oldActivity.getId(), oldActivity);
     }
 
     List<Activity> currentActivities =
@@ -122,8 +115,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (nonNull(activity.getExamId())
             && !activity.getExamId()
                 .equals(activityList.getExamId())) {
-          throw new IllegalArgumentException(
-              activity
+          throw new IllegalArgumentException(activity
                   + " is not same examId in update="
                   + activityList.getExamId());
         }
@@ -135,8 +127,7 @@ public class ActivityServiceImpl implements ActivityService {
           Activity oldActivity =
               oldActivitiesById.remove(activity.getId());
           if (isNull(oldActivity)) {
-            throw new IllegalArgumentException(
-                "Activity with id="
+            throw new IllegalArgumentException("Activity with id="
                     + activity.getId()
                     + " not exist by examID="
                     + activityList.getExamId());
@@ -157,8 +148,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     activityRepository.deleteAll(oldActivitiesById.values());
 
-    log.info(
-        "Atividades do exame atualizadas; "
+    log.info("Atividades do exame atualizadas; "
             + "examId={}, quantidade={}",
         activityList.getExamId(), savedActivities.size());
     return savedActivities;

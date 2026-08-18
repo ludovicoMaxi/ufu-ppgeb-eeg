@@ -1,8 +1,9 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.util.List;
+
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +51,10 @@ public class ExamController {
       @RequestParam(value = "examRequestId",
           required = false) Long examRequestId) {
 
-    logger.info(
-        "Consultando exames; id={}, bed={}, "
+    logger.info("Consultando exames; id={}, bed={}, "
             + "patientId={}, examRequestId={}",
         id, bed, patientId, examRequestId);
-    return examService.findByFilter(
-        id, bed, patientId, examRequestId);
+    return examService.findByFilter(id, bed, patientId, examRequestId);
   }
 
   /**
@@ -94,8 +93,7 @@ public class ExamController {
   @PutMapping
   public Exam update(@RequestBody Exam exam) {
 
-    logger.info(
-        "Recebendo atualização de exame id={}",
+    logger.info("Recebendo atualização de exame id={}",
         exam.getId());
     return examService.update(exam);
   }
@@ -107,11 +105,9 @@ public class ExamController {
    * @return the updated exam
    */
   @PutMapping("/medicament")
-  public Exam updateExamMedicament(
-      @RequestBody Exam examMedicamentList) {
+  public Exam updateExamMedicament(@RequestBody Exam examMedicamentList) {
 
-    logger.info(
-        "Recebendo atualização de medicamentos do exame id={}",
+    logger.info("Recebendo atualização de medicamentos do exame id={}",
         examMedicamentList.getId());
     return examService.updateExamMedicament(examMedicamentList);
   }
@@ -123,11 +119,9 @@ public class ExamController {
    * @return the updated exam
    */
   @PutMapping("/equipment")
-  public Exam updateExamEquipment(
-      @RequestBody Exam examEquipmentList) {
+  public Exam updateExamEquipment(@RequestBody Exam examEquipmentList) {
 
-    logger.info(
-        "Recebendo atualização de equipamentos do exame id={}",
+    logger.info("Recebendo atualização de equipamentos do exame id={}",
         examEquipmentList.getId());
     return examService.updateExamEquipment(examEquipmentList);
   }

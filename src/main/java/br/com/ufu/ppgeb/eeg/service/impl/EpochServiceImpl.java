@@ -3,15 +3,16 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.repository.EpochRepository;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
 import br.com.ufu.ppgeb.eeg.view.EpochList;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,12 +46,9 @@ public class EpochServiceImpl implements EpochService {
   private void validateEpoch(Epoch epoch) {
 
     Assert.notNull(epoch, "Epoch cannot be null.");
-    Assert.notNull(
-        epoch.getStartTime(), "start time cannot be null.");
-    Assert.notNull(
-        epoch.getDuration(), "duration cannot be null.");
-    Assert.hasText(
-        epoch.getDescription(),
+    Assert.notNull(epoch.getStartTime(), "start time cannot be null.");
+    Assert.notNull(epoch.getDuration(), "duration cannot be null.");
+    Assert.hasText(epoch.getDescription(),
         "description cannot be empty.");
   }
 
@@ -96,15 +94,12 @@ public class EpochServiceImpl implements EpochService {
   @Transactional(rollbackFor = Exception.class)
   public List<Epoch> updateList(EpochList epochList) {
 
-    Assert.notNull(
-        epochList, "EpochList cannot be null.");
-    Assert.notNull(
-        epochList.getExamId(), "ExamId cannot be null.");
+    Assert.notNull(epochList, "EpochList cannot be null.");
+    Assert.notNull(epochList.getExamId(), "ExamId cannot be null.");
 
     Map<Long, Epoch> oldEpochsById = new HashMap<>();
     for (Epoch oldEpoch
-        : epochRepository.findByExamId(
-            epochList.getExamId())) {
+        : epochRepository.findByExamId(epochList.getExamId())) {
       oldEpochsById.put(oldEpoch.getId(), oldEpoch);
     }
 
@@ -118,8 +113,7 @@ public class EpochServiceImpl implements EpochService {
         if (nonNull(epoch.getExamId())
             && !epoch.getExamId()
                 .equals(epochList.getExamId())) {
-          throw new IllegalArgumentException(
-              epoch
+          throw new IllegalArgumentException(epoch
                   + " is not same examId in update="
                   + epochList.getExamId());
         }
@@ -131,8 +125,7 @@ public class EpochServiceImpl implements EpochService {
           Epoch oldEpoch =
               oldEpochsById.remove(epoch.getId());
           if (isNull(oldEpoch)) {
-            throw new IllegalArgumentException(
-                "Epoch with id="
+            throw new IllegalArgumentException("Epoch with id="
                     + epoch.getId()
                     + " not exist by examID="
                     + epochList.getExamId());
@@ -153,8 +146,7 @@ public class EpochServiceImpl implements EpochService {
 
     epochRepository.deleteAll(oldEpochsById.values());
 
-    log.info(
-        "Épocas do exame atualizadas; "
+    log.info("Épocas do exame atualizadas; "
             + "examId={}, quantidade={}",
         epochList.getExamId(), savedEpochs.size());
     return savedEpochs;
