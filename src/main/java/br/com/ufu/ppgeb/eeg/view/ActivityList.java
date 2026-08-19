@@ -20,7 +20,6 @@ public class ActivityList {
   @Override
   public String toString() {
 
-    return "ActivityList{" + "examId=" + examId
-        + ", activities=" + activities + '}';
+    return "ActivityList{" + "examId=" + examId + ", activities=" + activities + '}';
   }
 }

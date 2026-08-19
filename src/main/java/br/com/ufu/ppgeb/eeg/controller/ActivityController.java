@@ -27,8 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ActivityController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(ActivityController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
   private final ActivityService activityService;
 
@@ -81,8 +80,7 @@ public class ActivityController {
   @PutMapping
   public ActivityList updateList(@RequestBody ActivityList activityList) {
 
-    logger.info("Recebendo atualização de atividades do exame id={}",
-        activityList.getExamId());
+    logger.info("Recebendo atualização de atividades do exame id={}", activityList.getExamId());
     activityList.setActivities(activityService.updateList(activityList));
     return activityList;
   }

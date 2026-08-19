@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ExamController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(ExamController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExamController.class);
 
   private final ExamService examService;
 
@@ -51,8 +50,7 @@ public class ExamController {
       @RequestParam(value = "examRequestId",
           required = false) Long examRequestId) {
 
-    logger.info("Consultando exames; id={}, bed={}, "
-            + "patientId={}, examRequestId={}",
+    logger.info("Consultando exames; id={}, bed={}, patientId={}, examRequestId={}",
         id, bed, patientId, examRequestId);
     return examService.findByFilter(id, bed, patientId, examRequestId);
   }
@@ -93,8 +91,7 @@ public class ExamController {
   @PutMapping
   public Exam update(@RequestBody Exam exam) {
 
-    logger.info("Recebendo atualização de exame id={}",
-        exam.getId());
+    logger.info("Recebendo atualização de exame id={}", exam.getId());
     return examService.update(exam);
   }
 

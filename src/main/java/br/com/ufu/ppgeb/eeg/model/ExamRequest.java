@@ -108,25 +108,17 @@ public class ExamRequest {
     if (!(o instanceof ExamRequest examRequest)) {
       return false;
     }
-    return Objects.equals(getMedicalRecord(),
-            examRequest.getMedicalRecord())
-        && Objects.equals(getMedicalRequest(),
-            examRequest.getMedicalRequest())
+    return Objects.equals(getMedicalRecord(), examRequest.getMedicalRecord())
+        && Objects.equals(getMedicalRequest(), examRequest.getMedicalRequest())
         && Objects.equals(getSector(), examRequest.getSector())
-        && Objects.equals(getAgreement(),
-            examRequest.getAgreement())
-        && Objects.equals(getDoctorRequestant(),
-            examRequest.getDoctorRequestant())
+        && Objects.equals(getAgreement(), examRequest.getAgreement())
+        && Objects.equals(getDoctorRequestant(), examRequest.getDoctorRequestant())
         && Objects.equals(getUser(), examRequest.getUser())
-        && Objects.equals(getClinicOrigin(),
-            examRequest.getClinicOrigin())
-        && Objects.equals(getCityOrigin(),
-            examRequest.getCityOrigin())
+        && Objects.equals(getClinicOrigin(), examRequest.getClinicOrigin())
+        && Objects.equals(getCityOrigin(), examRequest.getCityOrigin())
         && Objects.equals(getPatient(), examRequest.getPatient())
-        && CompareDate.compareDates(getRequestDate(),
-            examRequest.getRequestDate())
-        && CompareDate.compareDates(getAchievementDate(),
-            examRequest.getAchievementDate());
+        && CompareDate.compareDates(getRequestDate(), examRequest.getRequestDate())
+        && CompareDate.compareDates(getAchievementDate(), examRequest.getAchievementDate());
   }
 
   @Override
@@ -154,13 +146,10 @@ public class ExamRequest {
         + ", medicalRequest=" + medicalRequest
         + ", sector='" + sector + '\''
         + ", agreement='" + agreement + '\''
-        + ", doctorRequestant='"
-        + doctorRequestant + '\''
+        + ", doctorRequestant='" + doctorRequestant + '\''
         + ", user='" + user + '\''
-        + ", clinicOrigin='"
-        + clinicOrigin + '\''
-        + ", cityOrigin='"
-        + cityOrigin + '\''
+        + ", clinicOrigin='" + clinicOrigin + '\''
+        + ", cityOrigin='" + cityOrigin + '\''
         + ", patient=" + patient
         + ", requestDate=" + requestDate
         + ", achievementDate=" + achievementDate

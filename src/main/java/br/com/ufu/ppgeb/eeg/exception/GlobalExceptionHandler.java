@@ -20,8 +20,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   /**
    * Represents an API error response.
@@ -30,8 +29,7 @@ public class GlobalExceptionHandler {
 
     static ApiError of(HttpStatus status, String message) {
 
-      return new ApiError(Instant.now(), status.value(),
-          status.getReasonPhrase(), message);
+      return new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message);
     }
   }
 
@@ -129,8 +127,7 @@ public class GlobalExceptionHandler {
 
     logger.warn("Violação de integridade de dados", ex);
     return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(ApiError.of(HttpStatus.CONFLICT,
-            "Registro conflitante ou referenciado por outro cadastro."));
+        .body(ApiError.of(HttpStatus.CONFLICT, "Registro conflitante ou referenciado por outro cadastro."));
   }
 
   /**
@@ -144,7 +141,6 @@ public class GlobalExceptionHandler {
 
     logger.error("Erro inesperado ao processar requisição", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiError.of(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Erro interno ao processar a requisição."));
+        .body(ApiError.of(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno ao processar a requisição."));
   }
 }

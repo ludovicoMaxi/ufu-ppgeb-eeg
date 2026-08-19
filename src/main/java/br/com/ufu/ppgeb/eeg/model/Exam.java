@@ -135,8 +135,7 @@ public class Exam {
     return Objects.equals(getId(), exam.getId())
         && Objects.equals(getExamRequest(), exam.getExamRequest())
         && Objects.equals(getPatient(), exam.getPatient())
-        && CompareDate.compareDates(getAchievementDate(),
-            exam.getAchievementDate())
+        && CompareDate.compareDates(getAchievementDate(), exam.getAchievementDate())
         && Objects.equals(getMedicalReport(), exam.getMedicalReport())
         && Objects.equals(getConclusion(), exam.getConclusion())
         && Objects.equals(getBed(), exam.getBed())
@@ -167,15 +166,12 @@ public class Exam {
         + ", examRequest=" + examRequest
         + ", patient=" + patient
         + ", achievementDate=" + achievementDate
-        + ", medicalReport='"
-        + medicalReport + '\''
-        + ", conclusion='"
-        + conclusion + '\''
+        + ", medicalReport='" + medicalReport + '\''
+        + ", conclusion='" + conclusion + '\''
         + ", bed='" + bed + '\''
         + ", height=" + height
         + ", weight=" + weight
-        + ", clinicalData='"
-        + clinicalData + '\''
+        + ", clinicalData='" + clinicalData + '\''
         + ", examMedicaments=" + examMedicaments
         + ", examEquipments=" + examEquipments
         + ", createdAt=" + createdAt

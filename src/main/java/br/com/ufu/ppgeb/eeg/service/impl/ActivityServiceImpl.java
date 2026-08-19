@@ -48,8 +48,7 @@ public class ActivityServiceImpl implements ActivityService {
     Assert.notNull(activity, "Activity cannot be null.");
     Assert.notNull(activity.getStartTime(), "start time cannot be null.");
     Assert.notNull(activity.getDuration(), "duration cannot be null.");
-    Assert.hasText(activity.getDescription(),
-        "description cannot be empty.");
+    Assert.hasText(activity.getDescription(), "description cannot be empty.");
   }
 
   @Override
@@ -65,8 +64,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     Assert.notNull(id, "id cannot be null.");
     return activityRepository.findById(id)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("Activity", id));
+        .orElseThrow(() -> new ResourceNotFoundException("Activity", id));
   }
 
   @Override
@@ -95,17 +93,14 @@ public class ActivityServiceImpl implements ActivityService {
   public List<Activity> updateList(ActivityList activityList) {
 
     Assert.notNull(activityList, "ActivityList cannot be null.");
-    Assert.notNull(activityList.getExamId(),
-        "ExamId cannot be null.");
+    Assert.notNull(activityList.getExamId(), "ExamId cannot be null.");
 
     Map<Long, Activity> oldActivitiesById = new HashMap<>();
-    for (Activity oldActivity
-        : activityRepository.findByExamId(activityList.getExamId())) {
+    for (Activity oldActivity : activityRepository.findByExamId(activityList.getExamId())) {
       oldActivitiesById.put(oldActivity.getId(), oldActivity);
     }
 
-    List<Activity> currentActivities =
-        activityList.getActivities();
+    List<Activity> currentActivities = activityList.getActivities();
     List<Activity> savedActivities = new ArrayList<>();
 
     if (CollectionUtils.isNotEmpty(currentActivities)) {
@@ -115,22 +110,18 @@ public class ActivityServiceImpl implements ActivityService {
         if (nonNull(activity.getExamId())
             && !activity.getExamId()
                 .equals(activityList.getExamId())) {
-          throw new IllegalArgumentException(activity
-                  + " is not same examId in update="
-                  + activityList.getExamId());
+          throw new IllegalArgumentException(
+              activity + " is not same examId in update=" + activityList.getExamId());
         }
 
         activity.setExamId(activityList.getExamId());
 
         if (nonNull(activity.getId())) {
 
-          Activity oldActivity =
-              oldActivitiesById.remove(activity.getId());
+          Activity oldActivity = oldActivitiesById.remove(activity.getId());
           if (isNull(oldActivity)) {
-            throw new IllegalArgumentException("Activity with id="
-                    + activity.getId()
-                    + " not exist by examID="
-                    + activityList.getExamId());
+            throw new IllegalArgumentException("Activity with id=" + activity.getId()
+                + " not exist by examID=" + activityList.getExamId());
           }
 
           if (!activity.equals(oldActivity)) {
@@ -148,8 +139,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     activityRepository.deleteAll(oldActivitiesById.values());
 
-    log.info("Atividades do exame atualizadas; "
-            + "examId={}, quantidade={}",
+    log.info("Atividades do exame atualizadas; examId={}, quantidade={}",
         activityList.getExamId(), savedActivities.size());
     return savedActivities;
   }

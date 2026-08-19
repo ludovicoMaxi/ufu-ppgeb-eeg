@@ -21,8 +21,7 @@ import org.springframework.util.Assert;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ExamRequestServiceImpl
-    implements ExamRequestService {
+public class ExamRequestServiceImpl implements ExamRequestService {
 
   private final ExamRequestRepository examRequestRepository;
 
@@ -35,8 +34,7 @@ public class ExamRequestServiceImpl
     validateExamRequest(examRequest);
 
     ExamRequest saved = examRequestRepository.save(examRequest);
-    log.info("Solicitação de exame criada com id={}",
-        saved.getId());
+    log.info("Solicitação de exame criada com id={}", saved.getId());
     return saved;
   }
 
@@ -66,8 +64,7 @@ public class ExamRequestServiceImpl
 
     Assert.notNull(id, "id cannot be null.");
     return examRequestRepository.findById(id)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("ExamRequest", id));
+        .orElseThrow(() -> new ResourceNotFoundException("ExamRequest", id));
   }
 
   @Override
@@ -82,8 +79,8 @@ public class ExamRequestServiceImpl
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return examRequestRepository.findByFilter(medicalRecord, medicalRequest,
-        patientId, doctorRequestant);
+    return examRequestRepository.findByFilter(medicalRecord, medicalRequest, patientId,
+        doctorRequestant);
   }
 
   @Override
@@ -105,23 +102,18 @@ public class ExamRequestServiceImpl
     Assert.notNull(examRequest, "examRequest cannot be null.");
 
     validateExamRequest(examRequest);
-    Assert.notNull(examRequest.getId(),
-        "examRequest ID cannot be null.");
+    Assert.notNull(examRequest.getId(), "examRequest ID cannot be null.");
 
     Long examRequestId = examRequest.getId();
-    ExamRequest oldExamRequest = examRequestRepository
-        .findById(examRequestId)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("ExamRequest", examRequestId));
+    ExamRequest oldExamRequest = examRequestRepository.findById(examRequestId)
+        .orElseThrow(() -> new ResourceNotFoundException("ExamRequest", examRequestId));
 
     if (!oldExamRequest.equals(examRequest)) {
 
       if (!examRequest.getPatient().getId()
           .equals(oldExamRequest.getPatient().getId())) {
-        throw new IllegalArgumentException("Patient ID is different. New="
-                + examRequest.getPatient().getId()
-                + ", Old="
-                + oldExamRequest.getPatient().getId());
+        throw new IllegalArgumentException("Patient ID is different. New=" + examRequest.getPatient().getId()
+            + ", Old=" + oldExamRequest.getPatient().getId());
       }
 
       oldExamRequest.setMedicalRecord(examRequest.getMedicalRecord());
@@ -135,10 +127,8 @@ public class ExamRequestServiceImpl
       oldExamRequest.setSector(examRequest.getSector());
       oldExamRequest.setUser(examRequest.getUser());
 
-      examRequest =
-          examRequestRepository.save(oldExamRequest);
-      log.info("Solicitação de exame atualizada com id={}",
-          examRequestId);
+      examRequest = examRequestRepository.save(oldExamRequest);
+      log.info("Solicitação de exame atualizada com id={}", examRequestId);
     }
 
     return examRequest;

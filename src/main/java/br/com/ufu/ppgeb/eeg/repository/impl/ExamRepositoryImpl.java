@@ -21,8 +21,7 @@ import org.springframework.stereotype.Repository;
  * Custom repository implementation for Exam queries.
  */
 @Repository
-public class ExamRepositoryImpl
-    implements ExamRepositoryCustom {
+public class ExamRepositoryImpl implements ExamRepositoryCustom {
 
   @PersistenceContext
   private EntityManager em;
@@ -44,8 +43,7 @@ public class ExamRepositoryImpl
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(bed)) {
-      predicates.add(cb.like(root.get("bed"),
-          "%" + bed + "%"));
+      predicates.add(cb.like(root.get("bed"), "%" + bed + "%"));
     }
     if (nonNull(id)) {
       predicates.add(cb.equal(root.get("id"), id));
@@ -54,8 +52,7 @@ public class ExamRepositoryImpl
       predicates.add(cb.equal(root.get("patient").get("id"), patientId));
     }
     if (nonNull(examRequestId)) {
-      predicates.add(cb.equal(root.get("examRequest").get("id"),
-          examRequestId));
+      predicates.add(cb.equal(root.get("examRequest").get("id"), examRequestId));
     }
 
     cq.where(predicates.toArray(new Predicate[0]));

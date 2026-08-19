@@ -18,8 +18,7 @@ import org.springframework.stereotype.Repository;
  * Custom repository implementation for Patient queries.
  */
 @Repository
-public class PatientRepositoryImpl
-    implements PatientRepositoryCustom {
+public class PatientRepositoryImpl implements PatientRepositoryCustom {
 
   @PersistenceContext
   private EntityManager em;
@@ -27,20 +26,17 @@ public class PatientRepositoryImpl
   @Override
   public List<Patient> findByFilter(String name, String documentNumber) {
 
-    if (StringUtils.isBlank(name)
-        && StringUtils.isBlank(documentNumber)) {
+    if (StringUtils.isBlank(name) && StringUtils.isBlank(documentNumber)) {
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Patient> cq =
-        cb.createQuery(Patient.class);
+    CriteriaQuery<Patient> cq = cb.createQuery(Patient.class);
     Root<Patient> root = cq.from(Patient.class);
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(name)) {
-      predicates.add(cb.like(root.get("name"),
-          "%" + name + "%"));
+      predicates.add(cb.like(root.get("name"), "%" + name + "%"));
     }
     if (StringUtils.isNotBlank(documentNumber)) {
       predicates.add(cb.equal(root.get("documentNumber"), documentNumber));

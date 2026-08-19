@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class UnitController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(UnitController.class);
+  private static final Logger logger = LoggerFactory.getLogger(UnitController.class);
 
   private final UnitService unitService;
 
