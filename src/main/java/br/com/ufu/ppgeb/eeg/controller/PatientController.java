@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class PatientController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(PatientController.class);
+  private static final Logger logger = LoggerFactory.getLogger(PatientController.class);
 
   private final PatientService patientService;
 
@@ -45,8 +44,7 @@ public class PatientController {
       @RequestParam(value = "documentNumber",
           required = false) String documentNumber) {
 
-    logger.info("Consultando pacientes; name={}, documentNumber={}",
-        name, documentNumber);
+    logger.info("Consultando pacientes; name={}, documentNumber={}", name, documentNumber);
     return patientService.findByFilter(name, documentNumber);
   }
 
@@ -86,8 +84,7 @@ public class PatientController {
   @PutMapping
   public Patient update(@RequestBody Patient patient) {
 
-    logger.info("Recebendo atualização de paciente id={}",
-        patient.getId());
+    logger.info("Recebendo atualização de paciente id={}", patient.getId());
     return patientService.update(patient);
   }
 }

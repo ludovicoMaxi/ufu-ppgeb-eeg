@@ -96,13 +96,10 @@ public class Patient {
     }
     return getSex() == patient.getSex()
         && Objects.equals(getName(), patient.getName())
-        && Objects.equals(getDocumentNumber(),
-            patient.getDocumentNumber())
+        && Objects.equals(getDocumentNumber(), patient.getDocumentNumber())
         && CompareDate.compareDates(getBirthDate(), patient.getBirthDate())
-        && Objects.equals(getNacionality(),
-            patient.getNacionality())
-        && Objects.equals(getCivilStatus(),
-            patient.getCivilStatus())
+        && Objects.equals(getNacionality(), patient.getNacionality())
+        && Objects.equals(getCivilStatus(), patient.getCivilStatus())
         && Objects.equals(getJob(), patient.getJob());
   }
 
@@ -123,14 +120,11 @@ public class Patient {
 
     return "Patient{"
         + "name='" + name + '\''
-        + ", documentNumber='"
-        + documentNumber + '\''
+        + ", documentNumber='" + documentNumber + '\''
         + ", sex=" + sex
         + ", birthDate=" + birthDate
-        + ", nacionality='"
-        + nacionality + '\''
-        + ", civilStatus='"
-        + civilStatus + '\''
+        + ", nacionality='" + nacionality + '\''
+        + ", civilStatus='" + civilStatus + '\''
         + ", job='" + job + '\''
         + ", createdAt=" + createdAt
         + ", createdBy='" + createdBy + '\''

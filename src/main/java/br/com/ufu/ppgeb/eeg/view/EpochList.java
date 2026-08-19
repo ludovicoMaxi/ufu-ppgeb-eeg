@@ -20,7 +20,6 @@ public class EpochList {
   @Override
   public String toString() {
 
-    return "EpochList{" + "examId=" + examId
-        + ", epochs=" + epochs + '}';
+    return "EpochList{" + "examId=" + examId + ", epochs=" + epochs + '}';
   }
 }

@@ -17,8 +17,7 @@ import org.springframework.util.Assert;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class EquipmentServiceImpl
-    implements EquipmentService {
+public class EquipmentServiceImpl implements EquipmentService {
 
   private final EquipmentRepository equipmentRepository;
 
@@ -41,14 +40,12 @@ public class EquipmentServiceImpl
   public Equipment save(Equipment equipment) {
 
     Assert.notNull(equipment, "equipment cannot be null.");
-    Assert.hasText(equipment.getName(),
-        "equipment name cannot be empty.");
+    Assert.hasText(equipment.getName(), "equipment name cannot be empty.");
 
     equipment.setName(equipment.getName().toUpperCase());
 
     if (equipmentRepository.existsByName(equipment.getName())) {
-      throw new IllegalArgumentException("Equipamento já cadastrado: "
-              + equipment.getName());
+      throw new IllegalArgumentException("Equipamento já cadastrado: " + equipment.getName());
     }
 
     Equipment saved = equipmentRepository.save(equipment);

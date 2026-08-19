@@ -51,8 +51,7 @@ public class ContactServiceImpl implements ContactService {
       contact.setObjectType(objectType.getId());
       save(contact);
     }
-    log.info("Lista de contatos salva; "
-            + "objectType={}, objectId={}, quantidade={}",
+    log.info("Lista de contatos salva; objectType={}, objectId={}, quantidade={}",
         objectType.getId(), objectId, contactList.size());
   }
 
@@ -69,8 +68,7 @@ public class ContactServiceImpl implements ContactService {
 
     Assert.notNull(id, "id cannot be null.");
     return contactRepository.findById(id)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("Contact", id));
+        .orElseThrow(() -> new ResourceNotFoundException("Contact", id));
   }
 
   @Override
@@ -113,10 +111,8 @@ public class ContactServiceImpl implements ContactService {
     validateContact(contact);
     Assert.notNull(contact.getId(), "id cannot be null.");
 
-    Contact oldContact = contactRepository
-        .findById(contact.getId())
-        .orElseThrow(() ->
-            new ResourceNotFoundException("Contact", contact.getId()));
+    Contact oldContact = contactRepository.findById(contact.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("Contact", contact.getId()));
 
     oldContact.setName(contact.getName());
     oldContact.setActive(contact.getActive());
@@ -159,7 +155,6 @@ public class ContactServiceImpl implements ContactService {
 
     Assert.notNull(contact, "contact cannot be null.");
     Assert.hasText(contact.getName(), "name cannot be empty.");
-    Assert.hasText(contact.getCellphone(),
-        "cellphone cannot be empty.");
+    Assert.hasText(contact.getCellphone(), "cellphone cannot be empty.");
   }
 }

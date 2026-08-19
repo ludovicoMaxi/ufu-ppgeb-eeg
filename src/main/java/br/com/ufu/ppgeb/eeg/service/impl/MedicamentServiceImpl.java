@@ -17,8 +17,7 @@ import org.springframework.util.Assert;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class MedicamentServiceImpl
-    implements MedicamentService {
+public class MedicamentServiceImpl implements MedicamentService {
 
   private final MedicamentRepository medicamentRepository;
 
@@ -41,14 +40,12 @@ public class MedicamentServiceImpl
   public Medicament save(Medicament medicament) {
 
     Assert.notNull(medicament, "medicament cannot be null.");
-    Assert.hasText(medicament.getName(),
-        "medicament name cannot be empty.");
+    Assert.hasText(medicament.getName(), "medicament name cannot be empty.");
 
     medicament.setName(medicament.getName().toUpperCase());
 
     if (medicamentRepository.existsByName(medicament.getName())) {
-      throw new IllegalArgumentException("Medicamento já cadastrado: "
-              + medicament.getName());
+      throw new IllegalArgumentException("Medicamento já cadastrado: " + medicament.getName());
     }
 
     Medicament saved = medicamentRepository.save(medicament);

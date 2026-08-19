@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class EquipmentController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(EquipmentController.class);
+  private static final Logger logger = LoggerFactory.getLogger(EquipmentController.class);
 
   private final EquipmentService equipmentService;
 

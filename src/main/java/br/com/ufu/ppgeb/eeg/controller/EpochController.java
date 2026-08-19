@@ -27,8 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class EpochController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(EpochController.class);
+  private static final Logger logger = LoggerFactory.getLogger(EpochController.class);
 
   private final EpochService epochService;
 
@@ -81,8 +80,7 @@ public class EpochController {
   @PutMapping
   public EpochList updateList(@RequestBody EpochList epochList) {
 
-    logger.info("Recebendo atualização de épocas do exame id={}",
-        epochList.getExamId());
+    logger.info("Recebendo atualização de épocas do exame id={}", epochList.getExamId());
     epochList.setEpochs(epochService.updateList(epochList));
     return epochList;
   }

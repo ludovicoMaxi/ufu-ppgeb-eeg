@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ExamRequestController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(ExamRequestController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExamRequestController.class);
 
   private final ExamRequestService examRequestService;
 
@@ -51,13 +50,9 @@ public class ExamRequestController {
       @RequestParam(value = "doctorRequestant",
           required = false) String doctorRequestant) {
 
-    logger.info("Consultando solicitações; medicalRecord={}, "
-            + "medicalRequest={}, patientId={}, "
-            + "doctorRequestant={}",
-        medicalRecord, medicalRequest,
-        patientId, doctorRequestant);
-    return examRequestService.findByFilter(
+    logger.info("Consultando solicitações; medicalRecord={}, medicalRequest={}, patientId={}, doctorRequestant={}",
         medicalRecord, medicalRequest, patientId, doctorRequestant);
+    return examRequestService.findByFilter(medicalRecord, medicalRequest, patientId, doctorRequestant);
   }
 
   /**
@@ -96,8 +91,7 @@ public class ExamRequestController {
   @PutMapping
   public ExamRequest update(@RequestBody ExamRequest examRequest) {
 
-    logger.info("Recebendo atualização de solicitação de exame id={}",
-        examRequest.getId());
+    logger.info("Recebendo atualização de solicitação de exame id={}", examRequest.getId());
     return examRequestService.update(examRequest);
   }
 }

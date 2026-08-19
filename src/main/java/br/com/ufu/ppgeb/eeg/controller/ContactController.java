@@ -27,8 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ContactController {
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(ContactController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContactController.class);
 
   private final ContactService contactService;
 
@@ -45,8 +44,7 @@ public class ContactController {
       @RequestParam(value = "objectId",
           required = false) Long objectId) {
 
-    logger.info("Consultando contatos; objectType={}, objectId={}",
-        objectType, objectId);
+    logger.info("Consultando contatos; objectType={}, objectId={}", objectType, objectId);
     return contactService.findByFilter(objectType, objectId);
   }
 
@@ -99,8 +97,7 @@ public class ContactController {
   @PutMapping
   public Contact update(@RequestBody Contact contact) {
 
-    logger.info("Recebendo atualização de contato id={}",
-        contact.getId());
+    logger.info("Recebendo atualização de contato id={}", contact.getId());
     return contactService.update(contact);
   }
 }

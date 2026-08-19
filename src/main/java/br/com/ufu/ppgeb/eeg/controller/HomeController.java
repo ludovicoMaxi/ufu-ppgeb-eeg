@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-  private final String cacheVersion =
-      Long.toString(System.currentTimeMillis());
+  private final String cacheVersion = Long.toString(System.currentTimeMillis());
 
   /**
    * Renders the index page.

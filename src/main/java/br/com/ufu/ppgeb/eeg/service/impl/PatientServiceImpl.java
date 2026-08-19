@@ -67,8 +67,7 @@ public class PatientServiceImpl implements PatientService {
 
     Assert.notNull(id, "id cannot be null.");
     return patientRepository.findById(id)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("Patient", id));
+        .orElseThrow(() -> new ResourceNotFoundException("Patient", id));
   }
 
   @Override
@@ -105,10 +104,8 @@ public class PatientServiceImpl implements PatientService {
     Assert.notNull(patient.getId(), "patient ID cannot be null.");
 
     Long patientId = patient.getId();
-    Patient oldPatient = patientRepository
-        .findById(patientId)
-        .orElseThrow(() ->
-            new ResourceNotFoundException("Patient", patientId));
+    Patient oldPatient = patientRepository.findById(patientId)
+        .orElseThrow(() -> new ResourceNotFoundException("Patient", patientId));
 
     if (!oldPatient.equals(patient)) {
 

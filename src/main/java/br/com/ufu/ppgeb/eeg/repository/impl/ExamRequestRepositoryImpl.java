@@ -21,8 +21,7 @@ import org.springframework.stereotype.Repository;
  * Custom repository implementation for ExamRequest queries.
  */
 @Repository
-public class ExamRequestRepositoryImpl
-    implements ExamRequestRepositoryCustom {
+public class ExamRequestRepositoryImpl implements ExamRequestRepositoryCustom {
 
   @PersistenceContext
   private EntityManager em;
@@ -39,14 +38,12 @@ public class ExamRequestRepositoryImpl
     }
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<ExamRequest> cq =
-        cb.createQuery(ExamRequest.class);
+    CriteriaQuery<ExamRequest> cq = cb.createQuery(ExamRequest.class);
     Root<ExamRequest> root = cq.from(ExamRequest.class);
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(doctorRequestant)) {
-      predicates.add(cb.like(root.get("doctorRequestant"),
-          "%" + doctorRequestant + "%"));
+      predicates.add(cb.like(root.get("doctorRequestant"), "%" + doctorRequestant + "%"));
     }
     if (nonNull(medicalRecord)) {
       predicates.add(cb.equal(root.get("medicalRecord"), medicalRecord));

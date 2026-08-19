@@ -19,8 +19,7 @@ import org.springframework.stereotype.Repository;
  * Custom repository implementation for Contact queries.
  */
 @Repository
-public class ContactRepositoryImpl
-    implements ContactRepositoryCustom {
+public class ContactRepositoryImpl implements ContactRepositoryCustom {
 
   @PersistenceContext
   private EntityManager em;
@@ -29,8 +28,7 @@ public class ContactRepositoryImpl
   public List<Contact> findByFilter(Long objectType, Long objectId) {
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Contact> cq =
-        cb.createQuery(Contact.class);
+    CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
     Root<Contact> root = cq.from(Contact.class);
 
     List<Predicate> predicates = new ArrayList<>();
