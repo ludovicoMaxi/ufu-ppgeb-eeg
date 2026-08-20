@@ -22,6 +22,20 @@ import org.springframework.web.context.WebApplicationContext;
 @ActiveProfiles("test")
 class ApiIntegrationTest {
 
+  public static final int LENGTH = 3;
+  public static final int AMOUNT = 50;
+  private static final String API_UNIT = "/api/unit";
+  private static final String API_PATIENT = "/api/patient";
+  private static final String USERNAME = "joaol";
+  private static final String PASSWORD = "123";
+  private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String JSON_PATH_FIRST_NAME = "$[0].name";
+  private static final String JSON_PATH_NAME = "$.name";
+  private static final String JSON_PATH_FIRST_DESC = "$[0].description";
+  private static final String PATIENT_NAME = "JOAO LUDOVICO";
+  private static final String PATIENT_ID_1001 = "1001";
+  private static final String EXAM_ID_PARAM = "examId";
+
   @Autowired
   private WebApplicationContext context;
 
@@ -35,53 +49,53 @@ class ApiIntegrationTest {
 
   @Test
   void shouldRejectUnauthenticatedRequest() throws Exception {
-    mockMvc.perform(get("/api/unit"))
+    mockMvc.perform(get(API_UNIT))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   void shouldListUnits() throws Exception {
-    mockMvc.perform(get("/api/unit").with(httpBasic("joaol", "123")))
+    mockMvc.perform(get(API_UNIT).with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(3))
-        .andExpect(jsonPath("$[0].name").value("mg"));
+        .andExpect(jsonPath(JSON_PATH_LENGTH).value(LENGTH))
+        .andExpect(jsonPath(JSON_PATH_FIRST_NAME).value("mg"));
   }
 
   @Test
   void shouldFindPatientById() throws Exception {
-    mockMvc.perform(get("/api/patient/1001")
-            .with(httpBasic("joaol", "123")))
+    mockMvc.perform(get(API_PATIENT + "/" + PATIENT_ID_1001)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name")
-            .value("JOAO LUDOVICO"));
+        .andExpect(jsonPath(JSON_PATH_NAME)
+            .value(PATIENT_NAME));
   }
 
   @Test
   void shouldReturnNotFoundForUnknownPatient()
       throws Exception {
-    mockMvc.perform(get("/api/patient/999999")
-            .with(httpBasic("joaol", "123")))
+    mockMvc.perform(get(API_PATIENT + "/999999")
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldRejectPatientSearchWithoutFilter()
       throws Exception {
-    mockMvc.perform(get("/api/patient")
-            .with(httpBasic("joaol", "123")))
+    mockMvc.perform(get(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isBadRequest());
   }
 
   @Test
   void shouldSearchPatientByDocumentNumber()
       throws Exception {
-    mockMvc.perform(get("/api/patient")
+    mockMvc.perform(get(API_PATIENT)
             .param("documentNumber", "09574539652")
-            .with(httpBasic("joaol", "123")))
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].name")
-            .value("JOAO LUDOVICO"));
+        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
+        .andExpect(jsonPath(JSON_PATH_FIRST_NAME)
+            .value(PATIENT_NAME));
   }
 
   @Test
@@ -99,14 +113,14 @@ class ApiIntegrationTest {
         }
         """;
 
-    mockMvc.perform(post("/api/patient")
-            .with(httpBasic("joaol", "123"))
+    mockMvc.perform(post(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").isNumber())
         .andExpect(jsonPath("$.createdBy")
-            .value("joaol"))
+            .value(USERNAME))
         .andExpect(jsonPath("$.createdAt").isNotEmpty());
   }
 
@@ -124,8 +138,8 @@ class ApiIntegrationTest {
         }
         """;
 
-    mockMvc.perform(post("/api/patient")
-            .with(httpBasic("joaol", "123"))
+    mockMvc.perform(post(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isBadRequest());
@@ -148,26 +162,26 @@ class ApiIntegrationTest {
         }
         """;
 
-    mockMvc.perform(put("/api/patient")
-            .with(httpBasic("joaol", "123"))
+    mockMvc.perform(put(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name")
+        .andExpect(jsonPath(JSON_PATH_NAME)
             .value("V019 ATUALIZADO"))
         .andExpect(jsonPath("$.updatedBy")
-            .value("joaol"));
+            .value(USERNAME));
   }
 
   @Test
   void shouldLoadExamWithNestedCollections()
       throws Exception {
-    mockMvc.perform(get("/api/exam/1001")
-            .with(httpBasic("joaol", "123")))
+    mockMvc.perform(get("/api/exam/" + PATIENT_ID_1001)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.patient.name")
-            .value("JOAO LUDOVICO"))
-        .andExpect(jsonPath("$.examMedicaments[0].amount").value(50))
+            .value(PATIENT_NAME))
+        .andExpect(jsonPath("$.examMedicaments[0].amount").value(AMOUNT))
         .andExpect(jsonPath("$.examMedicaments[0].medicament.name")
             .value("DIPIRONA"))
         .andExpect(jsonPath("$.examEquipments[0].equipment.name")
@@ -177,32 +191,32 @@ class ApiIntegrationTest {
   @Test
   void shouldSearchExamByPatient() throws Exception {
     mockMvc.perform(get("/api/exam")
-            .param("patientId", "1001")
-            .with(httpBasic("joaol", "123")))
+            .param("patientId", PATIENT_ID_1001)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].examMedicaments[0].amount").value(50));
+        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
+        .andExpect(jsonPath("$[0].examMedicaments[0].amount").value(AMOUNT));
   }
 
   @Test
   void shouldListEpochsByExam() throws Exception {
     mockMvc.perform(get("/api/epoch")
-            .param("examId", "1001")
-            .with(httpBasic("joaol", "123")))
+            .param(EXAM_ID_PARAM, PATIENT_ID_1001)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].description")
+        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
+        .andExpect(jsonPath(JSON_PATH_FIRST_DESC)
             .value("Em Silencio"));
   }
 
   @Test
   void shouldListActivitiesByExam() throws Exception {
     mockMvc.perform(get("/api/activity")
-            .param("examId", "1001")
-            .with(httpBasic("joaol", "123")))
+            .param(EXAM_ID_PARAM, PATIENT_ID_1001)
+            .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].description")
+        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
+        .andExpect(jsonPath(JSON_PATH_FIRST_DESC)
             .value("Repouso"));
   }
 }

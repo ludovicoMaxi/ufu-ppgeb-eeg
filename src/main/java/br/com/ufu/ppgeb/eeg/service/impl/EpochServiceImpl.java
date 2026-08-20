@@ -28,6 +28,9 @@ import org.springframework.util.Assert;
 @Slf4j
 public class EpochServiceImpl implements EpochService {
 
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String RESOURCE_NAME = "Epoch";
+
   private final EpochRepository epochRepository;
 
   @Override
@@ -62,9 +65,9 @@ public class EpochServiceImpl implements EpochService {
   @Transactional(readOnly = true)
   public Epoch findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     return epochRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Epoch", id));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -80,9 +83,9 @@ public class EpochServiceImpl implements EpochService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!epochRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Epoch", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     epochRepository.deleteById(id);
     log.info("Época removida com id={}", id);

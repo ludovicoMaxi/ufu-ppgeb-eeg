@@ -41,17 +41,13 @@ public class ExamRequestController {
    */
   @GetMapping
   public List<ExamRequest> list(
-      @RequestParam(value = "medicalRecord",
-          required = false) Long medicalRecord,
-      @RequestParam(value = "medicalRequest",
-          required = false) Long medicalRequest,
-      @RequestParam(value = "patientId",
-          required = false) Long patientId,
-      @RequestParam(value = "doctorRequestant",
-          required = false) String doctorRequestant) {
+          @RequestParam(value = "medicalRecord", required = false) Long medicalRecord,
+          @RequestParam(value = "medicalRequest", required = false) Long medicalRequest,
+          @RequestParam(value = "patientId", required = false) Long patientId,
+          @RequestParam(value = "doctorRequestant", required = false) String doctorRequestant) {
 
     logger.info("Consultando solicitações; medicalRecord={}, medicalRequest={}, patientId={}, doctorRequestant={}",
-        medicalRecord, medicalRequest, patientId, doctorRequestant);
+            medicalRecord, medicalRequest, patientId, doctorRequestant);
     return examRequestService.findByFilter(medicalRecord, medicalRequest, patientId, doctorRequestant);
   }
 

@@ -21,13 +21,17 @@ import org.springframework.util.Assert;
 @Slf4j
 public class PatientServiceImpl implements PatientService {
 
+  private static final String MSG_PATIENT_NULL = "patient cannot be null.";
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String RESOURCE_NAME = "Patient";
+
   private final PatientRepository patientRepository;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
   public Patient save(Patient patient) {
 
-    Assert.notNull(patient, "patient cannot be null.");
+    Assert.notNull(patient, MSG_PATIENT_NULL);
 
     validatePatient(patient);
 
@@ -65,9 +69,9 @@ public class PatientServiceImpl implements PatientService {
   @Transactional(readOnly = true)
   public Patient findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     return patientRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Patient", id));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -86,9 +90,9 @@ public class PatientServiceImpl implements PatientService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!patientRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Patient", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     patientRepository.deleteById(id);
     log.info("Paciente removido com id={}", id);
@@ -98,14 +102,14 @@ public class PatientServiceImpl implements PatientService {
   @Transactional(rollbackFor = Exception.class)
   public Patient update(Patient patient) {
 
-    Assert.notNull(patient, "patient cannot be null.");
+    Assert.notNull(patient, MSG_PATIENT_NULL);
 
     validatePatient(patient);
     Assert.notNull(patient.getId(), "patient ID cannot be null.");
 
     Long patientId = patient.getId();
     Patient oldPatient = patientRepository.findById(patientId)
-        .orElseThrow(() -> new ResourceNotFoundException("Patient", patientId));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, patientId));
 
     if (!oldPatient.equals(patient)) {
 

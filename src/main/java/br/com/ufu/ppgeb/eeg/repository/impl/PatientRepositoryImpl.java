@@ -20,6 +20,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PatientRepositoryImpl implements PatientRepositoryCustom {
 
+  private static final String LIKE_WILDCARD = "%";
+
   @PersistenceContext
   private EntityManager em;
 
@@ -36,7 +38,7 @@ public class PatientRepositoryImpl implements PatientRepositoryCustom {
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(name)) {
-      predicates.add(cb.like(root.get("name"), "%" + name + "%"));
+      predicates.add(cb.like(root.get("name"), LIKE_WILDCARD + name + LIKE_WILDCARD));
     }
     if (StringUtils.isNotBlank(documentNumber)) {
       predicates.add(cb.equal(root.get("documentNumber"), documentNumber));

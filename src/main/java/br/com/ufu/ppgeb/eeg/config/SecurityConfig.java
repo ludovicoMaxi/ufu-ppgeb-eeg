@@ -28,6 +28,9 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 @Configuration
 public class SecurityConfig {
 
+  private static final String LOGIN_URL = "/login";
+  private static final String ROLE_USER = "USER";
+
   /**
    * Configures the security filter chain.
    *
@@ -45,12 +48,12 @@ public class SecurityConfig {
         .exceptionHandling(e -> e
             .defaultAuthenticationEntryPointFor(apiUnauthorizedEntryPoint(),
                 PathPatternRequestMatcher.pathPattern("/api/**"))
-            .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/login"),
+            .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint(LOGIN_URL),
                 PathPatternRequestMatcher.pathPattern("/**")))
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .formLogin(form -> form
-            .loginPage("/login")
+            .loginPage(LOGIN_URL)
             .defaultSuccessUrl("/", true)
             .permitAll())
         .logout(logout -> logout
@@ -86,13 +89,13 @@ public class SecurityConfig {
 
     UserDetails joao = User.withUsername("joaol")
         .password(passwordEncoder.encode(joaoPassword))
-        .roles("USER").build();
+        .roles(ROLE_USER).build();
     UserDetails teste = User.withUsername("teste")
         .password(passwordEncoder.encode(testePassword))
-        .roles("USER").build();
+        .roles(ROLE_USER).build();
     UserDetails user = User.withUsername("user")
         .password(passwordEncoder.encode(userPassword))
-        .roles("USER").build();
+        .roles(ROLE_USER).build();
 
     return new InMemoryUserDetailsManager(joao, teste, user);
   }

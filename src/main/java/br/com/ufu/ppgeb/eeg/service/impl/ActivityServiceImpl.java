@@ -28,6 +28,9 @@ import org.springframework.util.Assert;
 @Slf4j
 public class ActivityServiceImpl implements ActivityService {
 
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String RESOURCE_NAME = "Activity";
+
   private final ActivityRepository activityRepository;
 
   @Override
@@ -62,9 +65,9 @@ public class ActivityServiceImpl implements ActivityService {
   @Transactional(readOnly = true)
   public Activity findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     return activityRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Activity", id));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -80,9 +83,9 @@ public class ActivityServiceImpl implements ActivityService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!activityRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Activity", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     activityRepository.deleteById(id);
     log.info("Atividade removida com id={}", id);
