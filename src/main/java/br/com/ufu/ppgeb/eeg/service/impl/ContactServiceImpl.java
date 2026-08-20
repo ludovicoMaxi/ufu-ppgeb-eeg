@@ -24,6 +24,10 @@ import org.springframework.util.Assert;
 @Slf4j
 public class ContactServiceImpl implements ContactService {
 
+  private static final String MSG_CONTACT_LIST_EMPTY = "contactList cannot be empty.";
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String RESOURCE_NAME = "Contact";
+
   private final ContactRepository contactRepository;
 
   @Override
@@ -42,7 +46,7 @@ public class ContactServiceImpl implements ContactService {
   public void saveContactList(List<Contact> contactList,
       ObjectType objectType, Long objectId) {
 
-    Assert.notEmpty(contactList, "contactList cannot be empty.");
+    Assert.notEmpty(contactList, MSG_CONTACT_LIST_EMPTY);
     Assert.notNull(objectType, "objectType cannot be null.");
     Assert.notNull(objectId, "objectId cannot be empty.");
 
@@ -66,9 +70,9 @@ public class ContactServiceImpl implements ContactService {
   @Transactional(readOnly = true)
   public Contact findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     return contactRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Contact", id));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -96,9 +100,9 @@ public class ContactServiceImpl implements ContactService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!contactRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Contact", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     contactRepository.deleteById(id);
     log.info("Contato removido com id={}", id);
@@ -109,10 +113,10 @@ public class ContactServiceImpl implements ContactService {
   public Contact update(Contact contact) {
 
     validateContact(contact);
-    Assert.notNull(contact.getId(), "id cannot be null.");
+    Assert.notNull(contact.getId(), MSG_ID_NULL);
 
     Contact oldContact = contactRepository.findById(contact.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("Contact", contact.getId()));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, contact.getId()));
 
     oldContact.setName(contact.getName());
     oldContact.setActive(contact.getActive());
@@ -132,7 +136,7 @@ public class ContactServiceImpl implements ContactService {
   @Override
   public void validateContactList(List<Contact> contactList) {
 
-    Assert.notEmpty(contactList, "contactList cannot be empty.");
+    Assert.notEmpty(contactList, MSG_CONTACT_LIST_EMPTY);
 
     boolean hasMain = false;
     for (Contact contact : contactList) {

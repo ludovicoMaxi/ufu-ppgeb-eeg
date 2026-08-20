@@ -37,6 +37,12 @@ import org.springframework.util.Assert;
 @Slf4j
 public class ExamServiceImpl implements ExamService {
 
+  private static final String MSG_EXAM_NULL = "exam cannot be null.";
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String MSG_EXAM_ID_NULL = "exam ID cannot be null.";
+  private static final String RESOURCE_NAME = "Exam";
+  private static final String MSG_NOT_EXIST_BY_EXAM_ID = " not exist by examID=";
+
   private final ExamRepository examRepository;
 
   private final ExamMedicamentRepository examMedicamentRepository;
@@ -51,7 +57,7 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(rollbackFor = Exception.class)
   public Exam save(Exam exam) {
 
-    Assert.notNull(exam, "exam cannot be null.");
+    Assert.notNull(exam, MSG_EXAM_NULL);
 
     validateExam(exam);
 
@@ -78,8 +84,8 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(readOnly = true)
   public Exam findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
-    return examRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Exam", id));
+    Assert.notNull(id, MSG_ID_NULL);
+    return examRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -101,9 +107,9 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!examRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Exam", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     examRepository.deleteById(id);
     log.info("Exame removido com id={}", id);
@@ -113,14 +119,14 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(rollbackFor = Exception.class)
   public Exam update(Exam exam) {
 
-    Assert.notNull(exam, "exam cannot be null.");
+    Assert.notNull(exam, MSG_EXAM_NULL);
 
     validateExam(exam);
-    Assert.notNull(exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam.getId(), MSG_EXAM_ID_NULL);
 
     Long examId = exam.getId();
     Exam oldExam = examRepository.findById(examId)
-        .orElseThrow(() -> new ResourceNotFoundException("Exam", examId));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, examId));
 
     if (!oldExam.equals(exam)) {
 
@@ -173,14 +179,14 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(rollbackFor = Exception.class)
   public Exam updateExamMedicament(Exam exam) {
 
-    Assert.notNull(exam, "exam cannot be null.");
-    Assert.notNull(exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam, MSG_EXAM_NULL);
+    Assert.notNull(exam.getId(), MSG_EXAM_ID_NULL);
 
     registerUnregisteredMedicaments(exam.getExamMedicaments());
     validateExamMedicamentList(exam.getExamMedicaments());
 
     Exam oldExam = examRepository.findById(exam.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("Exam", exam.getId()));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, exam.getId()));
 
     List<ExamMedicament> currentMedicaments =
         isNull(exam.getExamMedicaments()) ? new ArrayList<>() : exam.getExamMedicaments();
@@ -202,7 +208,7 @@ public class ExamServiceImpl implements ExamService {
         ExamMedicament oldMedicament = oldMedicamentsById.remove(medicamentItem.getId());
         if (isNull(oldMedicament)) {
           throw new IllegalArgumentException("Exam Medicament with id=" + medicamentItem.getId()
-              + " not exist by examID=" + exam.getId());
+              + MSG_NOT_EXIST_BY_EXAM_ID + exam.getId());
         }
 
         if (!medicamentItem.equals(oldMedicament)) {
@@ -260,14 +266,14 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(rollbackFor = Exception.class)
   public Exam updateExamEquipment(Exam exam) {
 
-    Assert.notNull(exam, "exam cannot be null.");
-    Assert.notNull(exam.getId(), "exam ID cannot be null.");
+    Assert.notNull(exam, MSG_EXAM_NULL);
+    Assert.notNull(exam.getId(), MSG_EXAM_ID_NULL);
 
     registerUnregisteredEquipments(exam.getExamEquipments());
     validateExamEquipmentList(exam.getExamEquipments());
 
     Exam oldExam = examRepository.findById(exam.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("Exam", exam.getId()));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, exam.getId()));
 
     List<ExamEquipment> currentEquipments =
         isNull(exam.getExamEquipments()) ? new ArrayList<>() : exam.getExamEquipments();
@@ -289,7 +295,7 @@ public class ExamServiceImpl implements ExamService {
         ExamEquipment oldEquipment = oldEquipmentsById.remove(equipmentItem.getId());
         if (isNull(oldEquipment)) {
           throw new IllegalArgumentException("Exam Equipment with id=" + equipmentItem.getId()
-              + " not exist by examID=" + exam.getId());
+              + MSG_NOT_EXIST_BY_EXAM_ID + exam.getId());
         }
 
         if (!equipmentItem.equals(oldEquipment)) {

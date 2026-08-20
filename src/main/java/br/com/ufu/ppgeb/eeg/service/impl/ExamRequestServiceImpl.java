@@ -23,13 +23,17 @@ import org.springframework.util.Assert;
 @Slf4j
 public class ExamRequestServiceImpl implements ExamRequestService {
 
+  private static final String MSG_EXAM_REQUEST_NULL = "examRequest cannot be null.";
+  private static final String MSG_ID_NULL = "id cannot be null.";
+  private static final String RESOURCE_NAME = "ExamRequest";
+
   private final ExamRequestRepository examRequestRepository;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
   public ExamRequest save(ExamRequest examRequest) {
 
-    Assert.notNull(examRequest, "examRequest cannot be null.");
+    Assert.notNull(examRequest, MSG_EXAM_REQUEST_NULL);
 
     validateExamRequest(examRequest);
 
@@ -62,9 +66,9 @@ public class ExamRequestServiceImpl implements ExamRequestService {
   @Transactional(readOnly = true)
   public ExamRequest findById(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     return examRequestRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("ExamRequest", id));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
   }
 
   @Override
@@ -87,9 +91,9 @@ public class ExamRequestServiceImpl implements ExamRequestService {
   @Transactional(rollbackFor = Exception.class)
   public void delete(Long id) {
 
-    Assert.notNull(id, "id cannot be null.");
+    Assert.notNull(id, MSG_ID_NULL);
     if (!examRequestRepository.existsById(id)) {
-      throw new ResourceNotFoundException("ExamRequest", id);
+      throw new ResourceNotFoundException(RESOURCE_NAME, id);
     }
     examRequestRepository.deleteById(id);
     log.info("Solicitação de exame removida com id={}", id);
@@ -99,14 +103,14 @@ public class ExamRequestServiceImpl implements ExamRequestService {
   @Transactional(rollbackFor = Exception.class)
   public ExamRequest update(ExamRequest examRequest) {
 
-    Assert.notNull(examRequest, "examRequest cannot be null.");
+    Assert.notNull(examRequest, MSG_EXAM_REQUEST_NULL);
 
     validateExamRequest(examRequest);
     Assert.notNull(examRequest.getId(), "examRequest ID cannot be null.");
 
     Long examRequestId = examRequest.getId();
     ExamRequest oldExamRequest = examRequestRepository.findById(examRequestId)
-        .orElseThrow(() -> new ResourceNotFoundException("ExamRequest", examRequestId));
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, examRequestId));
 
     if (!oldExamRequest.equals(examRequest)) {
 

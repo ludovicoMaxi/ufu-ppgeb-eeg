@@ -23,6 +23,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ExamRepositoryImpl implements ExamRepositoryCustom {
 
+  private static final String LIKE_WILDCARD = "%";
+  private static final String ID = "id";
+
   @PersistenceContext
   private EntityManager em;
 
@@ -43,16 +46,16 @@ public class ExamRepositoryImpl implements ExamRepositoryCustom {
 
     List<Predicate> predicates = new ArrayList<>();
     if (StringUtils.isNotBlank(bed)) {
-      predicates.add(cb.like(root.get("bed"), "%" + bed + "%"));
+      predicates.add(cb.like(root.get("bed"), LIKE_WILDCARD + bed + LIKE_WILDCARD));
     }
     if (nonNull(id)) {
-      predicates.add(cb.equal(root.get("id"), id));
+      predicates.add(cb.equal(root.get(ID), id));
     }
     if (nonNull(patientId)) {
-      predicates.add(cb.equal(root.get("patient").get("id"), patientId));
+      predicates.add(cb.equal(root.get("patient").get(ID), patientId));
     }
     if (nonNull(examRequestId)) {
-      predicates.add(cb.equal(root.get("examRequest").get("id"), examRequestId));
+      predicates.add(cb.equal(root.get("examRequest").get(ID), examRequestId));
     }
 
     cq.where(predicates.toArray(new Predicate[0]));
