@@ -5,21 +5,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
-import br.com.ufu.ppgeb.eeg.config.JpaAuditingTestConfig;
+import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Contact;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import(JpaAuditingTestConfig.class)
+@Import(AuditingConfig.class)
 class ContactRepositoryTest {
 
   private static final Long OBJECT_TYPE_100 = 100L;
@@ -29,10 +36,27 @@ class ContactRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final String NAME_1 = "Contato 1";
   private static final String NAME_2 = "Contato 2";
+  private static final String USERNAME = "joaol";
   private static final int TWO_CONTACTS = 2;
 
   @Autowired
   private ContactRepository contactRepository;
+
+  @Autowired
+  private TestEntityManager testEntityManager;
+
+  @BeforeEach
+  void setUpAuthentication() {
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    context.setAuthentication(new UsernamePasswordAuthenticationToken(USERNAME, "123",
+        List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+    SecurityContextHolder.setContext(context);
+  }
+
+  @AfterEach
+  void tearDownAuthentication() {
+    SecurityContextHolder.clearContext();
+  }
 
   @Test
   @DisplayName("Given valid contact when save then generate id and fill auditing fields")
@@ -47,7 +71,30 @@ class ContactRepositoryTest {
     assertThat(saved.getObjectType()).isEqualTo(OBJECT_TYPE_100);
     assertThat(saved.getObjectId()).isEqualTo(OBJECT_ID_1);
     assertThat(saved.getCreatedAt()).isNotNull();
-    assertThat(saved.getCreatedBy()).isEqualTo(JpaAuditingTestConfig.TEST_AUDITOR);
+    assertThat(saved.getCreatedBy()).isEqualTo(USERNAME);
+    assertThat(saved.getUpdatedAt()).isNull();
+    assertThat(saved.getUpdatedBy()).isNull();
+  }
+
+  @Test
+  @DisplayName("Given existing contact when update then fill updated auditing fields and preserve creation fields")
+  void givenExistingContact_whenUpdate_thenFillUpdatedAuditingFieldsAndPreserveCreationFields() {
+    Contact saved = contactRepository.save(
+        createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
+
+    saved.setName(NAME_2);
+    contactRepository.save(saved);
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    Optional<Contact> result = contactRepository.findById(saved.getId());
+
+    assertThat(result).isPresent();
+    assertThat(result.get().getName()).isEqualTo(NAME_2);
+    assertThat(result.get().getUpdatedAt()).isNotNull();
+    assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
+    assertThat(result.get().getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
   }
 
   @Test
