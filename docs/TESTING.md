@@ -22,6 +22,7 @@ src/
     ├── java/br/com/ufu/ppgeb/eeg/
     │   ├── ApiIntegrationTest.java
     │   ├── UfuPpgebEegApplicationTests.java
+    │   ├── repository/*RepositoryTest.java
     │   └── service/impl/*ServiceImplTest.java
     └── resources/
         ├── application-test.properties
@@ -40,6 +41,7 @@ As dependências de teste são fornecidas principalmente por:
 - Instancio para gerar entidades de teste e substituir apenas os campos relevantes.
 - Spring Boot Test e MockMvc para testes de integração.
 - Spring Security Test para autenticação nas requisições protegidas.
+- `spring-boot-starter-data-jpa-test` para testes de repositório com `@DataJpaTest` (no Spring Boot 4).
 - JaCoCo para gerar o relatório de cobertura durante a fase de testes.
 
 ## Testes unitários de serviços
@@ -121,6 +123,82 @@ verify(repository, never()).save(any());
 ```
 
 As asserções devem validar o comportamento, não detalhes internos sem relevância. Quando uma chamada ao repositório for parte do contrato do serviço, use `verify` para garantir o argumento e a quantidade de chamadas esperada.
+
+## Testes de repositório
+
+### Quando usar
+
+Use o teste de repositório para validar o comportamento real da camada de persistência: queries derivadas, métodos do `JpaRepository` e implementações customizadas (como o `ContactRepositoryImpl` com Criteria). O repositório real é executado contra o banco H2 em memória do perfil `test`.
+
+### Configuração
+
+> **Spring Boot 4:** desde o Spring Boot 4, o `@DataJpaTest` foi movido para o módulo
+> `spring-boot-starter-data-jpa-test` e para novos pacotes. Adicione a dependência (test)
+> ao `pom.xml` e use os novos imports:
+>
+> ```java
+> import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+> import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+> import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+> ```
+
+```java
+@DataJpaTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+class ContactRepositoryTest {
+
+  @Autowired
+  private ContactRepository contactRepository;
+  // ...
+}
+```
+
+- `@DataJpaTest` limita o carregamento à camada JPA (entidades e repositórios), sem iniciar controllers ou serviços.
+- `@AutoConfigureTestDatabase(replace = Replace.NONE)` preserva o datasource H2 do perfil `test`.
+- Cada teste é transacional e sofre rollback ao final, então não é necessário limpar os dados entre testes.
+
+### Auditoria
+
+O `@DataJpaTest` não ativa o JPA auditing por padrão. Para validar que os campos de
+auditoria (`createdAt`, `createdBy`, `updatedAt`, `updatedBy`) são populados pelo
+`AuditingEntityListener` (e não preenchidos manualmente no `save`), importe a
+`@TestConfiguration` compartilhada `JpaAuditingTestConfig`, que habilita o auditing com
+um auditor fixo (`JpaAuditingTestConfig.TEST_AUDITOR`):
+
+```java
+@DataJpaTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@Import(JpaAuditingTestConfig.class)
+class ContactRepositoryTest {
+  // ...
+}
+```
+
+Assim, os testes de perseguiência podem validar a geração do ID e o preenchimento dos
+campos de auditoria como parte do comportamento verificado:
+
+```java
+Contact saved = contactRepository.save(contact);
+
+assertThat(saved.getId()).isNotNull();
+assertThat(saved.getCreatedAt()).isNotNull();
+assertThat(saved.getCreatedBy()).isEqualTo(JpaAuditingTestConfig.TEST_AUDITOR);
+```
+
+### Estrutura padrão
+
+Organize o teste em três etapas, seguindo as mesmas convenções dos testes de serviço:
+`given<Contexto>_when<Ação>_then<Resultado>`, `@DisplayName`, constantes para valores e
+helpers `create...` logo abaixo do primeiro teste que os utiliza.
+
+Cubra em cada repositório:
+- Persistência e consulta por id (`save` + `findById`).
+- Listagem (`findAll`).
+- Verificação de existência (`existsById`) para id existente e inexistente.
+- Exclusão (`deleteById`).
+- Queries de filtro (derivadas ou customizadas), incluindo a combinação de filtros e o cenário sem filtros/resultado vazio.
 
 ## Testes de integração da API
 
@@ -230,7 +308,7 @@ O Checkstyle é executado na fase `validate`, e o JaCoCo gera o relatório duran
 ## Checklist para novos testes
 
 1. Identifique a regra ou o contrato que precisa ser protegido.
-2. Escolha teste unitário para lógica isolada ou integração para comportamento do sistema/API.
+2. Escolha teste unitário para lógica isolada, teste de repositório para a camada de persistência ou integração para comportamento do sistema/API.
 3. Coloque o arquivo no pacote e no diretório correspondentes.
 4. Dê ao teste um nome `given_when_then` e um `@DisplayName` descritivo.
 5. Cubra o caminho válido e as falhas relevantes da regra.
@@ -244,5 +322,6 @@ O Checkstyle é executado na fase `validate`, e o JaCoCo gera o relatório duran
 - [UnitServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/UnitServiceImplTest.java): exemplo unitário mínimo.
 - [PatientServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/PatientServiceImplTest.java): validações, duplicidade, busca, atualização e exclusão.
 - [ExamServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/ExamServiceImplTest.java): relações e listas de medicamentos/equipamentos.
+- [ContactRepositoryTest](../src/test/java/br/com/ufu/ppgeb/eeg/repository/ContactRepositoryTest.java): `@DataJpaTest` no Spring Boot 4, filtro custom e persistência real com H2.
 - [ApiIntegrationTest](../src/test/java/br/com/ufu/ppgeb/eeg/ApiIntegrationTest.java): segurança, MockMvc, JSON e auditoria.
 - [UfuPpgebEegApplicationTests](../src/test/java/br/com/ufu/ppgeb/eeg/UfuPpgebEegApplicationTests.java): carregamento do contexto.
