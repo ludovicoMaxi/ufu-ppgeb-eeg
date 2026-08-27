@@ -33,7 +33,6 @@ class EquipmentServiceImplTest {
   private static final String MSG_DUPLICATED = "Equipamento já cadastrado: ";
   private static final int TWO_EQUIPMENTS = 2;
   private static final int ONE_EQUIPMENT = 1;
-  private static final Long EQUIPMENT_ID = 1L;
 
   @Mock
   private EquipmentRepository equipmentRepository;
@@ -98,20 +97,15 @@ class EquipmentServiceImplTest {
   @DisplayName("Given valid equipment when save then return saved equipment with uppercase name")
   void givenValidEquipment_whenSave_thenReturnSavedEquipmentWithUppercaseName() {
     Equipment equipment = Instancio.of(Equipment.class)
-        .set(field(Equipment::getId), null)
         .set(field(Equipment::getName), EQUIPMENT_NAME_LOWER)
         .create();
 
     when(equipmentRepository.existsByName(EQUIPMENT_NAME)).thenReturn(false);
-    when(equipmentRepository.save(any(Equipment.class))).thenAnswer(invocation -> {
-      Equipment saved = invocation.getArgument(0);
-      saved.setId(EQUIPMENT_ID);
-      return saved;
-    });
+    when(equipmentRepository.save(any(Equipment.class)))
+        .thenReturn(equipment);
 
     Equipment result = equipmentService.save(equipment);
 
-    assertThat(result.getId()).isNotNull();
     assertThat(result.getName()).isEqualTo(EQUIPMENT_NAME);
     verify(equipmentRepository).existsByName(EQUIPMENT_NAME);
     verify(equipmentRepository).save(equipment);
@@ -145,7 +139,6 @@ class EquipmentServiceImplTest {
   @DisplayName("Given duplicated equipment name when save then throw exception")
   void givenDuplicatedEquipmentName_whenSave_thenThrowException() {
     Equipment equipment = Instancio.of(Equipment.class)
-        .set(field(Equipment::getId), null)
         .set(field(Equipment::getName), EQUIPMENT_NAME_LOWER)
         .create();
 

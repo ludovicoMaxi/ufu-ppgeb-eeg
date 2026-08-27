@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,6 @@ import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -106,7 +106,7 @@ public class ActivityServiceImpl implements ActivityService {
     List<Activity> currentActivities = activityList.getActivities();
     List<Activity> savedActivities = new ArrayList<>();
 
-    if (CollectionUtils.isNotEmpty(currentActivities)) {
+    if (isNotEmpty(currentActivities)) {
 
       for (Activity activity : currentActivities) {
 
