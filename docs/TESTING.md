@@ -163,29 +163,73 @@ class ContactRepositoryTest {
 O `@DataJpaTest` não ativa o JPA auditing por padrão. Para validar que os campos de
 auditoria (`createdAt`, `createdBy`, `updatedAt`, `updatedBy`) são populados pelo
 `AuditingEntityListener` (e não preenchidos manualmente no `save`), importe a
-`@TestConfiguration` compartilhada `JpaAuditingTestConfig`, que habilita o auditing com
-um auditor fixo (`JpaAuditingTestConfig.TEST_AUDITOR`):
+configuração real `AuditingConfig` e popule o `SecurityContextHolder` com um usuário
+autenticado antes do teste, para que o `auditorProvider` de produção resolva o auditor:
 
 ```java
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import(JpaAuditingTestConfig.class)
+@Import(AuditingConfig.class)
 class ContactRepositoryTest {
+
+  @BeforeEach
+  void setUpAuthentication() {
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(USERNAME, "123",
+            List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+    SecurityContextHolder.setContext(context);
+  }
+
+  @AfterEach
+  void tearDownAuthentication() {
+    SecurityContextHolder.clearContext();
+  }
   // ...
 }
 ```
 
-Assim, os testes de perseguiência podem validar a geração do ID e o preenchimento dos
-campos de auditoria como parte do comportamento verificado:
+Assim, o listener de auditoria usa o `auditorProvider` de produção para preencher os
+campos de auditoria como parte do comportamento verificado. Como o `AuditingConfig`
+usa `modifyOnCreate = false`, na criação apenas os campos de criação são preenchidos —
+os campos de alteração ficam nulos:
 
 ```java
 Contact saved = contactRepository.save(contact);
 
 assertThat(saved.getId()).isNotNull();
 assertThat(saved.getCreatedAt()).isNotNull();
-assertThat(saved.getCreatedBy()).isEqualTo(JpaAuditingTestConfig.TEST_AUDITOR);
+assertThat(saved.getCreatedBy()).isEqualTo(USERNAME);
+
+assertThat(saved.getUpdatedAt()).isNull();
+assertThat(saved.getUpdatedBy()).isNull();
 ```
+
+Para atualizações, valide que `updatedAt` e `updatedBy` são preenchidos e que os campos
+de criação são preservados. Como o teste é transacional (rollback ao final), é preciso
+forçar o `flush` do `TestEntityManager` (que dispara o `UPDATE` e o `@PreUpdate`) e
+limpar o contexto (`clear`) para reler os valores persistidos:
+
+```java
+saved.setName(UPDATED_NAME);
+contactRepository.save(saved);
+testEntityManager.flush();
+testEntityManager.clear();
+
+Contact updated = contactRepository.findById(saved.getId()).orElseThrow();
+
+assertThat(updated.getUpdatedAt()).isNotNull();
+assertThat(updated.getUpdatedBy()).isEqualTo(USERNAME);
+assertThat(updated.getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+assertThat(updated.getCreatedBy()).isEqualTo(USERNAME);
+```
+
+> Compare timestamps com `getTime()`: ao reler do banco, o Hibernate devolve
+> `java.sql.Timestamp`, e `Timestamp.equals(Date)` nunca é `true`.
+
+O `auditorProvider` em si (leitura do `SecurityContextHolder`, casos autenticado/não
+autenticado) é coberto isoladamente pelo teste unitário `AuditingConfigTest`.
 
 ### Estrutura padrão
 

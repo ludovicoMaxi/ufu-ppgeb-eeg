@@ -11,7 +11,7 @@
 - Leia [`docs/TESTING.md`](docs/TESTING.md) antes de criar ou alterar testes.
 - Execute `./mvnw test` após mudanças no código Java ou nos testes. `mvn test` também é aceito quando o Maven estiver instalado.
 - Testes unitários de serviços devem permanecer isolados, usando Mockito e Instancio.
-- Testes de repositório devem usar `@DataJpaTest` (pacote do Spring Boot 4: `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest`), perfil `test`, H2 em memória e `@AutoConfigureTestDatabase(replace = Replace.NONE)`. Use `@Import(JpaAuditingTestConfig.class)` para habilitar o JPA auditing com auditor fixo; não preencha `createdBy`/`createdAt` manualmente no `save`.
+- Testes de repositório devem usar `@DataJpaTest` (pacote do Spring Boot 4: `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest`), perfil `test`, H2 em memória e `@AutoConfigureTestDatabase(replace = Replace.NONE)`. Use `@Import(AuditingConfig.class)` e popule o `SecurityContextHolder` com um usuário autenticado para habilitar o JPA auditing; não preencha `createdBy`/`createdAt` manualmente no `save`.
 - Testes de integração devem usar o perfil `test`, H2 em memória, MockMvc e as fixtures de `src/test/resources/import.sql` quando necessário.
 - Preserve as verificações de segurança, status HTTP, corpo JSON, auditoria e interações com repositórios já cobertas pelos testes.
 - Testes de API devem usar nomes no formato `given..._when..._then...` e declarar `@DisplayName` descrevendo o comportamento.
