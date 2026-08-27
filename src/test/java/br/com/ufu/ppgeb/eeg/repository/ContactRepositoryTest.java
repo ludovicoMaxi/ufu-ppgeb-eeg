@@ -36,6 +36,7 @@ class ContactRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final String NAME_1 = "Contato 1";
   private static final String NAME_2 = "Contato 2";
+  private static final String PHONE_1 = "9999-9999";
   private static final String USERNAME = "joaol";
   private static final int TWO_CONTACTS = 2;
 
@@ -95,6 +96,38 @@ class ContactRepositoryTest {
     assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
     assertThat(result.get().getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
     assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
+  }
+
+  @Test
+  @DisplayName("Given detached contact with existing id when save then merge updates existing row")
+  void givenDetachedContactWithExistingId_whenSave_thenMergeUpdatesExistingRowAndPreservesCreationAudit() {
+    Contact saved = contactRepository.save(
+        createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
+    saved.setPhone(PHONE_1);
+    final long originalCreatedAt = saved.getCreatedAt().getTime();
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    Contact detached = createContact(OBJECT_TYPE_200, OBJECT_ID_2, NAME_2);
+    detached.setId(saved.getId());
+
+    Contact merged = contactRepository.save(detached);
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    Optional<Contact> result = contactRepository.findById(saved.getId());
+
+    assertThat(merged).isNotSameAs(detached);
+    assertThat(contactRepository.findAll()).hasSize(1);
+    assertThat(result).isPresent();
+    assertThat(result.get().getName()).isEqualTo(NAME_2);
+    assertThat(result.get().getObjectType()).isEqualTo(OBJECT_TYPE_200);
+    assertThat(result.get().getObjectId()).isEqualTo(OBJECT_ID_2);
+    assertThat(result.get().getPhone()).isNull();
+    assertThat(result.get().getCreatedAt().getTime()).isEqualTo(originalCreatedAt);
+    assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
+    assertThat(result.get().getUpdatedAt()).isNotNull();
+    assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
   }
 
   @Test
