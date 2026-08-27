@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +39,7 @@ class UnitServiceImplTest {
 
     List<Unit> result = unitService.findAll();
 
-    assertEquals(TWO_UNITS, result.size());
+    assertThat(result).hasSize(TWO_UNITS);
     verify(unitRepository).findAll();
   }
 
@@ -51,7 +50,7 @@ class UnitServiceImplTest {
 
     List<Unit> result = unitService.findAll();
 
-    assertTrue(result.isEmpty());
+    assertThat(result).isEmpty();
     verify(unitRepository).findAll();
   }
 }
