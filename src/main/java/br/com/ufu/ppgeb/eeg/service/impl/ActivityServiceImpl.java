@@ -72,7 +72,7 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Activity> findByFilter(Long examId) {
+  public List<Activity> findByExamId(Long examId) {
 
     Assert.notNull(examId, "examId cannot be null.");
 

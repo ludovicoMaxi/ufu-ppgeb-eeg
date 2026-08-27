@@ -27,12 +27,12 @@ public interface ActivityService {
   Activity findById(Long id);
 
   /**
-   * Finds activities by filter.
+   * Finds activities by exam id.
    *
    * @param examId the exam id
    * @return the list of activities
    */
-  List<Activity> findByFilter(Long examId);
+  List<Activity> findByExamId(Long examId);
 
   /**
    * Finds all activities.

@@ -41,7 +41,7 @@ public class ActivityController {
   public List<Activity> list(@RequestParam(value = "examId") Long examId) {
 
     logger.info("Consultando atividades do exame id={}", examId);
-    return activityService.findByFilter(examId);
+    return activityService.findByExamId(examId);
   }
 
   /**
