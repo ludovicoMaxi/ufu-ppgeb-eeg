@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
@@ -93,7 +94,8 @@ class MedicamentRepositoryTest {
     assertThat(result.getName()).isEqualTo(NAME_2);
     assertThat(result.getUpdatedAt()).isNotNull();
     assertThat(result.getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.getCreatedBy()).isEqualTo(USERNAME);
   }
 

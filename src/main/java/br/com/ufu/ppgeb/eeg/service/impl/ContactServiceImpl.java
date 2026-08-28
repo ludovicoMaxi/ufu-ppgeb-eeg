@@ -27,6 +27,7 @@ public class ContactServiceImpl implements ContactService {
   private static final String MSG_CONTACT_LIST_EMPTY = "contactList cannot be empty.";
   private static final String MSG_ID_NULL = "id cannot be null.";
   private static final String RESOURCE_NAME = "Contact";
+  private static final String MSG_CONTACT_CREATED = "Contato criado com id={}";
 
   private final ContactRepository contactRepository;
 
@@ -37,7 +38,7 @@ public class ContactServiceImpl implements ContactService {
     validateContact(contact);
 
     Contact saved = contactRepository.save(contact);
-    log.info("Contato criado com id={}", saved.getId());
+    log.info(MSG_CONTACT_CREATED, saved.getId());
     return saved;
   }
 
@@ -53,7 +54,9 @@ public class ContactServiceImpl implements ContactService {
     for (Contact contact : contactList) {
       contact.setObjectId(objectId);
       contact.setObjectType(objectType.getId());
-      save(contact);
+      validateContact(contact);
+      Contact saved = contactRepository.save(contact);
+      log.info(MSG_CONTACT_CREATED, saved.getId());
     }
     log.info("Lista de contatos salva; objectType={}, objectId={}, quantidade={}",
         objectType.getId(), objectId, contactList.size());
@@ -80,7 +83,7 @@ public class ContactServiceImpl implements ContactService {
   public List<Contact> findByFilter(Long objectType, Long objectId) {
 
     if (isNull(objectType) && isNull(objectId)) {
-      return findAll();
+      return contactRepository.findAll();
     }
 
     validateSearchContact(objectType, objectId);

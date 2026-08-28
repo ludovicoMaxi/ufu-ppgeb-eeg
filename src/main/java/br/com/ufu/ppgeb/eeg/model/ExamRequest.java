@@ -1,6 +1,6 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
@@ -72,18 +72,18 @@ public class ExamRequest {
   private Patient patient;
 
   @Column(name = "REQUEST_DATE")
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date requestDate;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime requestDate;
 
   @Column(name = "ACHIEVEMENT_DATE")
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date achievementDate;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime achievementDate;
 
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date createdAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime createdAt;
 
   @CreatedBy
   @Column(name = "CREATED_BY", nullable = false,
@@ -92,8 +92,8 @@ public class ExamRequest {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date updatedAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime updatedAt;
 
   @LastModifiedBy
   @Column(name = "UPDATED_BY", length = 20)

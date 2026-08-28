@@ -1,6 +1,6 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -53,8 +53,8 @@ public class Epoch {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date createdAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime createdAt;
 
   @CreatedBy
   @Column(name = "CREATED_BY", length = 20,
@@ -63,8 +63,8 @@ public class Epoch {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date updatedAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime updatedAt;
 
   @LastModifiedBy
   @Column(name = "UPDATED_BY", length = 20)
