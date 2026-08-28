@@ -13,6 +13,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -31,7 +32,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "EXAM_MEDICAMENT")
+@Table(name = "EXAM_MEDICAMENT", indexes = {
+    @Index(name = "EXAM_MEDICAMENT_EXAM_IDX", columnList = "EXAM_ID"),
+    @Index(name = "EXAM_MEDICAMENT_MEDICAMENT_IDX", columnList = "MEDICAMENT_ID"),
+    @Index(name = "EXAM_MEDICAMENT_UNIT_IDX", columnList = "UNIT_ID")})
 @EntityListeners(AuditingEntityListener.class)
 public class ExamMedicament {
 
@@ -45,19 +49,19 @@ public class ExamMedicament {
       strategy = GenerationType.SEQUENCE)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "EXAM_ID", nullable = false)
   @JsonBackReference
   private Exam exam;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "MEDICAMENT_ID", nullable = false)
   private Medicament medicament;
 
   @Column(name = "AMOUNT", nullable = false)
   private Long amount;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "UNIT_ID", nullable = false)
   private Unit unit;
 
