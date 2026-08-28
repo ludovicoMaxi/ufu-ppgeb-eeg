@@ -90,7 +90,6 @@ class ContactRepositoryTest {
 
     Optional<Contact> result = contactRepository.findById(saved.getId());
 
-    assertThat(result).isPresent();
     assertThat(result.get().getName()).isEqualTo(NAME_2);
     assertThat(result.get().getUpdatedAt()).isNotNull();
     assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
