@@ -68,6 +68,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Local developer console with embedded MCP server (dev only) -->
+        <dependency>
+            <groupId>com.julien-dubois.bootui</groupId>
+            <artifactId>bootui-spring-boot-starter</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
