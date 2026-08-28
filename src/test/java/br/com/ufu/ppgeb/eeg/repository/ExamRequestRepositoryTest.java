@@ -3,7 +3,9 @@ package br.com.ufu.ppgeb.eeg.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,7 +109,8 @@ class ExamRequestRepositoryTest {
     assertThat(result.getSector()).isEqualTo(SECTOR_2);
     assertThat(result.getUpdatedAt()).isNotNull();
     assertThat(result.getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.getCreatedBy()).isEqualTo(USERNAME);
   }
 
@@ -225,7 +228,7 @@ class ExamRequestRepositoryTest {
     patient.setNacionality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRA");
     patient.setJob("ANALISTA");
-    patient.setBirthDate(new Date());
+    patient.setBirthDate(LocalDate.now());
     return testEntityManager.persistAndFlush(patient);
   }
 
@@ -236,7 +239,7 @@ class ExamRequestRepositoryTest {
     examRequest.setMedicalRequest(MEDICAL_REQUEST_1);
     examRequest.setDoctorRequestant(doctor);
     examRequest.setSector(sector);
-    examRequest.setRequestDate(new Date());
+    examRequest.setRequestDate(ZonedDateTime.now());
     examRequest.setUser("USUARIO_TESTE");
     return examRequest;
   }

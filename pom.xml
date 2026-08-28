@@ -22,6 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>25</java.version>
+        <postgresql.version>42.7.13</postgresql.version>
+        <log4j2.version>2.26.1</log4j2.version>
+        <jackson-bom.version>3.1.6</jackson-bom.version>
         <frontend-plugin.version>1.15.1</frontend-plugin.version>
         <node.version>v22.18.0</node.version>
         <npm.version>10.8.2</npm.version>

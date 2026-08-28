@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
@@ -54,7 +55,7 @@ public class Patient {
 
   @Column(name = "BIRTHDATE", nullable = false)
   @JsonFormat(pattern = "dd/MM/yyyy")
-  private Date birthDate;
+  private LocalDate birthDate;
 
   @Column(name = "NACIONALITY", length = 20)
   private String nacionality;
@@ -68,8 +69,8 @@ public class Patient {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date createdAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime createdAt;
 
   @CreatedBy
   @Column(name = "CREATED_BY", nullable = false,
@@ -78,8 +79,8 @@ public class Patient {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-  private Date updatedAt;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  private ZonedDateTime updatedAt;
 
   @LastModifiedBy
   @Column(name = "UPDATED_BY", length = 20)

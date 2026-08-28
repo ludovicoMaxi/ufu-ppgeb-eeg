@@ -1,9 +1,11 @@
 package br.com.ufu.ppgeb.eeg.config;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.Authentication;
@@ -13,7 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * Configuration for JPA auditing.
  */
 @Configuration
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider", modifyOnCreate = false)
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider",
+    dateTimeProviderRef = "auditingDateTimeProvider",
+    modifyOnCreate = false)
 public class AuditingConfig {
 
   /**
@@ -28,5 +32,16 @@ public class AuditingConfig {
         .map(context -> context.getAuthentication())
         .filter(Authentication::isAuthenticated)
         .map(Authentication::getName);
+  }
+
+  /**
+   * Provides the current date/time for auditing fields.
+   *
+   * @return the date time provider instance
+   */
+  @Bean
+  public DateTimeProvider auditingDateTimeProvider() {
+
+    return () -> Optional.of(ZonedDateTime.now());
   }
 }

@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,7 +102,8 @@ class PatientRepositoryTest {
     assertThat(result.get().getName()).isEqualTo(NAME_2);
     assertThat(result.get().getUpdatedAt()).isNotNull();
     assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.get().getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.get().getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
   }
 
@@ -224,7 +227,7 @@ class PatientRepositoryTest {
     patient.setNacionality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRO");
     patient.setJob("ANALISTA");
-    patient.setBirthDate(new java.util.Date());
+    patient.setBirthDate(LocalDate.now());
     return patient;
   }
 }

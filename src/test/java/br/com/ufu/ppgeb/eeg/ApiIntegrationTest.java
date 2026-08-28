@@ -9,9 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import org.junit.jupiter.api.BeforeEach;
@@ -155,10 +153,8 @@ class ApiIntegrationTest {
     return patient;
   }
 
-  private Date createDate(String date) {
-    return Date.from(LocalDate.parse(date, DATE_FORMAT)
-        .atStartOfDay(ZoneId.systemDefault())
-        .toInstant());
+  private LocalDate createDate(String date) {
+    return LocalDate.parse(date, DATE_FORMAT);
   }
 
   private String toJson(Object object) {

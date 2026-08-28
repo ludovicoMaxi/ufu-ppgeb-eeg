@@ -3,17 +3,20 @@ import Grid from '../layout/grid'
 import moment from 'moment'
 
 const INPUT_FORMAT = 'DD/MM/YYYY HH:mm:ss'
+const ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 
 function toInputValue(value, formatDate) {
     if (!value) {
         return '';
     }
-    const parsed = moment(value, formatDate || INPUT_FORMAT);
+    const iso = moment(value, moment.ISO_8601);
+    const parsed = iso.isValid() ? iso : moment(value, formatDate || INPUT_FORMAT);
     return parsed.isValid() ? parsed.format('YYYY-MM-DD') : '';
 }
 
 export default props => {
     const { cols, name, label, input, placeholder, readOnly, formatDate, meta: { error } } = props;
+    const hasTime = (formatDate || INPUT_FORMAT).includes('HH');
 
     return (
         <Grid cols={cols}>
@@ -28,10 +31,9 @@ export default props => {
                     readOnly={readOnly}
                     onChange={event => {
                         const dateValue = event.target.value;
-                        const formatted = dateValue
-                            ? moment(dateValue, 'YYYY-MM-DD').format(formatDate || INPUT_FORMAT)
-                            : null;
-                        input.onChange(formatted);
+                        input.onChange(dateValue
+                            ? moment(dateValue, 'YYYY-MM-DD').format(hasTime ? ISO_FORMAT : 'DD/MM/YYYY')
+                            : null);
                     }} />
                 {error && <span className="invalid-feedback d-block">{error}</span>}
             </div>

@@ -2,6 +2,8 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,7 +95,8 @@ class ContactRepositoryTest {
     assertThat(result.get().getName()).isEqualTo(NAME_2);
     assertThat(result.get().getUpdatedAt()).isNotNull();
     assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.get().getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.get().getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
   }
 
@@ -103,7 +106,7 @@ class ContactRepositoryTest {
     Contact saved = contactRepository.save(
         createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
     saved.setPhone(PHONE_1);
-    final long originalCreatedAt = saved.getCreatedAt().getTime();
+    final ZonedDateTime originalCreatedAt = saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS);
     testEntityManager.flush();
     testEntityManager.clear();
 
@@ -123,7 +126,8 @@ class ContactRepositoryTest {
     assertThat(result.get().getObjectType()).isEqualTo(OBJECT_TYPE_200);
     assertThat(result.get().getObjectId()).isEqualTo(OBJECT_ID_2);
     assertThat(result.get().getPhone()).isNull();
-    assertThat(result.get().getCreatedAt().getTime()).isEqualTo(originalCreatedAt);
+    assertThat(result.get().getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(originalCreatedAt);
     assertThat(result.get().getCreatedBy()).isEqualTo(USERNAME);
     assertThat(result.get().getUpdatedAt()).isNotNull();
     assertThat(result.get().getUpdatedBy()).isEqualTo(USERNAME);

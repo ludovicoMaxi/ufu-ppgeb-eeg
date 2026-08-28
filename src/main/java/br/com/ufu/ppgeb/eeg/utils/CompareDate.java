@@ -2,7 +2,6 @@ package br.com.ufu.ppgeb.eeg.utils;
 
 import static java.util.Objects.isNull;
 
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -15,13 +14,13 @@ public final class CompareDate {
   }
 
   /**
-   * Compares two dates for equality.
+   * Compares two values for equality.
    *
-   * @param a the first date
-   * @param b the second date
-   * @return true if both dates are equal
+   * @param a the first value
+   * @param b the second value
+   * @return true if both values are equal
    */
-  public static boolean compareDates(Date a, Date b) {
+  public static boolean compareDates(Object a, Object b) {
 
     if (isNull(a) || isNull(b)) {
       return a == b;

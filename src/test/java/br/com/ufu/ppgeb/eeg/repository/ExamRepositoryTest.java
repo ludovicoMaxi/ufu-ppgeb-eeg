@@ -3,7 +3,9 @@ package br.com.ufu.ppgeb.eeg.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,7 +104,8 @@ class ExamRepositoryTest {
     assertThat(result.getBed()).isEqualTo(BED_2);
     assertThat(result.getUpdatedAt()).isNotNull();
     assertThat(result.getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.getCreatedBy()).isEqualTo(USERNAME);
   }
 
@@ -214,14 +217,14 @@ class ExamRepositoryTest {
     patient.setNacionality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRO");
     patient.setJob("ANALISTA");
-    patient.setBirthDate(new Date());
+    patient.setBirthDate(LocalDate.now());
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam createExam(Patient patient, String bed) {
     Exam exam = new Exam(null);
     exam.setPatient(patient);
-    exam.setAchievementDate(new Date());
+    exam.setAchievementDate(ZonedDateTime.now());
     exam.setBed(bed);
     exam.setClinicalData("Dados clínicos");
     return exam;

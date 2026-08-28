@@ -2,7 +2,9 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
@@ -109,7 +111,8 @@ class ExamEquipmentRepositoryTest {
     assertThat(result.getAmount()).isEqualTo(AMOUNT_2);
     assertThat(result.getUpdatedAt()).isNotNull();
     assertThat(result.getUpdatedBy()).isEqualTo(USERNAME);
-    assertThat(result.getCreatedAt().getTime()).isEqualTo(saved.getCreatedAt().getTime());
+    assertThat(result.getCreatedAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(saved.getCreatedAt().truncatedTo(ChronoUnit.MILLIS));
     assertThat(result.getCreatedBy()).isEqualTo(USERNAME);
   }
 
@@ -213,14 +216,14 @@ class ExamEquipmentRepositoryTest {
     patient.setNacionality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRO");
     patient.setJob("ANALISTA");
-    patient.setBirthDate(new Date());
+    patient.setBirthDate(LocalDate.now());
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam persistExam() {
     Exam exam = new Exam(null);
     exam.setPatient(persistPatient());
-    exam.setAchievementDate(new Date());
+    exam.setAchievementDate(ZonedDateTime.now());
     exam.setBed("Leito Central");
     return testEntityManager.persistAndFlush(exam);
   }
