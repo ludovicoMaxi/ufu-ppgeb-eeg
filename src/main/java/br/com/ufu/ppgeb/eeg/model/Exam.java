@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -39,7 +40,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "EXAM")
+@Table(name = "EXAM", indexes = {
+    @Index(name = "EXAM_PATIENT_IDX", columnList = "PATIENT_ID"),
+    @Index(name = "EXAM_REQUEST_ID_IDX", columnList = "EXAM_REQUEST_ID")})
 @EntityListeners(AuditingEntityListener.class)
 public class Exam {
 
@@ -57,7 +60,7 @@ public class Exam {
   @JoinColumn(name = "EXAM_REQUEST_ID")
   private ExamRequest examRequest;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "PATIENT_ID", nullable = false)
   private Patient patient;
 

@@ -11,6 +11,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -29,7 +30,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "EXAM_REQUEST")
+@Table(name = "EXAM_REQUEST", indexes = {
+    @Index(name = "EXAM_REQUEST_PATIENT_IDX", columnList = "PATIENT_ID")})
 @EntityListeners(AuditingEntityListener.class)
 public class ExamRequest {
 
@@ -67,7 +69,7 @@ public class ExamRequest {
   @Column(name = "CITY_ORIGIN")
   private String cityOrigin;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "PATIENT_ID", nullable = false)
   private Patient patient;
 
