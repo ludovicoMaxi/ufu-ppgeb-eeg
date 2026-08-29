@@ -1,9 +1,11 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
-import br.com.ufu.ppgeb.eeg.model.Unit;
+import br.com.ufu.ppgeb.eeg.dto.UnitResponse;
+import br.com.ufu.ppgeb.eeg.mapper.UnitMapper;
 import br.com.ufu.ppgeb.eeg.service.UnitService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -30,9 +32,13 @@ public class UnitController {
    * @return the list of units
    */
   @GetMapping
-  public List<Unit> list() {
+  public List<UnitResponse> list() {
 
     logger.info("Consultando unidades");
-    return unitService.findAll();
+    return Optional.ofNullable(unitService.findAll())
+        .orElse(List.of())
+        .stream()
+        .map(UnitMapper::toResponse)
+        .toList();
   }
 }

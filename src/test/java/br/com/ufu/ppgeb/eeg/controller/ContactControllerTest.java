@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.dto.ContactRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Contact;
@@ -101,7 +102,7 @@ class ContactControllerTest {
     Contact contact = createContact();
     when(contactService.save(any(Contact.class))).thenReturn(contact);
 
-    String body = objectMapper.writeValueAsString(contact);
+    String body = objectMapper.writeValueAsString(Instancio.create(ContactRequest.class));
 
     mockMvc.perform(post(CONTACT)
             .contentType(MediaType.APPLICATION_JSON)
@@ -127,9 +128,9 @@ class ContactControllerTest {
     Contact contact = createContact();
     when(contactService.update(any(Contact.class))).thenReturn(contact);
 
-    String body = objectMapper.writeValueAsString(contact);
+    String body = objectMapper.writeValueAsString(Instancio.create(ContactRequest.class));
 
-    mockMvc.perform(put(CONTACT)
+    mockMvc.perform(put(CONTACT + PATH_SEPARATOR + CONTACT_ID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
