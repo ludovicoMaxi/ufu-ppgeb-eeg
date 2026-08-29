@@ -4,9 +4,9 @@ import java.net.URI;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
-import br.com.ufu.ppgeb.eeg.dto.PatientMapper;
 import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
 import br.com.ufu.ppgeb.eeg.dto.PatientResponse;
+import br.com.ufu.ppgeb.eeg.mapper.PatientMapper;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
 import jakarta.validation.Valid;

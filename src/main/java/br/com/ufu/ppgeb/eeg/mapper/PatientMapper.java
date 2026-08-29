@@ -1,9 +1,9 @@
-package br.com.ufu.ppgeb.eeg.dto;
+package br.com.ufu.ppgeb.eeg.mapper;
 
 import static java.util.Objects.isNull;
 
-import java.util.Objects;
-
+import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
+import br.com.ufu.ppgeb.eeg.dto.PatientResponse;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import lombok.experimental.UtilityClass;
 
@@ -12,8 +12,6 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class PatientMapper {
-
-  private static final String MSG_REQUEST_NULL = "request must not be null";
 
   /**
    * Maps a create request to a Patient entity.
@@ -35,7 +33,9 @@ public class PatientMapper {
    */
   public static Patient toEntity(PatientRequest request, Long id) {
 
-    Objects.requireNonNull(request, MSG_REQUEST_NULL);
+    if (isNull(request)) {
+      return null;
+    }
     return Patient.builder()
         .id(id)
         .name(request.name())
