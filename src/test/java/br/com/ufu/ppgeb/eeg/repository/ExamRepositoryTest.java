@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
+import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import br.com.ufu.ppgeb.eeg.model.Sex;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -213,9 +215,9 @@ class ExamRepositoryTest {
     Patient patient = new Patient();
     patient.setName(PATIENT_NAME);
     patient.setDocumentNumber(documentNumber);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus("SOLTEIRO");
+    patient.setCivilStatus(CivilStatus.SINGLE);
     patient.setJob("ANALISTA");
     patient.setBirthDate(LocalDate.now());
     return testEntityManager.persistAndFlush(patient);

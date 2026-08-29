@@ -51,11 +51,7 @@ public class PatientServiceImpl implements PatientService {
     Assert.hasText(patient.getDocumentNumber(), "documentNumber cannot be empty.");
     Assert.notNull(patient.getBirthDate(), "birthDate cannot be empty.");
     Assert.notNull(patient.getNationality(), "nationality cannot be null.");
-
-    if (patient.getSex() != 'F'
-        && patient.getSex() != 'M') {
-      throw new IllegalArgumentException("sex Invalid");
-    }
+    Assert.notNull(patient.getSex(), "sex cannot be null.");
   }
 
   @Override

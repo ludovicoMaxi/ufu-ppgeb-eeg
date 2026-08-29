@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import br.com.ufu.ppgeb.eeg.model.Sex;
 import br.com.ufu.ppgeb.eeg.repository.PatientRepository;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +34,7 @@ class PatientServiceImplTest {
   private static final String MSG_DOCUMENT_NUMBER_EMPTY = "documentNumber cannot be empty.";
   private static final String MSG_BIRTH_DATE_EMPTY = "birthDate cannot be empty.";
   private static final String MSG_NATIONALITY_NULL = "nationality cannot be null.";
-  private static final String MSG_SEX_INVALID = "sex Invalid";
+  private static final String MSG_SEX_NULL = "sex cannot be null.";
   private static final String MSG_CPF_DUPLICATED = "CPF já foi cadastrado, por favor informe outro.";
   private static final String MSG_FILTER_EMPTY = "Informe pelo menos um campo para consultar!";
   private static final String MSG_PATIENT_ID_NULL = "patient ID cannot be null.";
@@ -82,7 +83,7 @@ class PatientServiceImplTest {
   @DisplayName("Given valid patient when save then return saved patient")
   void givenValidPatient_whenSave_thenReturnSavedPatient() {
     Patient patient = Instancio.create(Patient.class);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setDocumentNumber(DOCUMENT_NUMBER);
 
     when(patientRepository.existsByDocumentNumber(DOCUMENT_NUMBER)).thenReturn(false);
@@ -158,14 +159,14 @@ class PatientServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given patient with invalid sex when save then throw exception")
-  void givenPatientWithInvalidSex_whenSave_thenThrowException() {
+  @DisplayName("Given patient with null sex when save then throw exception")
+  void givenPatientWithNullSex_whenSave_thenThrowException() {
     Patient patient = Instancio.create(Patient.class);
-    patient.setSex('X');
+    patient.setSex(null);
 
     assertThatThrownBy(() -> patientService.save(patient))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_SEX_INVALID);
+        .hasMessage(MSG_SEX_NULL);
 
     verify(patientRepository, never()).save(any());
   }
@@ -174,7 +175,7 @@ class PatientServiceImplTest {
   @DisplayName("Given patient with duplicated document number when save then throw exception")
   void givenPatientWithDuplicatedDocumentNumber_whenSave_thenThrowException() {
     Patient patient = Instancio.create(Patient.class);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setDocumentNumber(DOCUMENT_NUMBER);
 
     when(patientRepository.existsByDocumentNumber(DOCUMENT_NUMBER)).thenReturn(true);
@@ -298,7 +299,7 @@ class PatientServiceImplTest {
     patient.setId(id);
     patient.setDocumentNumber(documentNumber);
     patient.setName(name);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     return patient;
   }
 
@@ -316,7 +317,7 @@ class PatientServiceImplTest {
   @DisplayName("Given patient with null id when update then throw exception")
   void givenPatientWithNullId_whenUpdate_thenThrowException() {
     Patient patient = Instancio.create(Patient.class);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setId(null);
 
     assertThatThrownBy(() -> patientService.update(patient))

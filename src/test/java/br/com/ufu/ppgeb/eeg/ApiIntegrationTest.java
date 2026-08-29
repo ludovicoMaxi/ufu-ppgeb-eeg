@@ -1,17 +1,22 @@
 package br.com.ufu.ppgeb.eeg;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import br.com.ufu.ppgeb.eeg.dto.PatientCreateRequest;
+import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import br.com.ufu.ppgeb.eeg.model.Sex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,6 +56,11 @@ class ApiIntegrationTest {
   private static final String EQUIPMENT_NAME = "BRAINVISIAN";
   private static final String EPOCH_DESCRIPTION = "Em Silencio";
   private static final String ACTIVITY_DESCRIPTION = "Repouso";
+  private static final String PATH_SEPARATOR = "/";
+  private static final String NEW_PATIENT_DOCUMENT = "22233344455";
+  private static final String NEW_PATIENT_BIRTH_DATE = "10/10/1992";
+  private static final CivilStatus NEW_PATIENT_CIVIL_STATUS = CivilStatus.MARRIED;
+  private static final String NEW_PATIENT_JOB = "MEDICO";
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   @Autowired
@@ -86,7 +96,7 @@ class ApiIntegrationTest {
   @Test
   @DisplayName("Given existing patient ID when finding patient then return patient")
   void givenExistingPatientId_whenFindingPatient_thenReturnPatient() throws Exception {
-    mockMvc.perform(get(API_PATIENT + "/" + PATIENT_ID_1001)
+    mockMvc.perform(get(API_PATIENT + PATH_SEPARATOR + PATIENT_ID_1001)
             .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_NAME)
@@ -145,10 +155,10 @@ class ApiIntegrationTest {
     Patient patient = new Patient();
     patient.setName(CREATED_PATIENT_NAME);
     patient.setDocumentNumber("11122233344");
-    patient.setSex('F');
+    patient.setSex(Sex.FEMALE);
     patient.setBirthDate(createDate("20/05/1985"));
-    patient.setNacionality(NATIONALITY);
-    patient.setCivilStatus("SOLTEIRA");
+    patient.setNationality(NATIONALITY);
+    patient.setCivilStatus(CivilStatus.SINGLE);
     patient.setJob("ENGENHEIRA");
     return patient;
   }
@@ -179,9 +189,9 @@ class ApiIntegrationTest {
     Patient patient = new Patient();
     patient.setName(DUPLICATED_PATIENT_NAME);
     patient.setDocumentNumber(DUPLICATED_DOCUMENT_NUMBER);
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setBirthDate(createDate("01/01/1990"));
-    patient.setNacionality(NATIONALITY);
+    patient.setNationality(NATIONALITY);
     return patient;
   }
 
@@ -208,12 +218,51 @@ class ApiIntegrationTest {
     patient.setId(PATIENT_ID_1002);
     patient.setName(UPDATED_PATIENT_NAME);
     patient.setDocumentNumber("00000000019");
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setBirthDate(createDate("01/01/1991"));
-    patient.setNacionality(NATIONALITY);
-    patient.setCivilStatus("SOLTEIRO");
+    patient.setNationality(NATIONALITY);
+    patient.setCivilStatus(CivilStatus.SINGLE);
     patient.setJob("PESQUISADOR");
     return patient;
+  }
+
+  @Test
+  @DisplayName("Given valid patient when creating patient then return location header")
+  void givenValidPatient_whenCreatingPatient_thenReturnLocationHeader() throws Exception {
+    PatientCreateRequest request = setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader();
+
+    mockMvc.perform(post(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(request)))
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", startsWith(API_PATIENT + PATH_SEPARATOR)));
+  }
+
+  private PatientCreateRequest setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader() {
+    return new PatientCreateRequest("Carlos Teste", NEW_PATIENT_DOCUMENT, Sex.MALE,
+        createDate(NEW_PATIENT_BIRTH_DATE), NATIONALITY, NEW_PATIENT_CIVIL_STATUS,
+        NEW_PATIENT_JOB);
+  }
+
+  @Test
+  @DisplayName("Given patient with missing required field when creating patient then return bad request")
+  void givenPatientMissingRequiredField_whenCreatingPatient_thenReturnBadRequest()
+      throws Exception {
+    PatientCreateRequest request = setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest();
+
+    mockMvc.perform(post(API_PATIENT)
+            .with(httpBasic(USERNAME, PASSWORD))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(toJson(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("name must not be blank"));
+  }
+
+  private PatientCreateRequest setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest() {
+    return new PatientCreateRequest(null, NEW_PATIENT_DOCUMENT, Sex.MALE,
+        createDate(NEW_PATIENT_BIRTH_DATE), NATIONALITY, NEW_PATIENT_CIVIL_STATUS,
+        NEW_PATIENT_JOB);
   }
 
   @Test
