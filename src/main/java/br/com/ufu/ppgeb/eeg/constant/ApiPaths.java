@@ -9,8 +9,9 @@ import lombok.experimental.UtilityClass;
 public class ApiPaths {
 
   private static final String API = "/api";
+  public static final String PATH_SEPARATOR = "/";
 
-  public static final String HOME = "/";
+  public static final String HOME = PATH_SEPARATOR;
   public static final String CUSTOMERS = "/customers/*";
   public static final String LOGIN = "/login";
   public static final String LOGOUT = "/logout";
