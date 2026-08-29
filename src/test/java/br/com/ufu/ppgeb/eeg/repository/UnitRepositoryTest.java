@@ -1,14 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 import java.util.List;
 import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -105,9 +103,8 @@ class UnitRepositoryTest {
   }
 
   private Unit createUnit(String name) {
-    return Instancio.of(Unit.class)
-        .ignore(field(Unit::getId))
-        .set(field(Unit::getName), name)
-        .create();
+    return Unit.builder()
+        .name(name)
+        .build();
   }
 }

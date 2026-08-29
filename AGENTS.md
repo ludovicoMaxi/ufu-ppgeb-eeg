@@ -5,12 +5,15 @@
 - Aplicação Spring Boot para cadastro de exames de EEG da UFU.
 - Backend em Java 25, gerenciado pelo Maven.
 - Frontend em React/Webpack dentro de `src/main/webapp`.
+- Arquitetura em camadas e convenções de organização: consulte [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), em especial o uso centralizado de constantes de URL em `ApiPaths` (evite duplicar paths de URL em produção ou em testes).
 
 ## Testes
 
 - Leia [`docs/TESTING.md`](docs/TESTING.md) antes de criar ou alterar testes.
 - Execute `./mvnw test` após mudanças no código Java ou nos testes. `mvn test` também é aceito quando o Maven estiver instalado.
 - Testes unitários de serviços devem permanecer isolados, usando Mockito e Instancio.
+- Testes de controller são **isolados**, usando `MockMvcBuilders.standaloneSetup` + Mockito (sem contexto Spring/banco), com `.setControllerAdvice(new GlobalExceptionHandler())` para 404/400 e `.setValidator(...)` para `@Valid`. Reutilize os paths de URL via imports estáticos de `ApiPaths` (ex.: `EXAM`, `PATIENT`, `PATH_SEPARATOR`) em vez de duplicar literais.
+- Na criação de **entidades persistidas** em testes com Instancio, use `.ignore(field(...))` para `id`, campos de auditoria (`createdAt`/`createdBy`/`updatedAt`/`updatedBy`), associações não persistidas (ex.: `Exam.examRequest`) e coleções `mappedBy`; defina com `.set(...)` apenas os campos que o cenário verifica. Métodos helper de uma linha que só delegam a `Instancio.create(...)` devem ser inline no ponto de uso.
 - Testes de repositório devem usar `@DataJpaTest` (pacote do Spring Boot 4: `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest`), perfil `test`, H2 em memória e `@AutoConfigureTestDatabase(replace = Replace.NONE)`. Use `@Import(AuditingConfig.class)` e popule o `SecurityContextHolder` com um usuário autenticado para habilitar o JPA auditing; não preencha `createdBy`/`createdAt` manualmente no `save`.
 - Testes de integração devem usar o perfil `test`, H2 em memória, MockMvc e as fixtures de `src/test/resources/import.sql` quando necessário.
 - Preserve as verificações de segurança, status HTTP, corpo JSON, auditoria e interações com repositórios já cobertas pelos testes.

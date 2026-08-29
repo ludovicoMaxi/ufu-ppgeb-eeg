@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import jakarta.persistence.EntityManager;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -191,10 +189,9 @@ class MedicamentRepositoryTest {
   }
 
   private Medicament createMedicament(String name) {
-    return Instancio.of(Medicament.class)
-        .ignore(field(Medicament::getId))
-        .set(field(Medicament::getName), name)
-        .set(field(Medicament::getDescription), "Medicamento para exame")
-        .create();
+    return Medicament.builder()
+        .name(name)
+        .description("Medicamento para exame")
+        .build();
   }
 }
