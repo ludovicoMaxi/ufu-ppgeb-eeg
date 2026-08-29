@@ -4,14 +4,13 @@ import static java.util.Objects.isNull;
 
 import java.util.Objects;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Utility class for comparing dates.
  */
-public final class CompareDate {
-
-  private CompareDate() {
-
-  }
+@UtilityClass
+public class CompareDate {
 
   /**
    * Compares two values for equality.

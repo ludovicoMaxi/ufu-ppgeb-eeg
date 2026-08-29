@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.reflect.Method;
 
 import br.com.ufu.ppgeb.eeg.controller.PatientController;
-import br.com.ufu.ppgeb.eeg.dto.PatientCreateRequest;
+import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class GlobalExceptionHandlerTest {
   private MethodArgumentNotValidException
       setupGivenValidationErrorWhenHandlingValidationThenReturnBadRequestWithFieldMessage()
           throws Exception {
-    Method method = PatientController.class.getMethod("save", PatientCreateRequest.class);
+    Method method = PatientController.class.getMethod("save", PatientRequest.class);
     MethodParameter parameter = new MethodParameter(method, 0);
     BeanPropertyBindingResult bindingResult =
         new BeanPropertyBindingResult(new Object(), BINDING_OBJECT_NAME);

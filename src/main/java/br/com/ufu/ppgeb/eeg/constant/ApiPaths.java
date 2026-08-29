@@ -1,9 +1,12 @@
 package br.com.ufu.ppgeb.eeg.constant;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Centralized constants for the application URLs.
  */
-public final class ApiPaths {
+@UtilityClass
+public class ApiPaths {
 
   private static final String API = "/api";
 
@@ -28,7 +31,4 @@ public final class ApiPaths {
 
   public static final String EQUIPMENT_SUBPATH = "/equipment";
   public static final String EQUIPMENT = API + EQUIPMENT_SUBPATH;
-
-  private ApiPaths() {
-  }
 }
