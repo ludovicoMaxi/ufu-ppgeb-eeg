@@ -71,7 +71,7 @@ class PatientForm extends Component {
 
                                     <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                         label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
-                                    <Field name='nacionality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    <Field name='nationality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
                                     <Field name='sex' component={LabelAndInputSelect}
                                         label='Sexo' cols='12 2'

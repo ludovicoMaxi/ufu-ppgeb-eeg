@@ -3,6 +3,7 @@ package br.com.ufu.ppgeb.eeg.model;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,7 +77,7 @@ public class Contact {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime createdAt;
 
   @CreatedBy
@@ -86,7 +87,7 @@ public class Contact {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime updatedAt;
 
   @LastModifiedBy

@@ -213,7 +213,7 @@ class ExamEquipmentRepositoryTest {
     patient.setName(PATIENT_NAME);
     patient.setDocumentNumber("123.456.789-00");
     patient.setSex('M');
-    patient.setNacionality("BRASILEIRA");
+    patient.setNationality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRO");
     patient.setJob("ANALISTA");
     patient.setBirthDate(LocalDate.now());

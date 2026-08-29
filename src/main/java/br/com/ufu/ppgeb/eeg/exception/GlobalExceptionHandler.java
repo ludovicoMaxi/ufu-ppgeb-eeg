@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -98,6 +99,23 @@ public class GlobalExceptionHandler {
     logger.warn("Requisição com corpo inválido: {}", ex.getMostSpecificCause().getMessage());
     return ResponseEntity.badRequest()
         .body(ApiError.of(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido."));
+  }
+
+  /**
+   * Handles bean validation failures.
+   *
+   * @param ex the exception
+   * @return the response entity
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+
+    String message = ex.getBindingResult().getFieldErrors().stream()
+        .findFirst()
+        .map(error -> error.getField() + " " + error.getDefaultMessage())
+        .orElse("Requisição inválida.");
+    return ResponseEntity.badRequest()
+        .body(ApiError.of(HttpStatus.BAD_REQUEST, message));
   }
 
   /**

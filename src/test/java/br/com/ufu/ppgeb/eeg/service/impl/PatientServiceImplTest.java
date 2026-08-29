@@ -32,7 +32,7 @@ class PatientServiceImplTest {
   private static final String MSG_NAME_EMPTY = "name cannot be empty.";
   private static final String MSG_DOCUMENT_NUMBER_EMPTY = "documentNumber cannot be empty.";
   private static final String MSG_BIRTH_DATE_EMPTY = "birthDate cannot be empty.";
-  private static final String MSG_NACIONALITY_NULL = "nacionality cannot be null.";
+  private static final String MSG_NATIONALITY_NULL = "nationality cannot be null.";
   private static final String MSG_SEX_INVALID = "sex Invalid";
   private static final String MSG_CPF_DUPLICATED = "CPF já foi cadastrado, por favor informe outro.";
   private static final String MSG_FILTER_EMPTY = "Informe pelo menos um campo para consultar!";
@@ -145,14 +145,14 @@ class PatientServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given patient with null nacionality when save then throw exception")
-  void givenPatientWithNullNacionality_whenSave_thenThrowException() {
+  @DisplayName("Given patient with null nationality when save then throw exception")
+  void givenPatientWithNullNationality_whenSave_thenThrowException() {
     Patient patient = Instancio.create(Patient.class);
-    patient.setNacionality(null);
+    patient.setNationality(null);
 
     assertThatThrownBy(() -> patientService.save(patient))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_NACIONALITY_NULL);
+        .hasMessage(MSG_NATIONALITY_NULL);
 
     verify(patientRepository, never()).save(any());
   }

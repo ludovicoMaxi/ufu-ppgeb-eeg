@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for medicament operations.
  */
 @RestController
-@RequestMapping("/api/medicament")
+@RequestMapping(ApiPaths.MEDICAMENT)
 @AllArgsConstructor
 public class MedicamentController {
 

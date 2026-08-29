@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for equipment operations.
  */
 @RestController
-@RequestMapping("/api/equipment")
+@RequestMapping(ApiPaths.EQUIPMENT)
 @AllArgsConstructor
 public class EquipmentController {
 

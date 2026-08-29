@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
 import br.com.ufu.ppgeb.eeg.view.EpochList;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for epoch operations.
  */
 @RestController
-@RequestMapping("/api/epoch")
+@RequestMapping(ApiPaths.EPOCH)
 @AllArgsConstructor
 public class EpochController {
 

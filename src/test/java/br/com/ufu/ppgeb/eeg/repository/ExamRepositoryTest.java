@@ -214,7 +214,7 @@ class ExamRepositoryTest {
     patient.setName(PATIENT_NAME);
     patient.setDocumentNumber(documentNumber);
     patient.setSex('M');
-    patient.setNacionality("BRASILEIRA");
+    patient.setNationality("BRASILEIRA");
     patient.setCivilStatus("SOLTEIRO");
     patient.setJob("ANALISTA");
     patient.setBirthDate(LocalDate.now());

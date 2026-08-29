@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for contact operations.
  */
 @RestController
-@RequestMapping("/api/contact")
+@RequestMapping(ApiPaths.CONTACT)
 @AllArgsConstructor
 public class ContactController {
 
