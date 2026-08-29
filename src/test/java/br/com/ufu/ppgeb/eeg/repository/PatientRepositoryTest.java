@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -13,6 +14,7 @@ import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
 import jakarta.persistence.EntityManager;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -222,14 +224,15 @@ class PatientRepositoryTest {
   }
 
   private Patient createPatient(String name, String documentNumber) {
-    Patient patient = new Patient();
-    patient.setName(name);
-    patient.setDocumentNumber(documentNumber);
-    patient.setSex(Sex.MALE);
-    patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("ANALISTA");
-    patient.setBirthDate(LocalDate.now());
-    return patient;
+    return Instancio.of(Patient.class)
+        .ignore(field(Patient::getId))
+        .set(field(Patient::getName), name)
+        .set(field(Patient::getDocumentNumber), documentNumber)
+        .set(field(Patient::getSex), Sex.MALE)
+        .set(field(Patient::getNationality), "BRASILEIRA")
+        .set(field(Patient::getCivilStatus), CivilStatus.SINGLE)
+        .set(field(Patient::getJob), "ANALISTA")
+        .set(field(Patient::getBirthDate), LocalDate.now())
+        .create();
   }
 }
