@@ -4,11 +4,12 @@ Este documento descreve o padrão de testes adotado atualmente no projeto `ufu-p
 
 ## Objetivo
 
-Os testes devem proteger regras de negócio, contratos HTTP e integrações relevantes sem tornar a suíte desnecessariamente lenta ou frágil. A estratégia atual separa os testes em três níveis:
+Os testes devem proteger regras de negócio, contratos HTTP e integrações relevantes sem tornar a suíte desnecessariamente lenta ou frágil. A estratégia atual separa os testes em quatro níveis:
 
 1. Testes unitários dos serviços, rápidos e isolados.
-2. Testes de integração da aplicação, executados com o contexto Spring e banco H2.
-3. Teste mínimo de carregamento do contexto da aplicação.
+2. Testes isolados dos controllers, com `standaloneSetup` e Mockito.
+3. Testes de integração da aplicação, executados com o contexto Spring e banco H2.
+4. Teste mínimo de carregamento do contexto da aplicação.
 
 ## Estrutura dos arquivos
 
@@ -18,10 +19,11 @@ src/
 │   ├── controller/
 │   ├── service/
 │   └── repository/
-└── test/
+    └── test/
     ├── java/br/com/ufu/ppgeb/eeg/
     │   ├── ApiIntegrationTest.java
     │   ├── UfuPpgebEegApplicationTests.java
+    │   ├── controller/*Test.java
     │   ├── repository/*RepositoryTest.java
     │   └── service/impl/*ServiceImplTest.java
     └── resources/
@@ -29,7 +31,7 @@ src/
         └── import.sql
 ```
 
-Os testes ficam no mesmo pacote lógico das classes testadas. Para um novo serviço, crie o teste em `src/test/java` preservando a estrutura de pacotes e use o sufixo `ServiceImplTest`.
+Os testes ficam no mesmo pacote lógico das classes testadas. Para um novo serviço, crie o teste em `src/test/java` preservando a estrutura de pacotes e use o sufixo `ServiceImplTest`. Para um novo controller, use o sufixo `Test` no pacote `controller` (testes isolados com `standaloneSetup`).
 
 ## Ferramentas
 
@@ -123,6 +125,99 @@ verify(repository, never()).save(any());
 ```
 
 As asserções devem validar o comportamento, não detalhes internos sem relevância. Quando uma chamada ao repositório for parte do contrato do serviço, use `verify` para garantir o argumento e a quantidade de chamadas esperada.
+
+## Testes de controller (isolados)
+
+### Quando usar
+
+Use o teste isolado de controller para validar o contrato HTTP de cada endpoint (status, corpo JSON, `Location`, validação `@Valid` e tratamento de exceções) **sem** iniciar o contexto Spring nem acessar o banco. Os serviços são simulados com Mockito e o controller é montado com `MockMvcBuilders.standaloneSetup`. Não há autenticação/sessão nesse modo: cenários de 401 ficam fora do escopo do teste de controller.
+
+### Estrutura padrão
+
+```java
+@ExtendWith(MockitoExtension.class)
+class ExamControllerTest {
+
+  private static final String PATH_SEPARATOR = /* via ApiPaths */;
+
+  @Mock
+  private ExamService examService;
+
+  private MockMvc mockMvc;
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @BeforeEach
+  void setUp() {
+    LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+    validator.afterPropertiesSet();
+    mockMvc = MockMvcBuilders
+        .standaloneSetup(new ExamController(examService))
+        .setControllerAdvice(new GlobalExceptionHandler())
+        .setValidator(validator)
+        .build();
+  }
+  // ...
+}
+```
+
+### Pontos importantes
+
+- `standaloneSetup` **não** registra o `@RestControllerAdvice` automaticamente. Para cobrir 404 (`ResourceNotFoundException`) e 400 use `.setControllerAdvice(new GlobalExceptionHandler())`.
+- `@Valid` só é avaliado com um validador explícito: `.setValidator(new LocalValidatorFactoryBean())` e chame `validator.afterPropertiesSet()` no `@BeforeEach`.
+- Use imports estáticos de `MockMvcRequestBuilders` e `MockMvcResultMatchers`. Crie os payloads com o `ObjectMapper` a partir de objetos Java (não monte JSON manual).
+- Use os imports estáticos dos paths de `ApiPaths` (ex.: `ACTIVITY`, `EXAM`, `PATIENT`, `PATH_SEPARATOR`, `MEDICAMENT_SUBPATH`). Não duplique literais de URL nos testes (ver `docs/ARCHITECTURE.md`).
+- Controllers que retornam apenas o nome de uma view com caminho que colide com a URL (ex.: `HomeController` retornando `login`) apresentam `Circular view path` sob `standaloneSetup`. Nesse caso teste os métodos do controller diretamente (chamada unitária) em vez do `MockMvc`.
+
+### O que validar
+
+- Status HTTP para sucesso, entrada inválida e recurso inexistente.
+- Campos relevantes do JSON (com `jsonPath`), incluindo `Location` em criações.
+- Interações com o serviço (`verify`) e a ausência de chamadas em entradas inválidas (`verify(service, never()).save(any())`).
+- Normalmente um teste por endpoint, cobrindo o caminho válido e as falhas relevantes — sem reescrever a lógica interna já coberta pelos testes de serviço.
+
+Quando um teste de controller depende de um serviço mockado que retorna um objeto fixo, use um factory/helper `create...` contendo apenas o resultado verificado, configurando os demais campos com Instancio (ver abaixo).
+
+## Criação de entidades e DTOs com Instancio (factories)
+
+Em testes de controller, serviço e repositório, use **Instancio por padrão** para criar objetos de cenário, definindo apenas os campos relevantes para a asserção. Métodos helper de uma linha que apenas delegam a `Instancio.create(...)` devem ser **inline** no ponto de uso.
+
+Use o import estático `static org.instancio.Select.field` e o padrão `Instancio.of(Tipo.class).set(field(Tipo::getProp), valor).create()`:
+
+```java
+return Instancio.of(Exam.class)
+    .set(field(Exam::getId), ID)
+    .set(field(Exam::getBed), BED)
+    .create();
+```
+
+Em **factories de entidades persistidas** (testes de repositório), onde a entidade é salva via JPA/H2 e a auditoria é preenchida pelo listener, **ignore** os campos que o cenário não controla, especialmente:
+
+- `id` (para que o banco o gere e as asserções de geração de id funcionem);
+- os campos de auditoria `createdAt`, `createdBy`, `updatedAt`, `updatedBy` (para que o `AuditingEntityListener` os preencha; se o Instancio os preencher, os testes de auditoria de criação/atualização quebram);
+- associações que precisam estar `null` por não estarem persistidas, como `Exam.examRequest` (`@ManyToOne`) — caso contrário o Instancio cria um `ExamRequest` não persistido e o Hibernate lança violação de chave estrangeira no `EXAM_REQUEST_ID`;
+- coleções `mappedBy` (lado inverso), como `Exam.examMedicaments` e `Exam.examEquipments`;
+- campos opcionais que o teste espera `null` (ex.: `Contact.phone` e demais contatos opcionais) — o `new Entity()` original os deixava `null`.
+
+```java
+private Exam createExam(Patient patient, String bed) {
+  return Instancio.of(Exam.class)
+      .ignore(field(Exam::getId))
+      .ignore(field(Exam::getCreatedAt))
+      .ignore(field(Exam::getCreatedBy))
+      .ignore(field(Exam::getUpdatedAt))
+      .ignore(field(Exam::getUpdatedBy))
+      .ignore(field(Exam::getExamRequest))
+      .ignore(field(Exam::getExamMedicaments))
+      .ignore(field(Exam::getExamEquipments))
+      .set(field(Exam::getPatient), patient)
+      .set(field(Exam::getAchievementDate), ZonedDateTime.now())
+      .set(field(Exam::getBed), bed)
+      .create();
+}
+```
+
+Quando o cenário compara entidades com `assertEquals`/`containsOnly`, verifique se o `equals` da entidade ignora os campos automáticos; se ignorar (como em `Exam`), não é necessário igualar valores aleatórios.
 
 ## Testes de repositório
 
@@ -287,6 +382,11 @@ mockMvc.perform(get("/api/unit").with(httpBasic("joaol", "123")))
 Cubra tanto o acesso autenticado quanto o não autenticado. Para requisições JSON, informe `MediaType.APPLICATION_JSON` e valide o status e os campos relevantes da resposta com `jsonPath`.
 Crie os payloads a partir de objetos Java e serialize-os com o `ObjectMapper`; evite JSON manual em text blocks.
 
+> **Escopo atual do `ApiIntegrationTest`:** como os controllers têm testes isolados dedicados
+> (`standaloneSetup`), o `ApiIntegrationTest` foi reduzido para validar apenas os fluxos de
+> **auditoria completa** do contexto real — criação (`createdBy`/`createdAt`) e atualização
+> (`updatedBy`) de um paciente — onde é relevante exercitar a persistência real junto ao Spring.
+
 ### O que validar
 
 Os testes de API devem verificar o contrato observável:
@@ -366,6 +466,8 @@ O Checkstyle é executado na fase `validate`, e o JaCoCo gera o relatório duran
 - [UnitServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/UnitServiceImplTest.java): exemplo unitário mínimo.
 - [PatientServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/PatientServiceImplTest.java): validações, duplicidade, busca, atualização e exclusão.
 - [ExamServiceImplTest](../src/test/java/br/com/ufu/ppgeb/eeg/service/impl/ExamServiceImplTest.java): relações e listas de medicamentos/equipamentos.
+- [ExamControllerTest](../src/test/java/br/com/ufu/ppgeb/eeg/controller/ExamControllerTest.java): controller isolado com `standaloneSetup`, `GlobalExceptionHandler`, validador e `ApiPaths`.
 - [ContactRepositoryTest](../src/test/java/br/com/ufu/ppgeb/eeg/repository/ContactRepositoryTest.java): `@DataJpaTest` no Spring Boot 4, filtro custom e persistência real com H2.
-- [ApiIntegrationTest](../src/test/java/br/com/ufu/ppgeb/eeg/ApiIntegrationTest.java): segurança, MockMvc, JSON e auditoria.
+- [ExamRepositoryTest](../src/test/java/br/com/ufu/ppgeb/eeg/repository/ExamRepositoryTest.java): factories de entidade com Instancio (ignore de id/auditoria/associações).
+- [ApiIntegrationTest](../src/test/java/br/com/ufu/ppgeb/eeg/ApiIntegrationTest.java): auditoria completa de criação/atualização no contexto real.
 - [UfuPpgebEegApplicationTests](../src/test/java/br/com/ufu/ppgeb/eeg/UfuPpgebEegApplicationTests.java): carregamento do contexto.

@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import jakarta.persistence.EntityManager;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -192,10 +190,9 @@ class EquipmentRepositoryTest {
   }
 
   private Equipment createEquipment(String name) {
-    return Instancio.of(Equipment.class)
-        .ignore(field(Equipment::getId))
-        .set(field(Equipment::getName), name)
-        .set(field(Equipment::getDescription), "Equipamento para exame")
-        .create();
+    return Equipment.builder()
+        .name(name)
+        .description("Equipamento para exame")
+        .build();
   }
 }

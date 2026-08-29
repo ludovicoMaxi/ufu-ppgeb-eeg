@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import jakarta.persistence.EntityManager;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -175,12 +173,11 @@ class ActivityRepositoryTest {
   }
 
   private Activity createActivity(Long examId, Long duration, String description) {
-    return Instancio.of(Activity.class)
-        .ignore(field(Activity::getId))
-        .set(field(Activity::getExamId), examId)
-        .set(field(Activity::getStartTime), (long) System.currentTimeMillis())
-        .set(field(Activity::getDuration), duration)
-        .set(field(Activity::getDescription), description)
-        .create();
+    return Activity.builder()
+        .examId(examId)
+        .startTime(System.currentTimeMillis())
+        .duration(duration)
+        .description(description)
+        .build();
   }
 }

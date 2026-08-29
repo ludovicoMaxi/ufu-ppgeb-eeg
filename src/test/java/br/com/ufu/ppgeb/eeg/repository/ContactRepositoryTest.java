@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -10,7 +9,6 @@ import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Contact;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -245,12 +243,11 @@ class ContactRepositoryTest {
   }
 
   private Contact createContact(Long objectType, Long objectId, String name) {
-    return Instancio.of(Contact.class)
-        .ignore(field(Contact::getId))
-        .set(field(Contact::getName), name)
-        .set(field(Contact::getActive), true)
-        .set(field(Contact::getObjectId), objectId)
-        .set(field(Contact::getObjectType), objectType)
-        .create();
+    return Contact.builder()
+        .name(name)
+        .active(true)
+        .objectId(objectId)
+        .objectType(objectType)
+        .build();
   }
 }
