@@ -77,12 +77,18 @@ class PatientForm extends Component {
                                         label='Sexo' cols='12 2'
                                         readOnly={readOnly}
                                         placeholder='Sexo'
-                                        options={[{ 'value': 'M', 'label': 'MASCULINO' },
-                                        { 'value': 'F', 'label': 'FEMININO' }]}>
+                                        options={[{ 'value': 'MALE', 'label': 'MASCULINO' },
+                                        { 'value': 'FEMALE', 'label': 'FEMININO' }]}>
                                     </Field>
 
-                                    <Field name='civilStatus' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                        label='Estado Civil' cols='12 2' placeholder='Estado Civil' />
+                                    <Field name='civilStatus' component={LabelAndInputSelect} readOnly={readOnly}
+                                        label='Estado Civil' cols='12 2' placeholder='Estado Civil'
+                                        options={[{ 'value': 'SINGLE', 'label': 'SOLTEIRO' },
+                                        { 'value': 'MARRIED', 'label': 'CASADO' },
+                                        { 'value': 'DIVORCED', 'label': 'DIVORCIADO' },
+                                        { 'value': 'WIDOWED', 'label': 'VIÚVO' },
+                                        { 'value': 'COMMON_LAW_MARRIAGE', 'label': 'UNIÃO ESTÁVEL' }]}>
+                                    </Field>
                                     <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
                                 </div>

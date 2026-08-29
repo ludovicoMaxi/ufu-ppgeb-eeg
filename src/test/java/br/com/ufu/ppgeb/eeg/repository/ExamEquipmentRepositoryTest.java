@@ -8,10 +8,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
+import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import br.com.ufu.ppgeb.eeg.model.Sex;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -212,9 +214,9 @@ class ExamEquipmentRepositoryTest {
     Patient patient = new Patient();
     patient.setName(PATIENT_NAME);
     patient.setDocumentNumber("123.456.789-00");
-    patient.setSex('M');
+    patient.setSex(Sex.MALE);
     patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus("SOLTEIRO");
+    patient.setCivilStatus(CivilStatus.SINGLE);
     patient.setJob("ANALISTA");
     patient.setBirthDate(LocalDate.now());
     return testEntityManager.persistAndFlush(patient);

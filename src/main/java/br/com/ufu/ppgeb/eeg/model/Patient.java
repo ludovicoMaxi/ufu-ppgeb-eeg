@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,8 +53,9 @@ public class Patient {
       nullable = false)
   private String documentNumber;
 
-  @Column(name = "SEX")
-  private char sex;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "SEX", length = 10)
+  private Sex sex;
 
   @Column(name = "BIRTHDATE", nullable = false)
   @JsonFormat(pattern = DateFormats.ISO_DATE)
@@ -61,8 +64,9 @@ public class Patient {
   @Column(name = "NATIONALITY", length = 20)
   private String nationality;
 
-  @Column(name = "CIVIL_STATUS", length = 20)
-  private String civilStatus;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "CIVIL_STATUS", length = 25)
+  private CivilStatus civilStatus;
 
   @Column(name = "JOB", length = 256)
   private String job;
@@ -96,7 +100,7 @@ public class Patient {
     if (!(o instanceof Patient patient)) {
       return false;
     }
-    return getSex() == patient.getSex()
+    return Objects.equals(getSex(), patient.getSex())
         && Objects.equals(getName(), patient.getName())
         && Objects.equals(getDocumentNumber(), patient.getDocumentNumber())
         && CompareDate.compareDates(getBirthDate(), patient.getBirthDate())
