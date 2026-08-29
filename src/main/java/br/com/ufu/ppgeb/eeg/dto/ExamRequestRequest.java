@@ -11,7 +11,6 @@ import jakarta.validation.constraints.Size;
 /**
  * Request DTO for creating or updating an exam request.
  *
- * @param id the exam request id (used on update)
  * @param medicalRecord the medical record
  * @param medicalRequest the medical request
  * @param sector the sector
@@ -25,7 +24,6 @@ import jakarta.validation.constraints.Size;
  * @param achievementDate the achievement date
  */
 public record ExamRequestRequest(
-    Long id,
     @NotNull
     Long medicalRecord,
     @NotNull

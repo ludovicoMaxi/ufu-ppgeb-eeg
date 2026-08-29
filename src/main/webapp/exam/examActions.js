@@ -101,7 +101,7 @@ export function remove(values) {
 
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.id}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Exame atualizado com sucesso.`);
                 dispatch(initialize('examForm', resp.data));

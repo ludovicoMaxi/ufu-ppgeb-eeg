@@ -7,13 +7,13 @@ import {
     arrayRemove,
     change as changeFieldValue,
 } from 'redux-form'
-import { BASE_URL_EPOCH } from '../constants'
+import { BASE_URL_EXAM } from '../constants'
 
 const INITIAL_VALUES = { 'epochs': [{}] };
 
 export function getEpochsByExamId(examId) {
     return dispatch => {
-        axios.get(`${BASE_URL_EPOCH}?examId=${examId}`)
+        axios.get(`${BASE_URL_EXAM}/${examId}/epochs`)
             .then(resp => {
                 var epochList = { ...INITIAL_VALUES };
                 epochList.examId = examId;
@@ -60,7 +60,7 @@ export function removeItemList(index) {
 
 export function submitUpdateEpochList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EPOCH}`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.examId}/epochs`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Época(s) do exame atualizada(s) com sucesso.`);
                 var epochs = convertSecondsInMinutesAndSeconds(resp.data.epochs);
