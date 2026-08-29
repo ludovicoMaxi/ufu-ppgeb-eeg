@@ -124,7 +124,7 @@ export function remove(values) {
 
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM_REQUEST}`, values)
+        axios.put(`${BASE_URL_EXAM_REQUEST}/${values.id}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Requerimento atualizado com sucesso.`);
                 dispatch(initialize('examRequestForm', resp.data));

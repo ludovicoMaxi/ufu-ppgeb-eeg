@@ -47,7 +47,7 @@ export function removeItemList(index) {
 
 export function submitUpdateExamMedicamentList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}/medicament`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.id}/medicaments`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Medicamentos do exame atualizado com sucesso.`);
                 dispatch([changeFieldValue('examMedicamentListForm', 'examMedicaments', resp.data.examMedicaments), getOptionsMedicament()]);

@@ -1,10 +1,14 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
-import br.com.ufu.ppgeb.eeg.model.ExamRequest;
+import br.com.ufu.ppgeb.eeg.dto.ExamRequestRequest;
+import br.com.ufu.ppgeb.eeg.dto.ExamRequestResponse;
+import br.com.ufu.ppgeb.eeg.mapper.ExamRequestMapper;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +45,7 @@ public class ExamRequestController {
    * @return the list of exam requests
    */
   @GetMapping
-  public List<ExamRequest> list(
+  public List<ExamRequestResponse> list(
           @RequestParam(value = "medicalRecord", required = false) Long medicalRecord,
           @RequestParam(value = "medicalRequest", required = false) Long medicalRequest,
           @RequestParam(value = "patientId", required = false) Long patientId,
@@ -49,7 +53,12 @@ public class ExamRequestController {
 
     logger.info("Consultando solicitações; medicalRecord={}, medicalRequest={}, patientId={}, doctorRequestant={}",
             medicalRecord, medicalRequest, patientId, doctorRequestant);
-    return examRequestService.findByFilter(medicalRecord, medicalRequest, patientId, doctorRequestant);
+    return Optional.ofNullable(examRequestService.findByFilter(
+            medicalRecord, medicalRequest, patientId, doctorRequestant))
+        .orElse(List.of())
+        .stream()
+        .map(ExamRequestMapper::toResponse)
+        .toList();
   }
 
   /**
@@ -59,36 +68,41 @@ public class ExamRequestController {
    * @return the exam request
    */
   @GetMapping("/{id}")
-  public ExamRequest findById(@PathVariable(value = "id") Long id) {
+  public ExamRequestResponse findById(@PathVariable(value = "id") Long id) {
 
     logger.info("Consultando solicitação de exame id={}", id);
-    return examRequestService.findById(id);
+    return ExamRequestMapper.toResponse(examRequestService.findById(id));
   }
 
   /**
    * Saves a new exam request.
    *
-   * @param examRequest the exam request to save
+   * @param request the exam request to save
    * @return the saved exam request
    */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ExamRequest save(@RequestBody ExamRequest examRequest) {
+  public ExamRequestResponse save(@Valid @RequestBody ExamRequestRequest request) {
 
     logger.info("Recebendo criação de solicitação de exame");
-    return examRequestService.save(examRequest);
+    return ExamRequestMapper.toResponse(
+        examRequestService.save(ExamRequestMapper.toEntity(request)));
   }
 
   /**
    * Updates an exam request.
    *
-   * @param examRequest the exam request to update
+   * @param id the exam request id
+   * @param request the exam request to update
    * @return the updated exam request
    */
-  @PutMapping
-  public ExamRequest update(@RequestBody ExamRequest examRequest) {
+  @PutMapping("/{id}")
+  public ExamRequestResponse update(
+      @PathVariable(value = "id") Long id,
+      @Valid @RequestBody ExamRequestRequest request) {
 
-    logger.info("Recebendo atualização de solicitação de exame id={}", examRequest.getId());
-    return examRequestService.update(examRequest);
+    logger.info("Recebendo atualização de solicitação de exame id={}", id);
+    return ExamRequestMapper.toResponse(
+        examRequestService.update(ExamRequestMapper.toEntity(request, id)));
   }
 }

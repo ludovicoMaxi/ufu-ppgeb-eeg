@@ -126,7 +126,7 @@ export function remove(values) {
 
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_PATIENT}`, values)
+        axios.put(`${BASE_URL_PATIENT}/${values.id}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Paciente atualizado com sucesso.`);
                 dispatch(initialize('patientForm', resp.data));
