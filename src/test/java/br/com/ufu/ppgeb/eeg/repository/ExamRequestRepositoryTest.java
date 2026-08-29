@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -15,6 +16,7 @@ import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
 import jakarta.persistence.EntityManager;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -223,26 +225,29 @@ class ExamRequestRepositoryTest {
   }
 
   private Patient persistPatient(String documentNumber) {
-    Patient patient = new Patient();
-    patient.setName(PATIENT_NAME);
-    patient.setDocumentNumber(documentNumber);
-    patient.setSex(Sex.FEMALE);
-    patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("ANALISTA");
-    patient.setBirthDate(LocalDate.now());
+    Patient patient = Instancio.of(Patient.class)
+        .ignore(field(Patient::getId))
+        .set(field(Patient::getName), PATIENT_NAME)
+        .set(field(Patient::getDocumentNumber), documentNumber)
+        .set(field(Patient::getSex), Sex.FEMALE)
+        .set(field(Patient::getNationality), "BRASILEIRA")
+        .set(field(Patient::getCivilStatus), CivilStatus.SINGLE)
+        .set(field(Patient::getJob), "ANALISTA")
+        .set(field(Patient::getBirthDate), LocalDate.now())
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
   private ExamRequest createExamRequest(Patient patient, Long medicalRecord, String doctor, String sector) {
-    ExamRequest examRequest = new ExamRequest();
-    examRequest.setPatient(patient);
-    examRequest.setMedicalRecord(medicalRecord);
-    examRequest.setMedicalRequest(MEDICAL_REQUEST_1);
-    examRequest.setDoctorRequestant(doctor);
-    examRequest.setSector(sector);
-    examRequest.setRequestDate(ZonedDateTime.now());
-    examRequest.setUser("USUARIO_TESTE");
-    return examRequest;
+    return Instancio.of(ExamRequest.class)
+        .ignore(field(ExamRequest::getId))
+        .set(field(ExamRequest::getPatient), patient)
+        .set(field(ExamRequest::getMedicalRecord), medicalRecord)
+        .set(field(ExamRequest::getMedicalRequest), MEDICAL_REQUEST_1)
+        .set(field(ExamRequest::getDoctorRequestant), doctor)
+        .set(field(ExamRequest::getSector), sector)
+        .set(field(ExamRequest::getRequestDate), ZonedDateTime.now())
+        .set(field(ExamRequest::getUser), "USUARIO_TESTE")
+        .create();
   }
 }

@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -15,6 +16,7 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
 import jakarta.persistence.EntityManager;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -212,23 +214,29 @@ class ExamRepositoryTest {
   }
 
   private Patient persistPatient(String documentNumber) {
-    Patient patient = new Patient();
-    patient.setName(PATIENT_NAME);
-    patient.setDocumentNumber(documentNumber);
-    patient.setSex(Sex.MALE);
-    patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("ANALISTA");
-    patient.setBirthDate(LocalDate.now());
+    Patient patient = Instancio.of(Patient.class)
+        .ignore(field(Patient::getId))
+        .set(field(Patient::getName), PATIENT_NAME)
+        .set(field(Patient::getDocumentNumber), documentNumber)
+        .set(field(Patient::getSex), Sex.MALE)
+        .set(field(Patient::getNationality), "BRASILEIRA")
+        .set(field(Patient::getCivilStatus), CivilStatus.SINGLE)
+        .set(field(Patient::getJob), "ANALISTA")
+        .set(field(Patient::getBirthDate), LocalDate.now())
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam createExam(Patient patient, String bed) {
-    Exam exam = new Exam(null);
-    exam.setPatient(patient);
-    exam.setAchievementDate(ZonedDateTime.now());
-    exam.setBed(bed);
-    exam.setClinicalData("Dados clínicos");
-    return exam;
+    return Instancio.of(Exam.class)
+        .ignore(field(Exam::getId))
+        .ignore(field(Exam::getExamRequest))
+        .ignore(field(Exam::getExamMedicaments))
+        .ignore(field(Exam::getExamEquipments))
+        .set(field(Exam::getPatient), patient)
+        .set(field(Exam::getAchievementDate), ZonedDateTime.now())
+        .set(field(Exam::getBed), bed)
+        .set(field(Exam::getClinicalData), "Dados clínicos")
+        .create();
   }
 }

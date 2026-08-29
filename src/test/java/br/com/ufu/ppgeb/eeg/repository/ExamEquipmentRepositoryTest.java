@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -16,6 +17,7 @@ import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -211,45 +213,57 @@ class ExamEquipmentRepositoryTest {
   }
 
   private Patient persistPatient() {
-    Patient patient = new Patient();
-    patient.setName(PATIENT_NAME);
-    patient.setDocumentNumber("123.456.789-00");
-    patient.setSex(Sex.MALE);
-    patient.setNationality("BRASILEIRA");
-    patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("ANALISTA");
-    patient.setBirthDate(LocalDate.now());
+    Patient patient = Instancio.of(Patient.class)
+        .ignore(field(Patient::getId))
+        .set(field(Patient::getName), PATIENT_NAME)
+        .set(field(Patient::getDocumentNumber), "123.456.789-00")
+        .set(field(Patient::getSex), Sex.MALE)
+        .set(field(Patient::getNationality), "BRASILEIRA")
+        .set(field(Patient::getCivilStatus), CivilStatus.SINGLE)
+        .set(field(Patient::getJob), "ANALISTA")
+        .set(field(Patient::getBirthDate), LocalDate.now())
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam persistExam() {
-    Exam exam = new Exam(null);
-    exam.setPatient(persistPatient());
-    exam.setAchievementDate(ZonedDateTime.now());
-    exam.setBed("Leito Central");
+    Exam exam = Instancio.of(Exam.class)
+        .ignore(field(Exam::getId))
+        .ignore(field(Exam::getExamRequest))
+        .ignore(field(Exam::getExamMedicaments))
+        .ignore(field(Exam::getExamEquipments))
+        .set(field(Exam::getPatient), persistPatient())
+        .set(field(Exam::getAchievementDate), ZonedDateTime.now())
+        .set(field(Exam::getBed), "Leito Central")
+        .create();
     return testEntityManager.persistAndFlush(exam);
   }
 
   private Equipment persistEquipment(String name) {
-    Equipment equipment = new Equipment();
-    equipment.setName(name);
-    equipment.setDescription("Equipamento para exame");
+    Equipment equipment = Instancio.of(Equipment.class)
+        .ignore(field(Equipment::getId))
+        .set(field(Equipment::getName), name)
+        .set(field(Equipment::getDescription), "Equipamento para exame")
+        .create();
     return testEntityManager.persistAndFlush(equipment);
   }
 
   private Unit persistUnit() {
-    Unit unit = new Unit();
-    unit.setName(UNIT_NAME);
-    unit.setDescription("Unidade de medida");
+    Unit unit = Instancio.of(Unit.class)
+        .ignore(field(Unit::getId))
+        .set(field(Unit::getName), UNIT_NAME)
+        .set(field(Unit::getDescription), "Unidade de medida")
+        .create();
     return testEntityManager.persistAndFlush(unit);
   }
 
   private ExamEquipment createExamEquipment(Exam exam, Equipment equipment, Unit unit) {
-    ExamEquipment examEquipment = new ExamEquipment();
-    examEquipment.setExam(exam);
-    examEquipment.setEquipment(equipment);
-    examEquipment.setUnit(unit);
-    examEquipment.setAmount(AMOUNT_1);
-    return examEquipment;
+    return Instancio.of(ExamEquipment.class)
+        .ignore(field(ExamEquipment::getId))
+        .set(field(ExamEquipment::getExam), exam)
+        .set(field(ExamEquipment::getEquipment), equipment)
+        .set(field(ExamEquipment::getUnit), unit)
+        .set(field(ExamEquipment::getAmount), AMOUNT_1)
+        .create();
   }
 }
