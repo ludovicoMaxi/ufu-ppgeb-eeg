@@ -1,10 +1,14 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
-import br.com.ufu.ppgeb.eeg.model.Contact;
+import br.com.ufu.ppgeb.eeg.dto.ContactRequest;
+import br.com.ufu.ppgeb.eeg.dto.ContactResponse;
+import br.com.ufu.ppgeb.eeg.mapper.ContactMapper;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +44,17 @@ public class ContactController {
    * @return the list of contacts
    */
   @GetMapping
-  public List<Contact> list(@RequestParam(value = "objectType",
+  public List<ContactResponse> list(@RequestParam(value = "objectType",
           required = false) Long objectType,
       @RequestParam(value = "objectId",
           required = false) Long objectId) {
 
     logger.info("Consultando contatos; objectType={}, objectId={}", objectType, objectId);
-    return contactService.findByFilter(objectType, objectId);
+    return Optional.ofNullable(contactService.findByFilter(objectType, objectId))
+        .orElse(List.of())
+        .stream()
+        .map(ContactMapper::toResponse)
+        .toList();
   }
 
   /**
@@ -56,24 +64,24 @@ public class ContactController {
    * @return the contact
    */
   @GetMapping("/{id}")
-  public Contact findById(@PathVariable(value = "id") Long id) {
+  public ContactResponse findById(@PathVariable(value = "id") Long id) {
 
     logger.info("Consultando contato id={}", id);
-    return contactService.findById(id);
+    return ContactMapper.toResponse(contactService.findById(id));
   }
 
   /**
    * Saves a new contact.
    *
-   * @param contact the contact to save
+   * @param request the contact to save
    * @return the saved contact
    */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Contact save(@RequestBody Contact contact) {
+  public ContactResponse save(@Valid @RequestBody ContactRequest request) {
 
     logger.info("Recebendo criação de contato");
-    return contactService.save(contact);
+    return ContactMapper.toResponse(contactService.save(ContactMapper.toEntity(request)));
   }
 
   /**
@@ -92,13 +100,16 @@ public class ContactController {
   /**
    * Updates a contact.
    *
-   * @param contact the contact to update
+   * @param id the contact id
+   * @param request the contact to update
    * @return the updated contact
    */
-  @PutMapping
-  public Contact update(@RequestBody Contact contact) {
+  @PutMapping("/{id}")
+  public ContactResponse update(
+      @PathVariable(value = "id") Long id,
+      @Valid @RequestBody ContactRequest request) {
 
-    logger.info("Recebendo atualização de contato id={}", contact.getId());
-    return contactService.update(contact);
+    logger.info("Recebendo atualização de contato id={}", id);
+    return ContactMapper.toResponse(contactService.update(ContactMapper.toEntity(request, id)));
   }
 }

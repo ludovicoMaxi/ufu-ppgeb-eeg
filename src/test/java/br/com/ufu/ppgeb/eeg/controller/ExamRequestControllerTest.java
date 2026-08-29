@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.dto.ExamRequestRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
@@ -100,7 +101,7 @@ class ExamRequestControllerTest {
     ExamRequest examRequest = createExamRequest();
     when(examRequestService.save(any(ExamRequest.class))).thenReturn(examRequest);
 
-    String body = objectMapper.writeValueAsString(examRequest);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequestRequest.class));
 
     mockMvc.perform(post(EXAM_REQUEST)
             .contentType(MediaType.APPLICATION_JSON)
@@ -117,9 +118,9 @@ class ExamRequestControllerTest {
     ExamRequest examRequest = createExamRequest();
     when(examRequestService.update(any(ExamRequest.class))).thenReturn(examRequest);
 
-    String body = objectMapper.writeValueAsString(examRequest);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequestRequest.class));
 
-    mockMvc.perform(put(EXAM_REQUEST)
+    mockMvc.perform(put(EXAM_REQUEST + PATH_SEPARATOR + ID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())

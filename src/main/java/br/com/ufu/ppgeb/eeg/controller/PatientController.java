@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
@@ -50,7 +51,8 @@ public class PatientController {
           required = false) String documentNumber) {
 
     logger.info("Consultando pacientes; name={}, documentNumber={}", name, documentNumber);
-    return patientService.findByFilter(name, documentNumber)
+    return Optional.ofNullable(patientService.findByFilter(name, documentNumber))
+        .orElse(List.of())
         .stream()
         .map(PatientMapper::toResponse)
         .toList();

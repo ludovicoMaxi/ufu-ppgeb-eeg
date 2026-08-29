@@ -1,9 +1,11 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
-import br.com.ufu.ppgeb.eeg.model.Medicament;
+import br.com.ufu.ppgeb.eeg.dto.MedicamentResponse;
+import br.com.ufu.ppgeb.eeg.mapper.MedicamentMapper;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -30,9 +32,13 @@ public class MedicamentController {
    * @return the list of medicaments
    */
   @GetMapping
-  public List<Medicament> list() {
+  public List<MedicamentResponse> list() {
 
     logger.info("Consultando medicamentos");
-    return medicamentService.findAll();
+    return Optional.ofNullable(medicamentService.findAll())
+        .orElse(List.of())
+        .stream()
+        .map(MedicamentMapper::toResponse)
+        .toList();
   }
 }

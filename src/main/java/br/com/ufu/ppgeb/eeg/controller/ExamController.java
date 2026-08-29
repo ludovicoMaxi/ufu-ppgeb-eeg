@@ -1,10 +1,15 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
+import br.com.ufu.ppgeb.eeg.dto.ExamRequest;
+import br.com.ufu.ppgeb.eeg.dto.ExamResponse;
+import br.com.ufu.ppgeb.eeg.mapper.ExamMapper;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +46,7 @@ public class ExamController {
    * @return the list of exams
    */
   @GetMapping
-  public List<Exam> list(
+  public List<ExamResponse> list(
       @RequestParam(value = "id",
           required = false) Long id,
       @RequestParam(value = "bed",
@@ -53,7 +58,11 @@ public class ExamController {
 
     logger.info("Consultando exames; id={}, bed={}, patientId={}, examRequestId={}",
         id, bed, patientId, examRequestId);
-    return examService.findByFilter(id, bed, patientId, examRequestId);
+    return Optional.ofNullable(examService.findByFilter(id, bed, patientId, examRequestId))
+        .orElse(List.of())
+        .stream()
+        .map(ExamMapper::toResponse)
+        .toList();
   }
 
   /**
@@ -63,64 +72,75 @@ public class ExamController {
    * @return the exam
    */
   @GetMapping("/{id}")
-  public Exam findById(@PathVariable(value = "id") Long id) {
+  public ExamResponse findById(@PathVariable(value = "id") Long id) {
 
     logger.info("Consultando exame id={}", id);
-    return examService.findById(id);
+    return ExamMapper.toResponse(examService.findById(id));
   }
 
   /**
    * Saves a new exam.
    *
-   * @param exam the exam to save
+   * @param request the exam to save
    * @return the saved exam
    */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Exam save(@RequestBody Exam exam) {
+  public ExamResponse save(@Valid @RequestBody ExamRequest request) {
 
     logger.info("Recebendo criação de exame");
-    return examService.save(exam);
+    return ExamMapper.toResponse(examService.save(ExamMapper.toEntity(request)));
   }
 
   /**
    * Updates an exam.
    *
-   * @param exam the exam to update
+   * @param id the exam id
+   * @param request the exam to update
    * @return the updated exam
    */
-  @PutMapping
-  public Exam update(@RequestBody Exam exam) {
+  @PutMapping("/{id}")
+  public ExamResponse update(
+      @PathVariable(value = "id") Long id,
+      @Valid @RequestBody ExamRequest request) {
 
-    logger.info("Recebendo atualização de exame id={}", exam.getId());
-    return examService.update(exam);
+    logger.info("Recebendo atualização de exame id={}", id);
+    return ExamMapper.toResponse(examService.update(ExamMapper.toEntity(request, id)));
   }
 
   /**
    * Updates exam medicaments.
    *
-   * @param examMedicamentList the exam with medicament list
+   * @param id the exam id
+   * @param request the exam with medicament list
    * @return the updated exam
    */
-  @PutMapping(ApiPaths.MEDICAMENT_SUBPATH)
-  public Exam updateExamMedicament(@RequestBody Exam examMedicamentList) {
+  @PutMapping("/{id}" + ApiPaths.MEDICAMENTS_SUBPATH)
+  public ExamResponse updateExamMedicament(
+      @PathVariable(value = "id") Long id,
+      @RequestBody ExamRequest request) {
 
-    logger.info("Recebendo atualização de medicamentos do exame id={}",
-        examMedicamentList.getId());
-    return examService.updateExamMedicament(examMedicamentList);
+    logger.info("Recebendo atualização de medicamentos do exame id={}", id);
+    Exam exam = examService.updateExamMedicament(
+        ExamMapper.toEntity(request, id));
+    return ExamMapper.toResponse(exam);
   }
 
   /**
    * Updates exam equipment.
    *
-   * @param examEquipmentList the exam with equipment list
+   * @param id the exam id
+   * @param request the exam with equipment list
    * @return the updated exam
    */
-  @PutMapping(ApiPaths.EQUIPMENT_SUBPATH)
-  public Exam updateExamEquipment(@RequestBody Exam examEquipmentList) {
+  @PutMapping("/{id}" + ApiPaths.EQUIPMENTS_SUBPATH)
+  public ExamResponse updateExamEquipment(
+      @PathVariable(value = "id") Long id,
+      @RequestBody ExamRequest request) {
 
-    logger.info("Recebendo atualização de equipamentos do exame id={}",
-        examEquipmentList.getId());
-    return examService.updateExamEquipment(examEquipmentList);
+    logger.info("Recebendo atualização de equipamentos do exame id={}", id);
+    Exam exam = examService.updateExamEquipment(
+        ExamMapper.toEntity(request, id));
+    return ExamMapper.toResponse(exam);
   }
 }

@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg;
 
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATIENT;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,7 +31,6 @@ import tools.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 class ApiIntegrationTest {
 
-  private static final String API_PATIENT = "/api/patient";
   private static final String USERNAME = "joaol";
   private static final String PASSWORD = "123";
   private static final String JSON_PATH_NAME = "$.name";
@@ -61,7 +61,7 @@ class ApiIntegrationTest {
     Patient patient = setupGivenValidPatientWhenCreatingPatientThenReturnAuditingData();
     String body = toJson(patient);
 
-    mockMvc.perform(post(API_PATIENT)
+    mockMvc.perform(post(PATIENT)
             .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
@@ -99,7 +99,7 @@ class ApiIntegrationTest {
     PatientRequest request = setupGivenExistingPatientWhenUpdatingPatientThenReturnUpdatedBy();
     String body = toJson(request);
 
-    mockMvc.perform(put(API_PATIENT + PATH_SEPARATOR + PATIENT_ID_1002)
+    mockMvc.perform(put(PATIENT + PATH_SEPARATOR + PATIENT_ID_1002)
             .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
