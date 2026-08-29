@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -54,11 +55,11 @@ public class Patient {
   private char sex;
 
   @Column(name = "BIRTHDATE", nullable = false)
-  @JsonFormat(pattern = "dd/MM/yyyy")
+  @JsonFormat(pattern = DateFormats.ISO_DATE)
   private LocalDate birthDate;
 
-  @Column(name = "NACIONALITY", length = 20)
-  private String nacionality;
+  @Column(name = "NATIONALITY", length = 20)
+  private String nationality;
 
   @Column(name = "CIVIL_STATUS", length = 20)
   private String civilStatus;
@@ -69,7 +70,7 @@ public class Patient {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime createdAt;
 
   @CreatedBy
@@ -79,7 +80,7 @@ public class Patient {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime updatedAt;
 
   @LastModifiedBy
@@ -99,7 +100,7 @@ public class Patient {
         && Objects.equals(getName(), patient.getName())
         && Objects.equals(getDocumentNumber(), patient.getDocumentNumber())
         && CompareDate.compareDates(getBirthDate(), patient.getBirthDate())
-        && Objects.equals(getNacionality(), patient.getNacionality())
+        && Objects.equals(getNationality(), patient.getNationality())
         && Objects.equals(getCivilStatus(), patient.getCivilStatus())
         && Objects.equals(getJob(), patient.getJob());
   }
@@ -111,7 +112,7 @@ public class Patient {
         getDocumentNumber(),
         getSex(),
         getBirthDate(),
-        getNacionality(),
+        getNationality(),
         getCivilStatus(),
         getJob());
   }
@@ -124,7 +125,7 @@ public class Patient {
         + ", documentNumber='" + documentNumber + '\''
         + ", sex=" + sex
         + ", birthDate=" + birthDate
-        + ", nacionality='" + nacionality + '\''
+        + ", nationality='" + nationality + '\''
         + ", civilStatus='" + civilStatus + '\''
         + ", job='" + job + '\''
         + ", createdAt=" + createdAt

@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.config;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,6 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 @Configuration
 public class SecurityConfig {
 
-  private static final String LOGIN_URL = "/login";
   private static final String ROLE_USER = "USER";
 
   /**
@@ -47,18 +47,18 @@ public class SecurityConfig {
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
         .exceptionHandling(e -> e
             .defaultAuthenticationEntryPointFor(apiUnauthorizedEntryPoint(),
-                PathPatternRequestMatcher.pathPattern("/api/**"))
-            .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint(LOGIN_URL),
-                PathPatternRequestMatcher.pathPattern("/**")))
+                PathPatternRequestMatcher.pathPattern(ApiPaths.API_ROOT))
+            .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint(ApiPaths.LOGIN),
+                PathPatternRequestMatcher.pathPattern(ApiPaths.ANY)))
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .formLogin(form -> form
-            .loginPage(LOGIN_URL)
-            .defaultSuccessUrl("/", true)
+            .loginPage(ApiPaths.LOGIN)
+            .defaultSuccessUrl(ApiPaths.HOME, true)
             .permitAll())
         .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout"));
+            .logoutUrl(ApiPaths.LOGOUT)
+            .logoutSuccessUrl(ApiPaths.LOGIN_LOGOUT));
 
     return http.build();
   }

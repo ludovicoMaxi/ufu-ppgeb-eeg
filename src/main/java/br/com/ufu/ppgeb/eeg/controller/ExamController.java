@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for exam operations.
  */
 @RestController
-@RequestMapping("/api/exam")
+@RequestMapping(ApiPaths.EXAM)
 @AllArgsConstructor
 public class ExamController {
 
@@ -101,7 +102,7 @@ public class ExamController {
    * @param examMedicamentList the exam with medicament list
    * @return the updated exam
    */
-  @PutMapping("/medicament")
+  @PutMapping(ApiPaths.MEDICAMENT_SUBPATH)
   public Exam updateExamMedicament(@RequestBody Exam examMedicamentList) {
 
     logger.info("Recebendo atualização de medicamentos do exame id={}",
@@ -115,7 +116,7 @@ public class ExamController {
    * @param examEquipmentList the exam with equipment list
    * @return the updated exam
    */
-  @PutMapping("/equipment")
+  @PutMapping(ApiPaths.EQUIPMENT_SUBPATH)
   public Exam updateExamEquipment(@RequestBody Exam examEquipmentList) {
 
     logger.info("Recebendo atualização de equipamentos do exame id={}",

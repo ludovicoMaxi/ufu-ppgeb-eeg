@@ -50,7 +50,7 @@ public class PatientServiceImpl implements PatientService {
     Assert.hasText(patient.getName(), "name cannot be empty.");
     Assert.hasText(patient.getDocumentNumber(), "documentNumber cannot be empty.");
     Assert.notNull(patient.getBirthDate(), "birthDate cannot be empty.");
-    Assert.notNull(patient.getNacionality(), "nacionality cannot be null.");
+    Assert.notNull(patient.getNationality(), "nationality cannot be null.");
 
     if (patient.getSex() != 'F'
         && patient.getSex() != 'M') {
@@ -121,7 +121,7 @@ public class PatientServiceImpl implements PatientService {
       oldPatient.setName(patient.getName());
       oldPatient.setSex(patient.getSex());
       oldPatient.setBirthDate(patient.getBirthDate());
-      oldPatient.setNacionality(patient.getNacionality());
+      oldPatient.setNationality(patient.getNationality());
       oldPatient.setCivilStatus(patient.getCivilStatus());
       oldPatient.setJob(patient.getJob());
 

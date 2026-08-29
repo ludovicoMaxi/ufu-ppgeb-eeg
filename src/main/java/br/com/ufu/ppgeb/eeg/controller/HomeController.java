@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ public class HomeController {
    * @param model the model
    * @return the view name
    */
-  @GetMapping(value = { "/", "/customers/*" })
+  @GetMapping(value = { ApiPaths.HOME, ApiPaths.CUSTOMERS })
   public String index(Model model) {
 
     model.addAttribute("cacheVersion", cacheVersion);
@@ -30,7 +31,7 @@ public class HomeController {
    *
    * @return the view name
    */
-  @GetMapping("/login")
+  @GetMapping(ApiPaths.LOGIN)
   public String login() {
 
     return "login";

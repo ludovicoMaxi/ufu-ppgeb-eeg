@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for exam request operations.
  */
 @RestController
-@RequestMapping("/api/exam-request")
+@RequestMapping(ApiPaths.EXAM_REQUEST)
 @AllArgsConstructor
 public class ExamRequestController {
 

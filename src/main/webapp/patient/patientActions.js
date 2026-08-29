@@ -69,8 +69,8 @@ export function submitPatient(values) {
         errors.birthDate = 'Data de Nascimento é Obrigatório!'
     }
 
-    if (!values.nacionality) {
-        errors.nacionality = 'Nacionalidade é obrigatório!'
+    if (!values.nationality) {
+        errors.nationality = 'Nacionalidade é obrigatório!'
     }
 
     if (Object.keys(errors).length !== 0) {

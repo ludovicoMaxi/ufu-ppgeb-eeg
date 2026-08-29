@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import br.com.ufu.ppgeb.eeg.service.UnitService;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for unit operations.
  */
 @RestController
-@RequestMapping("/api/unit")
+@RequestMapping(ApiPaths.UNIT)
 @AllArgsConstructor
 public class UnitController {
 

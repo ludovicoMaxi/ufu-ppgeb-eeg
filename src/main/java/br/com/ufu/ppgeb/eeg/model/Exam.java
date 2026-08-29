@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -65,7 +66,7 @@ public class Exam {
   private Patient patient;
 
   @Column(name = "ACHIEVEMENT_DATE", nullable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime achievementDate;
 
   @Column(name = "MEDICAL_REPORT", length = 256)
@@ -99,7 +100,7 @@ public class Exam {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime createdAt;
 
   @CreatedBy
@@ -109,7 +110,7 @@ public class Exam {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime updatedAt;
 
   @LastModifiedBy

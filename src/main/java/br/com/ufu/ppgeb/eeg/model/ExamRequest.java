@@ -3,6 +3,7 @@ package br.com.ufu.ppgeb.eeg.model;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -74,17 +75,17 @@ public class ExamRequest {
   private Patient patient;
 
   @Column(name = "REQUEST_DATE")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime requestDate;
 
   @Column(name = "ACHIEVEMENT_DATE")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime achievementDate;
 
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false,
       updatable = false)
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime createdAt;
 
   @CreatedBy
@@ -94,7 +95,7 @@ public class ExamRequest {
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
   private ZonedDateTime updatedAt;
 
   @LastModifiedBy

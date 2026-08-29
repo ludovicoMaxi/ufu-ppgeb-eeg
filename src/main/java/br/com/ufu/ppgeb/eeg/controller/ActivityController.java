@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import br.com.ufu.ppgeb.eeg.view.ActivityList;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for activity operations.
  */
 @RestController
-@RequestMapping("/api/activity")
+@RequestMapping(ApiPaths.ACTIVITY)
 @AllArgsConstructor
 public class ActivityController {
 
