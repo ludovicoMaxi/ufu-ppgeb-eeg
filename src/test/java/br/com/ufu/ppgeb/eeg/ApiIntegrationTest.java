@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import br.com.ufu.ppgeb.eeg.dto.PatientCreateRequest;
+import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
 import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
@@ -199,10 +199,10 @@ class ApiIntegrationTest {
   @DisplayName("Given existing patient when updating patient then return updated by")
   void givenExistingPatient_whenUpdatingPatient_thenReturnUpdatedBy()
       throws Exception {
-    Patient patient = setupGivenExistingPatientWhenUpdatingPatientThenReturnUpdatedBy();
-    String body = toJson(patient);
+    PatientRequest request = setupGivenExistingPatientWhenUpdatingPatientThenReturnUpdatedBy();
+    String body = toJson(request);
 
-    mockMvc.perform(put(API_PATIENT)
+    mockMvc.perform(put(API_PATIENT + PATH_SEPARATOR + PATIENT_ID_1002)
             .with(httpBasic(USERNAME, PASSWORD))
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
@@ -213,23 +213,21 @@ class ApiIntegrationTest {
             .value(USERNAME));
   }
 
-  private Patient setupGivenExistingPatientWhenUpdatingPatientThenReturnUpdatedBy() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID_1002);
-    patient.setName(UPDATED_PATIENT_NAME);
-    patient.setDocumentNumber("00000000019");
-    patient.setSex(Sex.MALE);
-    patient.setBirthDate(createDate("01/01/1991"));
-    patient.setNationality(NATIONALITY);
-    patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("PESQUISADOR");
-    return patient;
+  private PatientRequest setupGivenExistingPatientWhenUpdatingPatientThenReturnUpdatedBy() {
+    return new PatientRequest(
+        UPDATED_PATIENT_NAME,
+        "00000000019",
+        Sex.MALE,
+        createDate("01/01/1991"),
+        NATIONALITY,
+        CivilStatus.SINGLE,
+        "PESQUISADOR");
   }
 
   @Test
   @DisplayName("Given valid patient when creating patient then return location header")
   void givenValidPatient_whenCreatingPatient_thenReturnLocationHeader() throws Exception {
-    PatientCreateRequest request = setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader();
+    PatientRequest request = setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader();
 
     mockMvc.perform(post(API_PATIENT)
             .with(httpBasic(USERNAME, PASSWORD))
@@ -239,8 +237,8 @@ class ApiIntegrationTest {
         .andExpect(header().string("Location", startsWith(API_PATIENT + PATH_SEPARATOR)));
   }
 
-  private PatientCreateRequest setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader() {
-    return new PatientCreateRequest("Carlos Teste", NEW_PATIENT_DOCUMENT, Sex.MALE,
+  private PatientRequest setupGivenValidPatientWhenCreatingPatientThenReturnLocationHeader() {
+    return new PatientRequest("Carlos Teste", NEW_PATIENT_DOCUMENT, Sex.MALE,
         createDate(NEW_PATIENT_BIRTH_DATE), NATIONALITY, NEW_PATIENT_CIVIL_STATUS,
         NEW_PATIENT_JOB);
   }
@@ -249,7 +247,7 @@ class ApiIntegrationTest {
   @DisplayName("Given patient with missing required field when creating patient then return bad request")
   void givenPatientMissingRequiredField_whenCreatingPatient_thenReturnBadRequest()
       throws Exception {
-    PatientCreateRequest request = setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest();
+    PatientRequest request = setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest();
 
     mockMvc.perform(post(API_PATIENT)
             .with(httpBasic(USERNAME, PASSWORD))
@@ -259,8 +257,8 @@ class ApiIntegrationTest {
         .andExpect(jsonPath("$.message").value("name must not be blank"));
   }
 
-  private PatientCreateRequest setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest() {
-    return new PatientCreateRequest(null, NEW_PATIENT_DOCUMENT, Sex.MALE,
+  private PatientRequest setupGivenPatientMissingRequiredFieldWhenCreatingPatientThenReturnBadRequest() {
+    return new PatientRequest(null, NEW_PATIENT_DOCUMENT, Sex.MALE,
         createDate(NEW_PATIENT_BIRTH_DATE), NATIONALITY, NEW_PATIENT_CIVIL_STATUS,
         NEW_PATIENT_JOB);
   }
