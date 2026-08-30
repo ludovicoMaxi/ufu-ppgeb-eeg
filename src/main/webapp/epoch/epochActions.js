@@ -60,10 +60,10 @@ export function removeItemList(index) {
 
 export function submitUpdateEpochList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}/${values.examId}/epochs`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.examId}/epochs`, values.epochs)
             .then(resp => {
                 toastr.success('Sucesso', `Época(s) do exame atualizada(s) com sucesso.`);
-                var epochs = convertSecondsInMinutesAndSeconds(resp.data.epochs);
+                var epochs = convertSecondsInMinutesAndSeconds(resp.data);
                 dispatch(changeFieldValue('epochListForm', 'epochs', epochs));
             })
             .catch(e => {

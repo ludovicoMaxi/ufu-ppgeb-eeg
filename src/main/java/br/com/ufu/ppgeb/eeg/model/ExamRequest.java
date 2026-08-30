@@ -4,7 +4,6 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
-import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -127,8 +126,8 @@ public class ExamRequest {
         && Objects.equals(getClinicOrigin(), examRequest.getClinicOrigin())
         && Objects.equals(getCityOrigin(), examRequest.getCityOrigin())
         && Objects.equals(getPatient(), examRequest.getPatient())
-        && CompareDate.compareDates(getRequestDate(), examRequest.getRequestDate())
-        && CompareDate.compareDates(getAchievementDate(), examRequest.getAchievementDate());
+        && Objects.equals(getRequestDate(), examRequest.getRequestDate())
+        && Objects.equals(getAchievementDate(), examRequest.getAchievementDate());
   }
 
   @Override

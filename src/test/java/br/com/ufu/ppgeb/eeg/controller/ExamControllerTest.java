@@ -1,8 +1,8 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EQUIPMENT_SUBPATH;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EQUIPMENTS_SUBPATH;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM;
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.MEDICAMENT_SUBPATH;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.MEDICAMENTS_SUBPATH;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.dto.ExamRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Exam;
@@ -99,7 +100,7 @@ class ExamControllerTest {
     Exam exam = createExam();
     when(examService.save(any(Exam.class))).thenReturn(exam);
 
-    String body = objectMapper.writeValueAsString(exam);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
 
     mockMvc.perform(post(EXAM)
             .contentType(MediaType.APPLICATION_JSON)
@@ -116,9 +117,9 @@ class ExamControllerTest {
     Exam exam = createExam();
     when(examService.update(any(Exam.class))).thenReturn(exam);
 
-    String body = objectMapper.writeValueAsString(exam);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
 
-    mockMvc.perform(put(EXAM)
+    mockMvc.perform(put(EXAM + PATH_SEPARATOR + EXAM_ID)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
@@ -133,9 +134,9 @@ class ExamControllerTest {
     Exam exam = createExam();
     when(examService.updateExamMedicament(any(Exam.class))).thenReturn(exam);
 
-    String body = objectMapper.writeValueAsString(exam);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
 
-    mockMvc.perform(put(EXAM + MEDICAMENT_SUBPATH)
+    mockMvc.perform(put(EXAM + PATH_SEPARATOR + EXAM_ID + MEDICAMENTS_SUBPATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
@@ -150,9 +151,9 @@ class ExamControllerTest {
     Exam exam = createExam();
     when(examService.updateExamEquipment(any(Exam.class))).thenReturn(exam);
 
-    String body = objectMapper.writeValueAsString(exam);
+    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
 
-    mockMvc.perform(put(EXAM + EQUIPMENT_SUBPATH)
+    mockMvc.perform(put(EXAM + PATH_SEPARATOR + EXAM_ID + EQUIPMENTS_SUBPATH)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
