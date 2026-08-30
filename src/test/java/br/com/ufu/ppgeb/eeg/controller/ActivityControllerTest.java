@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.dto.ActivityRequest;
-import br.com.ufu.ppgeb.eeg.dto.ActivityResponse;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import org.instancio.Instancio;
@@ -102,16 +101,15 @@ class ActivityControllerTest {
   @Test
   @DisplayName("Given an activity list when updating activities then return updated activity list")
   void givenActivityList_whenUpdatingActivities_thenReturnUpdatedActivityList() throws Exception {
-    ActivityResponse activityResponse = Instancio.of(ActivityResponse.class)
-        .set(field(ActivityResponse::id), EXAM_ID)
-        .set(field(ActivityResponse::examId), EXAM_ID)
-        .set(field(ActivityResponse::description), DESCRIPTION)
+    ActivityRequest activityRequest = Instancio.of(ActivityRequest.class)
+        .set(field(ActivityRequest::id), EXAM_ID)
+        .set(field(ActivityRequest::description), DESCRIPTION)
         .create();
 
     when(activityService.updateList(eq(EXAM_ID), anyList()))
         .thenReturn(List.of(createActivity()));
 
-    String body = objectMapper.writeValueAsString(List.of(activityResponse));
+    String body = objectMapper.writeValueAsString(List.of(activityRequest));
 
     mockMvc.perform(put(ACTIVITY_URL)
             .contentType(MediaType.APPLICATION_JSON)

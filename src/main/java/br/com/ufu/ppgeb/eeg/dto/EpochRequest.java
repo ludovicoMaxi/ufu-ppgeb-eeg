@@ -6,15 +6,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * Request DTO for creating or updating an activity.
+ * Request DTO for creating or updating an epoch.
  *
- * @param id the activity id (used on update)
+ * @param id the epoch id (used on update)
  * @param startTime the start time
  * @param duration the duration
  * @param description the description
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ActivityRequest(
+public record EpochRequest(
     Long id,
     @NotNull
     Long startTime,

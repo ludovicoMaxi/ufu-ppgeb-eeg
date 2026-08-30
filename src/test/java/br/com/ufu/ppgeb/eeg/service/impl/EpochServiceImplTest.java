@@ -14,7 +14,6 @@ import java.util.Optional;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.repository.EpochRepository;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,6 @@ class EpochServiceImplTest {
   private static final String MSG_DURATION_NULL = "duration cannot be null.";
   private static final String MSG_DESCRIPTION_EMPTY = "description cannot be empty.";
   private static final String MSG_EXAM_ID_NULL = "examId cannot be null.";
-  private static final String MSG_EPOCH_LIST_NULL = "EpochList cannot be null.";
   private static final String RESOURCE_NAME = "Epoch";
   private static final String MSG_NOT_FOUND = " não encontrado(a) com id=";
   private static final Long EPOCH_ID = 1L;
@@ -77,6 +75,7 @@ class EpochServiceImplTest {
   @DisplayName("Given valid epoch when save then return saved epoch")
   void givenValidEpoch_whenSave_thenReturnSavedEpoch() {
     Epoch epoch = Instancio.create(Epoch.class);
+    epoch.setId(null);
 
     when(epochRepository.save(any(Epoch.class)))
         .thenReturn(epoch);
@@ -84,6 +83,19 @@ class EpochServiceImplTest {
     epochService.save(epoch);
 
     verify(epochRepository).save(epoch);
+  }
+
+  @Test
+  @DisplayName("Given epoch with non-null id when save then throw exception")
+  void givenEpochWithNonNullId_whenSave_thenThrowException() {
+    Epoch epoch = Instancio.create(Epoch.class);
+    epoch.setId(EPOCH_ID);
+
+    assertThatThrownBy(() -> epochService.save(epoch))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("id must be null");
+
+    verify(epochRepository, never()).save(any());
   }
 
   @Test
@@ -100,6 +112,7 @@ class EpochServiceImplTest {
   @DisplayName("Given epoch with null start time when save then throw exception")
   void givenEpochWithNullStartTime_whenSave_thenThrowException() {
     Epoch epoch = Instancio.create(Epoch.class);
+    epoch.setId(null);
     epoch.setStartTime(null);
 
     assertThatThrownBy(() -> epochService.save(epoch))
@@ -113,6 +126,7 @@ class EpochServiceImplTest {
   @DisplayName("Given epoch with null duration when save then throw exception")
   void givenEpochWithNullDuration_whenSave_thenThrowException() {
     Epoch epoch = Instancio.create(Epoch.class);
+    epoch.setId(null);
     epoch.setDuration(null);
 
     assertThatThrownBy(() -> epochService.save(epoch))
@@ -126,6 +140,7 @@ class EpochServiceImplTest {
   @DisplayName("Given epoch with empty description when save then throw exception")
   void givenEpochWithEmptyDescription_whenSave_thenThrowException() {
     Epoch epoch = Instancio.create(Epoch.class);
+    epoch.setId(null);
     epoch.setDescription("");
 
     assertThatThrownBy(() -> epochService.save(epoch))
@@ -226,22 +241,9 @@ class EpochServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given null epoch list when updateList then throw exception")
-  void givenNullEpochList_whenUpdateList_thenThrowException() {
-    assertThatThrownBy(() -> epochService.updateList(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_EPOCH_LIST_NULL);
-
-    verify(epochRepository, never()).save(any());
-  }
-
-  @Test
-  @DisplayName("Given epoch list with null exam id when updateList then throw exception")
-  void givenEpochListWithNullExamId_whenUpdateList_thenThrowException() {
-    EpochList epochList = new EpochList();
-    epochList.setExamId(null);
-
-    assertThatThrownBy(() -> epochService.updateList(epochList))
+  @DisplayName("Given null exam id when updateList then throw exception")
+  void givenNullExamId_whenUpdateList_thenThrowException() {
+    assertThatThrownBy(() -> epochService.updateList(null, List.of(createEpoch(null, EXAM_ID))))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("ExamId cannot be null.");
 
@@ -249,20 +251,31 @@ class EpochServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given epoch list with new epochs when updateList then return saved epochs")
-  void givenEpochListWithNewEpochs_whenUpdateList_thenReturnSavedEpochs() {
+  @DisplayName("Given null epochs when updateList then return empty list")
+  void givenNullEpochs_whenUpdateList_thenReturnEmpty() {
+    when(epochRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
+
+    List<Epoch> result = epochService.updateList(EXAM_ID, null);
+
+    assertThat(result).isEmpty();
+    verify(epochRepository).findByExamId(EXAM_ID);
+    verify(epochRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("Given new epochs when updateList then return saved epochs")
+  void givenNewEpochs_whenUpdateList_thenReturnSavedEpochs() {
     Epoch epoch = createEpoch(null, EXAM_ID);
-    EpochList epochList = createEpochList(EXAM_ID, epoch);
 
     when(epochRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
     when(epochRepository.save(any(Epoch.class)))
         .thenReturn(epoch);
 
-    List<Epoch> result = epochService.updateList(epochList);
+    List<Epoch> result = epochService.updateList(EXAM_ID, List.of(epoch));
 
     assertThat(result).hasSize(1);
     verify(epochRepository).findByExamId(EXAM_ID);
-    verify(epochRepository).save(epoch);
+    verify(epochRepository).save(any(Epoch.class));
   }
 
   private Epoch createEpoch(Long id, Long examId) {
@@ -272,22 +285,14 @@ class EpochServiceImplTest {
     return epoch;
   }
 
-  private EpochList createEpochList(Long examId, Epoch epoch) {
-    EpochList epochList = new EpochList();
-    epochList.setExamId(examId);
-    epochList.setEpochs(List.of(epoch));
-    return epochList;
-  }
-
   @Test
   @DisplayName("Given epoch with different exam id in list when updateList then throw exception")
   void givenEpochWithDifferentExamIdInList_whenUpdateList_thenThrowException() {
     Epoch epoch = createEpoch(null, DIFFERENT_EXAM_ID);
-    EpochList epochList = createEpochList(EXAM_ID, epoch);
 
     when(epochRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
 
-    assertThatThrownBy(() -> epochService.updateList(epochList))
+    assertThatThrownBy(() -> epochService.updateList(EXAM_ID, List.of(epoch)))
         .isInstanceOf(IllegalArgumentException.class);
 
     verify(epochRepository, never()).save(any());
@@ -297,11 +302,10 @@ class EpochServiceImplTest {
   @DisplayName("Given epoch with nonexistent id in list when updateList then throw exception")
   void givenEpochWithNonexistentIdInList_whenUpdateList_thenThrowException() {
     Epoch epoch = createEpoch(NONEXISTENT_ID, EXAM_ID);
-    EpochList epochList = createEpochList(EXAM_ID, epoch);
 
     when(epochRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
 
-    assertThatThrownBy(() -> epochService.updateList(epochList))
+    assertThatThrownBy(() -> epochService.updateList(EXAM_ID, List.of(epoch)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Epoch with id=" + NONEXISTENT_ID + " not exist by examID=" + EXAM_ID);
 

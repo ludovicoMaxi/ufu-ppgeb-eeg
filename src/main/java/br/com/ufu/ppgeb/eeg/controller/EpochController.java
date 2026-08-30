@@ -1,11 +1,16 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
+import br.com.ufu.ppgeb.eeg.dto.EpochRequest;
+import br.com.ufu.ppgeb.eeg.dto.EpochResponse;
+import br.com.ufu.ppgeb.eeg.mapper.EpochMapper;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +21,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller for epoch operations.
+ * REST controller for epochs of an exam.
  */
 @RestController
-@RequestMapping(ApiPaths.EPOCH)
+@RequestMapping(ApiPaths.EXAM_EPOCHS)
 @AllArgsConstructor
 public class EpochController {
 
@@ -39,50 +43,71 @@ public class EpochController {
    * @return the list of epochs
    */
   @GetMapping
-  public List<Epoch> list(@RequestParam(value = "examId") Long examId) {
+  public List<EpochResponse> list(@PathVariable(value = "examId") Long examId) {
 
     logger.info("Consultando épocas do exame id={}", examId);
-    return epochService.findByFilter(examId);
+    return Optional.ofNullable(epochService.findByFilter(examId))
+        .orElse(List.of())
+        .stream()
+        .map(EpochMapper::toResponse)
+        .toList();
   }
 
   /**
    * Finds an epoch by id.
    *
+   * @param examId the exam id
    * @param id the epoch id
    * @return the epoch
    */
   @GetMapping("/{id}")
-  public Epoch findById(@PathVariable(value = "id") Long id) {
+  public EpochResponse findById(
+      @PathVariable(value = "examId") Long examId,
+      @PathVariable(value = "id") Long id) {
 
-    logger.info("Consultando época id={}", id);
-    return epochService.findById(id);
+    logger.info("Consultando época id={} do exame id={}", id, examId);
+    return EpochMapper.toResponse(epochService.findById(id));
   }
 
   /**
-   * Saves a new epoch.
+   * Saves a new epoch for an exam.
    *
-   * @param epoch the epoch to save
+   * @param examId the exam id
+   * @param request the epoch to save
    * @return the saved epoch
    */
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public Epoch save(@RequestBody Epoch epoch) {
+  public EpochResponse save(
+      @PathVariable(value = "examId") Long examId,
+      @Valid @RequestBody EpochRequest request) {
 
-    logger.info("Recebendo criação de época");
-    return epochService.save(epoch);
+    logger.info("Recebendo criação de época do exame id={}", examId);
+    return EpochMapper.toResponse(epochService.save(EpochMapper.toEntity(request, examId)));
   }
 
   /**
-   * Updates a list of epochs.
+   * Updates a list of epochs of an exam.
    *
-   * @param epochList the epoch list to update
+   * @param examId the exam id
+   * @param epochs the epochs to update
    * @return the updated epoch list
    */
   @PutMapping
-  public EpochList updateList(@RequestBody EpochList epochList) {
+  public List<EpochResponse> updateList(
+      @PathVariable(value = "examId") Long examId,
+      @RequestBody List<EpochRequest> epochs) {
 
-    logger.info("Recebendo atualização de épocas do exame id={}", epochList.getExamId());
-    epochList.setEpochs(epochService.updateList(epochList));
-    return epochList;
+    logger.info("Recebendo atualização de épocas do exame id={}", examId);
+    List<Epoch> entities = Optional.ofNullable(epochs)
+        .orElse(List.of())
+        .stream()
+        .filter(Objects::nonNull)
+        .map(request -> EpochMapper.toEntity(request, examId))
+        .toList();
+    return epochService.updateList(examId, entities)
+        .stream()
+        .map(EpochMapper::toResponse)
+        .toList();
   }
 }

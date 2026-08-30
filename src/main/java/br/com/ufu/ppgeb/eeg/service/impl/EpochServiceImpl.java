@@ -13,7 +13,6 @@ import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.repository.EpochRepository;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +37,7 @@ public class EpochServiceImpl implements EpochService {
   public Epoch save(Epoch epoch) {
 
     Assert.notNull(epoch, "epoch cannot be null.");
+    Assert.isNull(epoch.getId(), "id must be null");
 
     validateEpoch(epoch);
 
@@ -93,17 +93,15 @@ public class EpochServiceImpl implements EpochService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public List<Epoch> updateList(EpochList epochList) {
+  public List<Epoch> updateList(Long examId, List<Epoch> currentEpochs) {
 
-    Assert.notNull(epochList, "EpochList cannot be null.");
-    Assert.notNull(epochList.getExamId(), "ExamId cannot be null.");
+    Assert.notNull(examId, "ExamId cannot be null.");
 
     Map<Long, Epoch> oldEpochsById = new HashMap<>();
-    for (Epoch oldEpoch : epochRepository.findByExamId(epochList.getExamId())) {
+    for (Epoch oldEpoch : epochRepository.findByExamId(examId)) {
       oldEpochsById.put(oldEpoch.getId(), oldEpoch);
     }
 
-    List<Epoch> currentEpochs = epochList.getEpochs();
     List<Epoch> savedEpochs = new ArrayList<>();
 
     if (isNotEmpty(currentEpochs)) {
@@ -112,19 +110,19 @@ public class EpochServiceImpl implements EpochService {
 
         if (nonNull(epoch.getExamId())
             && !epoch.getExamId()
-                .equals(epochList.getExamId())) {
+                .equals(examId)) {
           throw new IllegalArgumentException(
-              epoch + " is not same examId in update=" + epochList.getExamId());
+              epoch + " is not same examId in update=" + examId);
         }
 
-        epoch.setExamId(epochList.getExamId());
+        epoch.setExamId(examId);
 
         if (nonNull(epoch.getId())) {
 
           Epoch oldEpoch = oldEpochsById.remove(epoch.getId());
           if (isNull(oldEpoch)) {
             throw new IllegalArgumentException("Epoch with id=" + epoch.getId()
-                + " not exist by examID=" + epochList.getExamId());
+                + " not exist by examID=" + examId);
           }
 
           if (!epoch.equals(oldEpoch)) {
@@ -143,7 +141,7 @@ public class EpochServiceImpl implements EpochService {
     epochRepository.deleteAll(oldEpochsById.values());
 
     log.info("Épocas do exame atualizadas; examId={}, quantidade={}",
-        epochList.getExamId(), savedEpochs.size());
+        examId, savedEpochs.size());
     return savedEpochs;
   }
 }

@@ -25,48 +25,12 @@ public class ActivityMapper {
     if (isNull(request)) {
       return null;
     }
-    return toEntity(request, request.id(), examId);
-  }
-
-  /**
-   * Maps a request to an Activity entity preserving the id and setting the exam id.
-   *
-   * @param request the request
-   * @param id the activity id
-   * @param examId the exam id
-   * @return the Activity entity
-   */
-  public static Activity toEntity(ActivityRequest request, Long id, Long examId) {
-
-    if (isNull(request)) {
-      return null;
-    }
     return Activity.builder()
-        .id(id)
+        .id(request.id())
         .examId(examId)
         .startTime(request.startTime())
         .duration(request.duration())
         .description(request.description())
-        .build();
-  }
-
-  /**
-   * Maps an activity response to an Activity entity.
-   *
-   * @param response the activity response
-   * @return the Activity entity
-   */
-  public static Activity toEntity(ActivityResponse response) {
-
-    if (isNull(response)) {
-      return null;
-    }
-    return Activity.builder()
-        .id(response.id())
-        .examId(response.examId())
-        .startTime(response.startTime())
-        .duration(response.duration())
-        .description(response.description())
         .build();
   }
 
