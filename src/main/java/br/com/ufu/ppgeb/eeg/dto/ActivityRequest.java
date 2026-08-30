@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Size;
  * @param duration the duration
  * @param description the description
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record ActivityRequest(
     Long id,
     @NotNull

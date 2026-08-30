@@ -1,8 +1,12 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EPOCH;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EPOCHS_SUBPATH;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,9 +17,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.dto.EpochRequest;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +35,8 @@ import tools.jackson.databind.ObjectMapper;
 @ExtendWith(MockitoExtension.class)
 class EpochControllerTest {
 
-  private static final String EXAM_ID_PARAM = "examId";
   private static final Long EXAM_ID = 1001L;
+  private static final String EPOCH_URL = EXAM + PATH_SEPARATOR + EXAM_ID + EPOCHS_SUBPATH;
   private static final String DESCRIPTION = "Em Silencio";
   private static final String JSON_PATH_LENGTH = "$.length()";
   private static final String JSON_PATH_FIRST_DESCRIPTION = "$[0].description";
@@ -56,7 +60,7 @@ class EpochControllerTest {
     Epoch epoch = createEpoch();
     when(epochService.findByFilter(EXAM_ID)).thenReturn(List.of(epoch));
 
-    mockMvc.perform(get(EPOCH).param(EXAM_ID_PARAM, String.valueOf(EXAM_ID)))
+    mockMvc.perform(get(EPOCH_URL))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
         .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
@@ -70,7 +74,7 @@ class EpochControllerTest {
     Epoch epoch = createEpoch();
     when(epochService.findById(EXAM_ID)).thenReturn(epoch);
 
-    mockMvc.perform(get(EPOCH + "/" + EXAM_ID))
+    mockMvc.perform(get(EPOCH_URL + PATH_SEPARATOR + EXAM_ID))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_DESCRIPTION).value(DESCRIPTION));
 
@@ -83,9 +87,9 @@ class EpochControllerTest {
     Epoch epoch = createEpoch();
     when(epochService.save(any(Epoch.class))).thenReturn(epoch);
 
-    String body = objectMapper.writeValueAsString(epoch);
+    String body = objectMapper.writeValueAsString(Instancio.create(EpochRequest.class));
 
-    mockMvc.perform(post(EPOCH)
+    mockMvc.perform(post(EPOCH_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isCreated())
@@ -97,24 +101,23 @@ class EpochControllerTest {
   @Test
   @DisplayName("Given an epoch list when updating epochs then return updated epoch list")
   void givenEpochList_whenUpdatingEpochs_thenReturnUpdatedEpochList() throws Exception {
-    Epoch epoch = createEpoch();
-    EpochList epochList = Instancio.of(EpochList.class)
-        .set(field(EpochList::getExamId), EXAM_ID)
-        .set(field(EpochList::getEpochs), List.of(epoch))
+    EpochRequest epochRequest = Instancio.of(EpochRequest.class)
+        .set(field(EpochRequest::id), EXAM_ID)
+        .set(field(EpochRequest::description), DESCRIPTION)
         .create();
 
-    when(epochService.updateList(any(EpochList.class))).thenReturn(List.of(epoch));
+    when(epochService.updateList(eq(EXAM_ID), anyList()))
+        .thenReturn(List.of(createEpoch()));
 
-    String body = objectMapper.writeValueAsString(epochList);
+    String body = objectMapper.writeValueAsString(List.of(epochRequest));
 
-    mockMvc.perform(put(EPOCH)
+    mockMvc.perform(put(EPOCH_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.examId").value(EXAM_ID))
-        .andExpect(jsonPath("$.epochs[0].description").value(DESCRIPTION));
+        .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
 
-    verify(epochService).updateList(any(EpochList.class));
+    verify(epochService).updateList(eq(EXAM_ID), anyList());
   }
 
   private Epoch createEpoch() {

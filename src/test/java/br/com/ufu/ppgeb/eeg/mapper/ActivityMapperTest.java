@@ -35,23 +35,6 @@ class ActivityMapperTest {
   }
 
   @Test
-  @DisplayName("Given an activity response when mapping to entity then map every field")
-  void givenActivityResponse_whenToEntity_thenMapEveryField() {
-    ActivityResponse response = Instancio.create(ActivityResponse.class);
-
-    Activity activity = ActivityMapper.toEntity(response);
-
-    assertThat(activity)
-        .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
-            UPDATED_AT_FIELD, UPDATED_BY_FIELD);
-    assertThat(activity.getId()).isEqualTo(response.id());
-    assertThat(activity.getExamId()).isEqualTo(response.examId());
-    assertThat(activity.getStartTime()).isEqualTo(response.startTime());
-    assertThat(activity.getDuration()).isEqualTo(response.duration());
-    assertThat(activity.getDescription()).isEqualTo(response.description());
-  }
-
-  @Test
   @DisplayName("Given a null activity request when mapping to entity then return null")
   void givenNullActivityRequest_whenToEntity_thenReturnNull() {
 

@@ -3,7 +3,6 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Epoch;
-import br.com.ufu.ppgeb.eeg.view.EpochList;
 
 /**
  * Service interface for Epoch operations.
@@ -49,11 +48,12 @@ public interface EpochService {
   void delete(Long id);
 
   /**
-   * Updates a list of epochs.
+   * Updates a list of epochs of an exam.
    *
-   * @param epochList the epoch list
-   * @return the updated list
+   * @param examId the exam id
+   * @param epochs the epochs to update
+   * @return the updated list of epochs
    */
-  List<Epoch> updateList(EpochList epochList);
+  List<Epoch> updateList(Long examId, List<Epoch> epochs);
 
 }

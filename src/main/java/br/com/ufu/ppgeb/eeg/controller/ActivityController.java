@@ -96,14 +96,14 @@ public class ActivityController {
   @PutMapping
   public List<ActivityResponse> updateList(
       @PathVariable(value = "examId") Long examId,
-      @RequestBody List<ActivityResponse> activities) {
+      @RequestBody List<ActivityRequest> activities) {
 
     logger.info("Recebendo atualização de atividades do exame id={}", examId);
     List<Activity> entities = Optional.ofNullable(activities)
         .orElse(List.of())
         .stream()
         .filter(Objects::nonNull)
-        .map(ActivityMapper::toEntity)
+        .map(request -> ActivityMapper.toEntity(request, examId))
         .toList();
     return activityService.updateList(examId, entities)
         .stream()
