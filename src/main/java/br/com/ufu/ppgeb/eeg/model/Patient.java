@@ -5,7 +5,6 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
-import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -110,7 +109,7 @@ public class Patient {
     return Objects.equals(getSex(), patient.getSex())
         && Objects.equals(getName(), patient.getName())
         && Objects.equals(getDocumentNumber(), patient.getDocumentNumber())
-        && CompareDate.compareDates(getBirthDate(), patient.getBirthDate())
+        && Objects.equals(getBirthDate(), patient.getBirthDate())
         && Objects.equals(getNationality(), patient.getNationality())
         && Objects.equals(getCivilStatus(), patient.getCivilStatus())
         && Objects.equals(getJob(), patient.getJob());

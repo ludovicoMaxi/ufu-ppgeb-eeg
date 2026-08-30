@@ -3,7 +3,6 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Activity;
-import br.com.ufu.ppgeb.eeg.view.ActivityList;
 
 /**
  * Service interface for Activity operations.
@@ -49,11 +48,12 @@ public interface ActivityService {
   void delete(Long id);
 
   /**
-   * Updates a list of activities.
+   * Updates a list of activities of an exam.
    *
-   * @param activityList the activity list
-   * @return the updated list
+   * @param examId the exam id
+   * @param activities the activities to update
+   * @return the updated list of activities
    */
-  List<Activity> updateList(ActivityList activityList);
+  List<Activity> updateList(Long examId, List<Activity> activities);
 
 }

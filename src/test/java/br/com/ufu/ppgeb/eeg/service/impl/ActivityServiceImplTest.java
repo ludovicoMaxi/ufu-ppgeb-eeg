@@ -14,7 +14,6 @@ import java.util.Optional;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
-import br.com.ufu.ppgeb.eeg.view.ActivityList;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,6 @@ class ActivityServiceImplTest {
   private static final String MSG_DURATION_NULL = "duration cannot be null.";
   private static final String MSG_DESCRIPTION_EMPTY = "description cannot be empty.";
   private static final String MSG_EXAM_ID_NULL = "examId cannot be null.";
-  private static final String MSG_ACTIVITY_LIST_NULL = "ActivityList cannot be null.";
   private static final String RESOURCE_NAME = "Activity";
   private static final String MSG_NOT_FOUND = " não encontrado(a) com id=";
   private static final Long ACTIVITY_ID = 1L;
@@ -77,6 +75,7 @@ class ActivityServiceImplTest {
   @DisplayName("Given valid activity when save then return saved activity")
   void givenValidActivity_whenSave_thenReturnSavedActivity() {
     Activity activity = Instancio.create(Activity.class);
+    activity.setId(null);
 
     when(activityRepository.save(any(Activity.class)))
         .thenReturn(activity);
@@ -84,6 +83,19 @@ class ActivityServiceImplTest {
     activityService.save(activity);
 
     verify(activityRepository).save(activity);
+  }
+
+  @Test
+  @DisplayName("Given activity with non-null id when save then throw exception")
+  void givenActivityWithNonNullId_whenSave_thenThrowException() {
+    Activity activity = Instancio.create(Activity.class);
+    activity.setId(ACTIVITY_ID);
+
+    assertThatThrownBy(() -> activityService.save(activity))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("id must be null");
+
+    verify(activityRepository, never()).save(any());
   }
 
   @Test
@@ -100,6 +112,7 @@ class ActivityServiceImplTest {
   @DisplayName("Given activity with null start time when save then throw exception")
   void givenActivityWithNullStartTime_whenSave_thenThrowException() {
     Activity activity = Instancio.create(Activity.class);
+    activity.setId(null);
     activity.setStartTime(null);
 
     assertThatThrownBy(() -> activityService.save(activity))
@@ -113,6 +126,7 @@ class ActivityServiceImplTest {
   @DisplayName("Given activity with null duration when save then throw exception")
   void givenActivityWithNullDuration_whenSave_thenThrowException() {
     Activity activity = Instancio.create(Activity.class);
+    activity.setId(null);
     activity.setDuration(null);
 
     assertThatThrownBy(() -> activityService.save(activity))
@@ -126,6 +140,7 @@ class ActivityServiceImplTest {
   @DisplayName("Given activity with empty description when save then throw exception")
   void givenActivityWithEmptyDescription_whenSave_thenThrowException() {
     Activity activity = Instancio.create(Activity.class);
+    activity.setId(null);
     activity.setDescription("");
 
     assertThatThrownBy(() -> activityService.save(activity))
@@ -226,22 +241,9 @@ class ActivityServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given null activity list when updateList then throw exception")
-  void givenNullActivityList_whenUpdateList_thenThrowException() {
-    assertThatThrownBy(() -> activityService.updateList(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_ACTIVITY_LIST_NULL);
-
-    verify(activityRepository, never()).save(any());
-  }
-
-  @Test
-  @DisplayName("Given activity list with null exam id when updateList then throw exception")
-  void givenActivityListWithNullExamId_whenUpdateList_thenThrowException() {
-    ActivityList activityList = new ActivityList();
-    activityList.setExamId(null);
-
-    assertThatThrownBy(() -> activityService.updateList(activityList))
+  @DisplayName("Given null exam id when updateList then throw exception")
+  void givenNullExamId_whenUpdateList_thenThrowException() {
+    assertThatThrownBy(() -> activityService.updateList(null, List.of(createActivity(null, EXAM_ID))))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("ExamId cannot be null.");
 
@@ -249,20 +251,31 @@ class ActivityServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given activity list with new activities when updateList then return saved activities")
-  void givenActivityListWithNewActivities_whenUpdateList_thenReturnSavedActivities() {
+  @DisplayName("Given null activities when updateList then return empty list")
+  void givenNullActivities_whenUpdateList_thenReturnEmpty() {
+    when(activityRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
+
+    List<Activity> result = activityService.updateList(EXAM_ID, null);
+
+    assertThat(result).isEmpty();
+    verify(activityRepository).findByExamId(EXAM_ID);
+    verify(activityRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("Given new activities when updateList then return saved activities")
+  void givenNewActivities_whenUpdateList_thenReturnSavedActivities() {
     Activity activity = createActivity(null, EXAM_ID);
-    ActivityList activityList = createActivityList(EXAM_ID, activity);
 
     when(activityRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
     when(activityRepository.save(any(Activity.class)))
         .thenReturn(activity);
 
-    List<Activity> result = activityService.updateList(activityList);
+    List<Activity> result = activityService.updateList(EXAM_ID, List.of(activity));
 
     assertThat(result).hasSize(1);
     verify(activityRepository).findByExamId(EXAM_ID);
-    verify(activityRepository).save(activity);
+    verify(activityRepository).save(any(Activity.class));
   }
 
   private Activity createActivity(Long id, Long examId) {
@@ -272,22 +285,14 @@ class ActivityServiceImplTest {
     return activity;
   }
 
-  private ActivityList createActivityList(Long examId, Activity activity) {
-    ActivityList activityList = new ActivityList();
-    activityList.setExamId(examId);
-    activityList.setActivities(List.of(activity));
-    return activityList;
-  }
-
   @Test
   @DisplayName("Given activity with different exam id in list when updateList then throw exception")
   void givenActivityWithDifferentExamIdInList_whenUpdateList_thenThrowException() {
     Activity activity = createActivity(null, DIFFERENT_EXAM_ID);
-    ActivityList activityList = createActivityList(EXAM_ID, activity);
 
     when(activityRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
 
-    assertThatThrownBy(() -> activityService.updateList(activityList))
+    assertThatThrownBy(() -> activityService.updateList(EXAM_ID, List.of(activity)))
         .isInstanceOf(IllegalArgumentException.class);
 
     verify(activityRepository, never()).save(any());
@@ -297,11 +302,10 @@ class ActivityServiceImplTest {
   @DisplayName("Given activity with nonexistent id in list when updateList then throw exception")
   void givenActivityWithNonexistentIdInList_whenUpdateList_thenThrowException() {
     Activity activity = createActivity(NONEXISTENT_ID, EXAM_ID);
-    ActivityList activityList = createActivityList(EXAM_ID, activity);
 
     when(activityRepository.findByExamId(EXAM_ID)).thenReturn(Collections.emptyList());
 
-    assertThatThrownBy(() -> activityService.updateList(activityList))
+    assertThatThrownBy(() -> activityService.updateList(EXAM_ID, List.of(activity)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Activity with id=" + NONEXISTENT_ID + " not exist by examID=" + EXAM_ID);
 
