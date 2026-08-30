@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
-import br.com.ufu.ppgeb.eeg.utils.CompareDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
@@ -143,7 +142,7 @@ public class Exam {
     return Objects.equals(getId(), exam.getId())
         && Objects.equals(getExamRequest(), exam.getExamRequest())
         && Objects.equals(getPatient(), exam.getPatient())
-        && CompareDate.compareDates(getAchievementDate(), exam.getAchievementDate())
+        && Objects.equals(getAchievementDate(), exam.getAchievementDate())
         && Objects.equals(getMedicalReport(), exam.getMedicalReport())
         && Objects.equals(getConclusion(), exam.getConclusion())
         && Objects.equals(getBed(), exam.getBed())
