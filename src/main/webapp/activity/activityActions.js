@@ -60,10 +60,10 @@ export function removeItemList(index) {
 
 export function submitUpdateActivityList(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}/${values.examId}/activities`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.examId}/activities`, values.activities)
             .then(resp => {
                 toastr.success('Sucesso', `Atividade(s) do exame atualizada(s) com sucesso.`);
-                var activities = convertSecondsInMinutesAndSeconds(resp.data.activities);
+                var activities = convertSecondsInMinutesAndSeconds(resp.data);
                 dispatch(changeFieldValue('activityListForm', 'activities', activities));
             })
             .catch(e => {

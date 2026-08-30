@@ -13,7 +13,6 @@ import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
-import br.com.ufu.ppgeb.eeg.view.ActivityList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +37,7 @@ public class ActivityServiceImpl implements ActivityService {
   public Activity save(Activity activity) {
 
     Assert.notNull(activity, "activity cannot be null.");
+    Assert.isNull(activity.getId(), "id must be null");
 
     validateActivity(activity);
 
@@ -93,17 +93,15 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public List<Activity> updateList(ActivityList activityList) {
+  public List<Activity> updateList(Long examId, List<Activity> currentActivities) {
 
-    Assert.notNull(activityList, "ActivityList cannot be null.");
-    Assert.notNull(activityList.getExamId(), "ExamId cannot be null.");
+    Assert.notNull(examId, "ExamId cannot be null.");
 
     Map<Long, Activity> oldActivitiesById = new HashMap<>();
-    for (Activity oldActivity : activityRepository.findByExamId(activityList.getExamId())) {
+    for (Activity oldActivity : activityRepository.findByExamId(examId)) {
       oldActivitiesById.put(oldActivity.getId(), oldActivity);
     }
 
-    List<Activity> currentActivities = activityList.getActivities();
     List<Activity> savedActivities = new ArrayList<>();
 
     if (isNotEmpty(currentActivities)) {
@@ -112,19 +110,19 @@ public class ActivityServiceImpl implements ActivityService {
 
         if (nonNull(activity.getExamId())
             && !activity.getExamId()
-                .equals(activityList.getExamId())) {
+                .equals(examId)) {
           throw new IllegalArgumentException(
-              activity + " is not same examId in update=" + activityList.getExamId());
+              activity + " is not same examId in update=" + examId);
         }
 
-        activity.setExamId(activityList.getExamId());
+        activity.setExamId(examId);
 
         if (nonNull(activity.getId())) {
 
           Activity oldActivity = oldActivitiesById.remove(activity.getId());
           if (isNull(oldActivity)) {
             throw new IllegalArgumentException("Activity with id=" + activity.getId()
-                + " not exist by examID=" + activityList.getExamId());
+                + " not exist by examID=" + examId);
           }
 
           if (!activity.equals(oldActivity)) {
@@ -143,7 +141,7 @@ public class ActivityServiceImpl implements ActivityService {
     activityRepository.deleteAll(oldActivitiesById.values());
 
     log.info("Atividades do exame atualizadas; examId={}, quantidade={}",
-        activityList.getExamId(), savedActivities.size());
+        examId, savedActivities.size());
     return savedActivities;
   }
 }

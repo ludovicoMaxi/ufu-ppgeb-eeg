@@ -1,8 +1,12 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.ACTIVITY;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.ACTIVITIES_SUBPATH;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM;
+import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,9 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.dto.ActivityRequest;
+import br.com.ufu.ppgeb.eeg.dto.ActivityResponse;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
-import br.com.ufu.ppgeb.eeg.view.ActivityList;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +36,8 @@ import tools.jackson.databind.ObjectMapper;
 @ExtendWith(MockitoExtension.class)
 class ActivityControllerTest {
 
-  private static final String EXAM_ID_PARAM = "examId";
   private static final Long EXAM_ID = 1001L;
+  private static final String ACTIVITY_URL = EXAM + PATH_SEPARATOR + EXAM_ID + ACTIVITIES_SUBPATH;
   private static final String DESCRIPTION = "Repouso";
   private static final String JSON_PATH_LENGTH = "$.length()";
   private static final String JSON_PATH_FIRST_DESCRIPTION = "$[0].description";
@@ -56,7 +61,7 @@ class ActivityControllerTest {
     Activity activity = createActivity();
     when(activityService.findByExamId(EXAM_ID)).thenReturn(List.of(activity));
 
-    mockMvc.perform(get(ACTIVITY).param(EXAM_ID_PARAM, String.valueOf(EXAM_ID)))
+    mockMvc.perform(get(ACTIVITY_URL))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
         .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
@@ -70,7 +75,7 @@ class ActivityControllerTest {
     Activity activity = createActivity();
     when(activityService.findById(EXAM_ID)).thenReturn(activity);
 
-    mockMvc.perform(get(ACTIVITY + "/" + EXAM_ID))
+    mockMvc.perform(get(ACTIVITY_URL + PATH_SEPARATOR + EXAM_ID))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_DESCRIPTION).value(DESCRIPTION));
 
@@ -83,9 +88,9 @@ class ActivityControllerTest {
     Activity activity = createActivity();
     when(activityService.save(any(Activity.class))).thenReturn(activity);
 
-    String body = objectMapper.writeValueAsString(activity);
+    String body = objectMapper.writeValueAsString(Instancio.create(ActivityRequest.class));
 
-    mockMvc.perform(post(ACTIVITY)
+    mockMvc.perform(post(ACTIVITY_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isCreated())
@@ -97,24 +102,24 @@ class ActivityControllerTest {
   @Test
   @DisplayName("Given an activity list when updating activities then return updated activity list")
   void givenActivityList_whenUpdatingActivities_thenReturnUpdatedActivityList() throws Exception {
-    Activity activity = createActivity();
-    ActivityList activityList = Instancio.of(ActivityList.class)
-        .set(field(ActivityList::getExamId), EXAM_ID)
-        .set(field(ActivityList::getActivities), List.of(activity))
+    ActivityResponse activityResponse = Instancio.of(ActivityResponse.class)
+        .set(field(ActivityResponse::id), EXAM_ID)
+        .set(field(ActivityResponse::examId), EXAM_ID)
+        .set(field(ActivityResponse::description), DESCRIPTION)
         .create();
 
-    when(activityService.updateList(any(ActivityList.class))).thenReturn(List.of(activity));
+    when(activityService.updateList(eq(EXAM_ID), anyList()))
+        .thenReturn(List.of(createActivity()));
 
-    String body = objectMapper.writeValueAsString(activityList);
+    String body = objectMapper.writeValueAsString(List.of(activityResponse));
 
-    mockMvc.perform(put(ACTIVITY)
+    mockMvc.perform(put(ACTIVITY_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.examId").value(EXAM_ID))
-        .andExpect(jsonPath("$.activities[0].description").value(DESCRIPTION));
+        .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
 
-    verify(activityService).updateList(any(ActivityList.class));
+    verify(activityService).updateList(eq(EXAM_ID), anyList());
   }
 
   private Activity createActivity() {
