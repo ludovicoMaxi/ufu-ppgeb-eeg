@@ -2,18 +2,10 @@ package br.com.ufu.ppgeb.eeg.mapper;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
-import java.util.List;
-
-import br.com.ufu.ppgeb.eeg.dto.ExamEquipmentRequest;
-import br.com.ufu.ppgeb.eeg.dto.ExamMedicamentRequest;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequest;
 import br.com.ufu.ppgeb.eeg.dto.ExamResponse;
 import br.com.ufu.ppgeb.eeg.model.Exam;
-import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
-import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
-import br.com.ufu.ppgeb.eeg.model.Patient;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +21,7 @@ class ExamMapperTest {
   @Test
   @DisplayName("Given an exam request when mapping to entity then map every field")
   void givenExamRequest_whenToEntity_thenMapEveryField() {
-    ExamRequest request = createExamRequest();
+    ExamRequest request = Instancio.create(ExamRequest.class);
 
     Exam exam = ExamMapper.toEntity(request);
 
@@ -53,19 +45,10 @@ class ExamMapperTest {
     assertThat(exam.getExamEquipments()).hasSize(request.examEquipments().size());
   }
 
-  private ExamRequest createExamRequest() {
-    return Instancio.of(ExamRequest.class)
-        .set(field(ExamRequest::examMedicaments),
-            List.of(Instancio.create(ExamMedicamentRequest.class)))
-        .set(field(ExamRequest::examEquipments),
-            List.of(Instancio.create(ExamEquipmentRequest.class)))
-        .create();
-  }
-
   @Test
   @DisplayName("Given an exam request and an id when mapping to entity then map every field with the id")
   void givenExamRequestAndId_whenToEntity_thenMapEveryFieldWithTheId() {
-    ExamRequest request = createExamRequest();
+    ExamRequest request = Instancio.create(ExamRequest.class);
 
     Exam exam = ExamMapper.toEntity(request, ID);
 
@@ -95,7 +78,7 @@ class ExamMapperTest {
   @Test
   @DisplayName("Given an exam when mapping to response then map every field")
   void givenExam_whenToResponse_thenMapEveryField() {
-    Exam exam = createExam();
+    Exam exam = Instancio.create(Exam.class);
 
     ExamResponse response = ExamMapper.toResponse(exam);
 
@@ -116,18 +99,6 @@ class ExamMapperTest {
     assertThat(response.createdBy()).isEqualTo(exam.getCreatedBy());
     assertThat(response.updatedAt()).isEqualTo(exam.getUpdatedAt());
     assertThat(response.updatedBy()).isEqualTo(exam.getUpdatedBy());
-  }
-
-  private Exam createExam() {
-    return Instancio.of(Exam.class)
-        .set(field(Exam::getPatient), Patient.builder().id(ID).build())
-        .set(field(Exam::getExamRequest),
-            br.com.ufu.ppgeb.eeg.model.ExamRequest.builder().id(ID).build())
-        .set(field(Exam::getExamMedicaments),
-            List.of(Instancio.create(ExamMedicament.class)))
-        .set(field(Exam::getExamEquipments),
-            List.of(Instancio.create(ExamEquipment.class)))
-        .create();
   }
 
   @Test

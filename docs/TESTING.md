@@ -218,11 +218,11 @@ assertThat(activity.getExamId()).isEqualTo(EXAM_ID);
 ### Dicas específicas
 
 - Para que o `hasNoNullFieldsOrPropertiesExcept(...)` passe no `toEntity`, garanta no
-  cenário que os campos obrigatórios do request sejam não nulos (o `Instancio` já
-  gera valores não nulos por padrão). Em mappers compostos com listas (ex.:
-  `ExamMapper`), defina explicitamente as listas no request/entidade com
-  `Instancio.of(...).set(field(...), List.of(...)).create()` para evitar dependência
-  do preenchimento padrão do `Instancio`.
+  cenário que os campos obrigatórios do request e os objetos/coleções filhos sejam não
+  nulos — o `Instancio` já preenche listas e objetos aninhados por padrão (listas com
+  elementos, campos escalares não nulos), então basta `Instancio.create(...)`. Use
+  `set(...)` apenas quando um valor específico faz parte da asserção (ex.: `examId`
+  determinístico) ou quando o factory precisa ignorar/normalizar um campo.
 - As asserções estruturais complementam — não substituem — as asserções campo a campo
   e as asserções de mapeamento de listas (tamanho e delegação aos mappers dedicados).
 - Exemplos completos: [ActivityMapperTest](../src/test/java/br/com/ufu/ppgeb/eeg/mapper/ActivityMapperTest.java),
