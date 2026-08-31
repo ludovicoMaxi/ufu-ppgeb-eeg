@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -13,10 +14,13 @@ import jakarta.validation.constraints.Size;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record EquipmentRequest(
+    @JsonProperty("id")
     Long id,
     @NotBlank
     @Size(max = 256)
+    @JsonProperty("name")
     String name,
     @Size(max = 256)
+    @JsonProperty("description")
     String description) {
 }
