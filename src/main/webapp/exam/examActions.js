@@ -60,6 +60,33 @@ export function submitExam(values) {
     }
 }
 
+export function toExamRequestPayload(values) {
+    return {
+        id: values.id,
+        patientId: values.patient ? values.patient.id : values.patientId,
+        examRequestId: values.examRequest ? values.examRequest.id : values.examRequestId,
+        achievementDate: values.achievementDate,
+        medicalReport: values.medicalReport,
+        conclusion: values.conclusion,
+        bed: values.bed,
+        height: values.height,
+        weight: values.weight,
+        clinicalData: values.clinicalData,
+        examMedicaments: (values.examMedicaments || []).map(item => ({
+            id: item.id,
+            medicament: item.medicament,
+            amount: item.amount,
+            unitId: item.unit ? item.unit.id : item.unitId
+        })),
+        examEquipments: (values.examEquipments || []).map(item => ({
+            id: item.id,
+            equipment: item.equipment,
+            amount: item.amount,
+            unitId: item.unit ? item.unit.id : item.unitId
+        }))
+    }
+}
+
 export function searchExam(values) {
 
     var errors = {}
@@ -101,7 +128,7 @@ export function remove(values) {
 
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}/${values.id}`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.id}`, toExamRequestPayload(values))
             .then(resp => {
                 toastr.success('Sucesso', `Exame atualizado com sucesso.`);
                 dispatch(initialize('examForm', resp.data));
@@ -114,7 +141,7 @@ function update(values) {
 
 function create(values) {
     return dispatch => {
-        axios.post(`${BASE_URL_EXAM}`, values)
+        axios.post(`${BASE_URL_EXAM}`, toExamRequestPayload(values))
             .then(resp => {
                 toastr.success('Sucesso', `Exame cadastrado com sucesso.`)
                 dispatch(resetForm('examForm'));

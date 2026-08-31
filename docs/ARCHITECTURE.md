@@ -40,6 +40,27 @@ Convenções de camada:
   (via `mapper`). Interfaces em `service`, implementações em `service.impl`.
 - **Repository**: apenas persistência (queries derivadas ou customizadas com Criteria).
 
+### Consultas derivadas em associações
+
+Quando uma entidade guarda uma associação `@ManyToOne`/`@OneToOne` sem um campo literal
+(`ExamMedicament`/`ExamEquipment` com `private Exam exam`), a query derivada deve usar a
+**associação** como parâmetro, pois não existe coluna `examId` na entidade:
+
+```java
+List<ExamMedicament> findByExam(Exam exam);
+```
+
+- `findByExamId(Long)` **não funciona** para esses casos (Hibernate tenta resolver
+  `e.examId` e lança `Could not resolve attribute 'examId'`).
+- `findByExam_Id(Long)` seria o caminho derivado, porém viola o `GoogleMethodName` do
+  checkstyle (underscore só é aceito entre dígitos adjacentes).
+- Entidades que **declaram** o id literal (ex.: `Epoch.examId`, `Activity.examId`) usam
+  normalmente `findByExamId(Long)`.
+- Um `Exam` com apenas o `id` preenchido (`Exam.builder().id(id).build()`) é suficiente como
+  argumento — o Hibernate usa só o identificador para a comparação.
+- **DTOs de resposta não expõem entidades** e mappers são null-safe: ver seção
+  ["DTOs, mappers e programação defensiva"](#dtos-mappers-e-programação-defensiva).
+
 ## Constantes centralizadas (`constant`)
 
 Os paths de URL da aplicação ficam centralizados em `br.com.ufu.ppgeb.eeg.constant.ApiPaths`
@@ -93,6 +114,46 @@ Formatos de data centralizados ficam em `constant/DateFormats`.
 - Mensagens de validação/mensagens de negócio reutilizadas vivem próximas à entidade/DTO que
   as originam (ex.: em `model.Exam` para a mensagem de filtro). Não repita a mesma mensagem em
   produção e em testes — os testes referenciam a mesma fonte quando possível.
+
+## DTOs, mappers e programação defensiva
+
+- **Responses nunca expõem entidades.** Um DTO de resposta (`XxxResponse`) não deve conter
+  tipos do pacote `model`; entidades aninhadas devem ser convertidas pelo seu mapper dedicado
+  (`MedicamentMapper.toResponse`, `EquipmentMapper.toResponse`, `UnitMapper.toResponse`,
+  etc.), que já são null-safe. Ex.: `ExamMedicamentResponse` usa `MedicamentResponse` e
+  `UnitResponse`, nunca `Medicament`/`Unit`.
+- **Encadeamentos nulos são proibidos.** Não escreva `request.equipment().id()` em cadeia
+  livre: quebre cada objeto aninhado guardado (ex.: `if (isNull(request.medicament()))`) e use
+  `Objects.requireNonNull`/`isNull`/`nonNull` para proteger o acesso. Nos mappers, extraia a
+  conversão de cada parte (`medicament`, `unit`, `exam`) para um helper privado null-safe.
+- **Controllers não usam entidades na assinatura.** Requisições e respostas de controller
+  usam apenas os DTOs correspondentes; a conversão fica no `mapper` (ver seção Camadas).
+- **`request.amount()`** é `Long` e considerada campo obrigatório do negócio; não é aninhado,
+  não requer guarda.
+- **Referências usam id plano; aninhe só o que pode ser cadastrado inline.** Uma associação
+  que é apenas referência entra no request como `Long unitId` (não como `UnitRequest`).
+  Reserve o objeto aninhado (ex.: `MedicamentRequest`/`EquipmentRequest`) para o fluxo "outro",
+  em que o recurso pode não existir e ganha `id` + `name` + `description` no mesmo payload.
+- **Reutilize o mapper dedicado da entidade.** Mappers compostos (`ExamMedicamentMapper`,
+  `ExamEquipmentMapper`) não devem duplicar helpers privados de referência: chamam
+  `UnitMapper.buildReference(id)`, `ExamMapper.buildReference(id)`, `MedicamentMapper.toResponse(entity)`,
+  etc. O mapper dedicado de cada entidade é o único lugar autorizado a converter
+  `id ↔ <Entidade>` e `<Entidade> → <Entidade>Response`.
+
+### Exemplo (mapper defensivo)
+
+```java
+private static Medicament mapMedicament(ExamMedicamentRequest request) {
+  if (isNull(request.medicament())) {
+    return null;
+  }
+  return Medicament.builder()
+      .id(request.medicament().id())
+      .name(request.medicament().name())
+      .description(request.medicament().description())
+      .build();
+}
+```
 
 ## Auditoria
 

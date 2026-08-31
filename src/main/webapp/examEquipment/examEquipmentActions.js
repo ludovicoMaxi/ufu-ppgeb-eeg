@@ -46,11 +46,20 @@ export function removeItemList(index) {
 }
 
 export function submitUpdateExamEquipmentList(values) {
+    var valueSubmit = {
+        examEquipments: (values.examEquipments || []).map(item => ({
+            id: item.id,
+            equipment: item.equipment,
+            amount: item.amount,
+            unitId: item.unit ? item.unit.id : item.unitId
+        }))
+    };
+
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM}/${values.id}/equipments`, values)
+        axios.put(`${BASE_URL_EXAM}/${values.id}/equipments`, valueSubmit.examEquipments)
             .then(resp => {
                 toastr.success('Sucesso', `Equipamentos do exame atualizado com sucesso.`);
-                dispatch([changeFieldValue('examEquipmentListForm', 'examEquipments', resp.data.examEquipments), getOptionsEquipment()]);
+                dispatch([changeFieldValue('examEquipmentListForm', 'examEquipments', resp.data), getOptionsEquipment()]);
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao atualizar os Equipamentos do Exame (${values.id}): \n` + e.response.data.message)

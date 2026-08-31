@@ -59,20 +59,4 @@ public interface ExamService {
    */
   Exam update(Exam exam);
 
-  /**
-   * Updates exam medicaments.
-   *
-   * @param exam the exam with medicaments
-   * @return the updated exam
-   */
-  Exam updateExamMedicament(Exam exam);
-
-  /**
-   * Updates exam equipment.
-   *
-   * @param exam the exam with equipment
-   * @return the updated exam
-   */
-  Exam updateExamEquipment(Exam exam);
-
 }
