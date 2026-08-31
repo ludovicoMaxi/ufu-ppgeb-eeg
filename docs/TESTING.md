@@ -178,6 +178,57 @@ class ExamControllerTest {
 
 Quando um teste de controller depende de um serviço mockado que retorna um objeto fixo, use um factory/helper `create...` contendo apenas o resultado verificado, configurando os demais campos com Instancio (ver abaixo).
 
+## Testes de mappers
+
+### Quando usar
+
+Use o teste de mapper para validar que cada campo do DTO de request/response é
+mapeado para a entidade (e vice-versa), além das conversões de listas e referências
+via mappers dedicados. Os mappers são classes estáticas (`@UtilityClass`), então o
+teste não exige contexto Spring nem mocks — apenas `Instancio` e AssertJ.
+
+### Estrutura padrão
+
+Todos os mappers seguem o mesmo formato, com quatro cenários mínimos:
+
+1. `given<Request>_whenToEntity_thenMapEveryField` — converte e valida campo a campo.
+2. `givenNull<Request>_whenToEntity_thenReturnNull` — entrada nula retorna `null`.
+3. `given<Entity>_whenToResponse_thenMapEveryField` — converte e valida campo a campo.
+4. `givenNull<Entity>_whenToResponse_thenReturnNull` — entrada nula retorna `null`.
+
+Use **sempre** `hasNoNullFieldsOrProperties()` nas asserções estruturais:
+
+- No `toResponse`, use `assertThat(response).hasNoNullFieldsOrProperties();`.
+- No `toEntity`, use
+  `hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD, UPDATED_AT_FIELD, UPDATED_BY_FIELD)`
+  quando a entidade tem auditoria que o mapper não preenche. Se o mapper também não
+  preencher o `id` (ex.: criação), inclua `ID_FIELD` na lista de exceções. Os nomes
+  das propriedades ficam em constantes privadas (`CREATED_AT_FIELD`, etc.).
+
+```java
+Activity activity = ActivityMapper.toEntity(request, EXAM_ID);
+
+assertThat(activity)
+    .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
+        UPDATED_AT_FIELD, UPDATED_BY_FIELD);
+assertThat(activity.getId()).isEqualTo(request.id());
+assertThat(activity.getExamId()).isEqualTo(EXAM_ID);
+```
+
+### Dicas específicas
+
+- Para que o `hasNoNullFieldsOrPropertiesExcept(...)` passe no `toEntity`, garanta no
+  cenário que os campos obrigatórios do request sejam não nulos (o `Instancio` já
+  gera valores não nulos por padrão). Em mappers compostos com listas (ex.:
+  `ExamMapper`), defina explicitamente as listas no request/entidade com
+  `Instancio.of(...).set(field(...), List.of(...)).create()` para evitar dependência
+  do preenchimento padrão do `Instancio`.
+- As asserções estruturais complementam — não substituem — as asserções campo a campo
+  e as asserções de mapeamento de listas (tamanho e delegação aos mappers dedicados).
+- Exemplos completos: [ActivityMapperTest](../src/test/java/br/com/ufu/ppgeb/eeg/mapper/ActivityMapperTest.java),
+  [ExamRequestMapperTest](../src/test/java/br/com/ufu/ppgeb/eeg/mapper/ExamRequestMapperTest.java) e
+  [ExamMapperTest](../src/test/java/br/com/ufu/ppgeb/eeg/mapper/ExamMapperTest.java).
+
 ## Criação de entidades e DTOs com Instancio (factories)
 
 Em testes de controller, serviço e repositório, use **Instancio por padrão** para criar objetos de cenário, definindo apenas os campos relevantes para a asserção. Métodos helper de uma linha que apenas delegam a `Instancio.create(...)` devem ser **inline** no ponto de uso.

@@ -14,6 +14,20 @@ import lombok.experimental.UtilityClass;
 public class PatientMapper {
 
   /**
+   * Builds a Patient reference from its id (null-safe).
+   *
+   * @param patientId the patient id
+   * @return the Patient reference or null if patientId is null
+   */
+  public static Patient buildReference(Long patientId) {
+
+    if (isNull(patientId)) {
+      return null;
+    }
+    return Patient.builder().id(patientId).build();
+  }
+
+  /**
    * Maps a create request to a Patient entity.
    *
    * @param request the create request

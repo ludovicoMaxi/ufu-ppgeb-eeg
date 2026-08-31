@@ -3,27 +3,18 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
-import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
-import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
-import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
-import br.com.ufu.ppgeb.eeg.model.Medicament;
-import br.com.ufu.ppgeb.eeg.model.Unit;
-import br.com.ufu.ppgeb.eeg.repository.ExamEquipmentRepository;
-import br.com.ufu.ppgeb.eeg.repository.ExamMedicamentRepository;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -44,9 +35,6 @@ class ExamServiceImplTest {
   private static final String MSG_FILTER_EMPTY = "Informe pelo menos um campo para consultar!";
   private static final String MSG_PATIENT_ID_DIFFERENT = "Patient ID is different. New=";
   private static final String MSG_EXAM_REQUEST_CHANGED = "Exam request ID cannot be changed.";
-  private static final String MSG_MEDICAMENT_NOT_EXIST = "Exam Medicament with id=";
-  private static final String MSG_EQUIPMENT_NOT_EXIST = "Exam Equipment with id=";
-  private static final String MSG_NOT_EXIST_BY_EXAM_ID = " not exist by examID=";
   private static final String RESOURCE_NAME = "Exam";
   private static final String MSG_NOT_FOUND = " não encontrado(a) com id=";
   private static final String UPDATED_BED = "NEW BED";
@@ -55,17 +43,10 @@ class ExamServiceImplTest {
   private static final Long PATIENT_ID = 10L;
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long DIFFERENT_PATIENT_ID = 999L;
-  private static final Long AMOUNT_VALUE = 10L;
   private static final int TWO_EXAMS = 2;
 
   @Mock
   private ExamRepository examRepository;
-
-  @Mock
-  private ExamMedicamentRepository examMedicamentRepository;
-
-  @Mock
-  private ExamEquipmentRepository examEquipmentRepository;
 
   @InjectMocks
   private ExamServiceImpl examService;
@@ -317,181 +298,5 @@ class ExamServiceImplTest {
         .hasMessage(MSG_EXAM_REQUEST_CHANGED);
 
     verify(examRepository, never()).save(any());
-  }
-
-  @Test
-  @DisplayName("Given exam with medicaments when updateExamMedicament then return updated exam")
-  void givenExamWithMedicaments_whenUpdateExamMedicament_thenReturnUpdatedExam() {
-    ExamMedicament examMedicament = createExamMedicament(null);
-    Exam exam = createExamWithMedicaments(examMedicament);
-    Exam oldExam = createExamWithEmptyMedicaments();
-
-    when(examRepository.findById(EXAM_ID)).thenReturn(Optional.of(oldExam));
-    when(examMedicamentRepository.save(any(ExamMedicament.class)))
-        .thenReturn(examMedicament);
-
-    Exam result = examService.updateExamMedicament(exam);
-
-    assertThat(result.getExamMedicaments()).hasSize(1);
-    verify(examRepository).findById(EXAM_ID);
-    verify(examMedicamentRepository).save(examMedicament);
-  }
-
-  private Medicament createMedicament() {
-    return Instancio.of(Medicament.class)
-        .set(field(Medicament::getId), 1L)
-        .set(field(Medicament::getName), "DIPIRONA")
-        .create();
-  }
-
-  private Unit createUnit() {
-    return Instancio.of(Unit.class)
-        .set(field(Unit::getId), 1L)
-        .create();
-  }
-
-  private ExamMedicament createExamMedicament(Long id) {
-    ExamMedicament examMedicament = new ExamMedicament();
-    examMedicament.setId(id);
-    examMedicament.setAmount(AMOUNT_VALUE);
-    examMedicament.setMedicament(createMedicament());
-    examMedicament.setUnit(createUnit());
-    return examMedicament;
-  }
-
-  private Exam createExamWithMedicaments(ExamMedicament examMedicament) {
-    Exam exam = createExam(EXAM_ID, null, null);
-    exam.setExamMedicaments(List.of(examMedicament));
-    return exam;
-  }
-
-  private Exam createExamWithEmptyMedicaments() {
-    Exam exam = createExam(EXAM_ID, null, null);
-    exam.setExamMedicaments(new ArrayList<>());
-    return exam;
-  }
-
-  @Test
-  @DisplayName("Given null exam when updateExamMedicament then throw exception")
-  void givenNullExam_whenUpdateExamMedicament_thenThrowException() {
-    assertThatThrownBy(() -> examService.updateExamMedicament(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_EXAM_NULL);
-
-    verify(examRepository, never()).findById(any());
-  }
-
-  @Test
-  @DisplayName("Given exam with null id when updateExamMedicament then throw exception")
-  void givenExamWithNullId_whenUpdateExamMedicament_thenThrowException() {
-    Exam exam = Instancio.create(Exam.class);
-    exam.setId(null);
-
-    assertThatThrownBy(() -> examService.updateExamMedicament(exam))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_EXAM_ID_NULL);
-
-    verify(examRepository, never()).findById(any());
-  }
-
-  @Test
-  @DisplayName("Given exam medicament with nonexistent id when updateExamMedicament then throw exception")
-  void givenExamMedicamentWithNonexistentId_whenUpdateExamMedicament_thenThrowException() {
-    ExamMedicament examMedicament = createExamMedicament(NONEXISTENT_ID);
-    Exam exam = createExamWithMedicaments(examMedicament);
-    Exam oldExam = createExamWithEmptyMedicaments();
-
-    when(examRepository.findById(EXAM_ID)).thenReturn(Optional.of(oldExam));
-
-    assertThatThrownBy(() -> examService.updateExamMedicament(exam))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining(MSG_MEDICAMENT_NOT_EXIST + NONEXISTENT_ID + MSG_NOT_EXIST_BY_EXAM_ID + EXAM_ID);
-
-    verify(examMedicamentRepository, never()).save(any());
-  }
-
-  @Test
-  @DisplayName("Given exam with equipments when updateExamEquipment then return updated exam")
-  void givenExamWithEquipments_whenUpdateExamEquipment_thenReturnUpdatedExam() {
-    ExamEquipment examEquipment = createExamEquipment(null);
-    Exam exam = createExamWithEquipments(examEquipment);
-    Exam oldExam = createExamWithEmptyEquipments();
-
-    when(examRepository.findById(EXAM_ID)).thenReturn(Optional.of(oldExam));
-    when(examEquipmentRepository.save(any(ExamEquipment.class)))
-        .thenReturn(examEquipment);
-
-    Exam result = examService.updateExamEquipment(exam);
-
-    assertThat(result.getExamEquipments()).hasSize(1);
-    verify(examRepository).findById(EXAM_ID);
-    verify(examEquipmentRepository).save(examEquipment);
-  }
-
-  private Equipment createEquipment() {
-    return Instancio.of(Equipment.class)
-        .set(field(Equipment::getId), 1L)
-        .set(field(Equipment::getName), "BRAINVISIAN")
-        .create();
-  }
-
-  private ExamEquipment createExamEquipment(Long id) {
-    ExamEquipment examEquipment = new ExamEquipment();
-    examEquipment.setId(id);
-    examEquipment.setAmount(AMOUNT_VALUE);
-    examEquipment.setEquipment(createEquipment());
-    examEquipment.setUnit(createUnit());
-    return examEquipment;
-  }
-
-  private Exam createExamWithEquipments(ExamEquipment examEquipment) {
-    Exam exam = createExam(EXAM_ID, null, null);
-    exam.setExamEquipments(List.of(examEquipment));
-    return exam;
-  }
-
-  private Exam createExamWithEmptyEquipments() {
-    Exam exam = createExam(EXAM_ID, null, null);
-    exam.setExamEquipments(new ArrayList<>());
-    return exam;
-  }
-
-  @Test
-  @DisplayName("Given null exam when updateExamEquipment then throw exception")
-  void givenNullExam_whenUpdateExamEquipment_thenThrowException() {
-    assertThatThrownBy(() -> examService.updateExamEquipment(null))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_EXAM_NULL);
-
-    verify(examRepository, never()).findById(any());
-  }
-
-  @Test
-  @DisplayName("Given exam with null id when updateExamEquipment then throw exception")
-  void givenExamWithNullId_whenUpdateExamEquipment_thenThrowException() {
-    Exam exam = Instancio.create(Exam.class);
-    exam.setId(null);
-
-    assertThatThrownBy(() -> examService.updateExamEquipment(exam))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage(MSG_EXAM_ID_NULL);
-
-    verify(examRepository, never()).findById(any());
-  }
-
-  @Test
-  @DisplayName("Given exam equipment with nonexistent id when updateExamEquipment then throw exception")
-  void givenExamEquipmentWithNonexistentId_whenUpdateExamEquipment_thenThrowException() {
-    ExamEquipment examEquipment = createExamEquipment(NONEXISTENT_ID);
-    Exam exam = createExamWithEquipments(examEquipment);
-    Exam oldExam = createExamWithEmptyEquipments();
-
-    when(examRepository.findById(EXAM_ID)).thenReturn(Optional.of(oldExam));
-
-    assertThatThrownBy(() -> examService.updateExamEquipment(exam))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining(MSG_EQUIPMENT_NOT_EXIST + NONEXISTENT_ID + MSG_NOT_EXIST_BY_EXAM_ID + EXAM_ID);
-
-    verify(examEquipmentRepository, never()).save(any());
   }
 }

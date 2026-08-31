@@ -18,6 +18,7 @@
 - Testes de integração devem usar o perfil `test`, H2 em memória, MockMvc e as fixtures de `src/test/resources/import.sql` quando necessário.
 - Preserve as verificações de segurança, status HTTP, corpo JSON, auditoria e interações com repositórios já cobertas pelos testes.
 - Testes de API devem usar nomes no formato `given..._when..._then...` e declarar `@DisplayName` descrevendo o comportamento.
+- Testes de mapper (`XxxMapperTest`) devem usar **sempre** a asserção estrutural `hasNoNullFieldsOrProperties()` no `toResponse` e `hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD, UPDATED_AT_FIELD, UPDATED_BY_FIELD[, ID_FIELD])` no `toEntity` (exceções: campos de auditoria e `id` quando o mapper não o preenche), além das asserções campo a campo e de listas. Nomes de propriedades em constantes. Detalhes e exemplos: [`docs/TESTING.md`](docs/TESTING.md#testes-de-mappers).
 - Para payloads JSON nos testes de integração, crie os objetos Java e serialize-os com o `ObjectMapper`; não monte JSON manualmente em text blocks.
 - Não use credenciais do perfil de teste em produção nem adicione segredos às fixtures.
 
@@ -40,6 +41,15 @@
   ```
 
 - Vale tanto para o código de produção quanto para os testes.
+
+## Mappers, DTOs e programação defensiva
+
+- **Responses nunca expõem entidades.** DTOs de resposta (`XxxResponse`) não devem conter tipos do pacote `model`; entidades aninhadas são convertidas via mappers dedicados já existentes (`MedicamentMapper`, `EquipmentMapper`, `UnitMapper`, etc., todos null-safe). Ex.: `ExamMedicamentResponse`/`ExamEquipmentResponse` usam `MedicamentResponse`/`EquipmentResponse`/`UnitResponse`.
+- **Proíba encadeamentos nulos** como `request.equipment().id()`. Ao mapear request→entidade, proteja cada parte com `isNull(...)`/`nonNull(...)` (ou `Objects.requireNonNull` quando obrigatório) e extraia a conversão de cada relacionamento para um helper privado null-safe no mesmo mapper.
+- **Reutilize o mapper dedicado da entidade** (`XxxMapper.buildReference(id)`, `XxxMapper.toResponse(entity)`) em mappers compostos em vez de duplicar helpers.
+- **Referências usam id plano** (`Long unitId`) no request; aninhe objeto apenas quando há cadastro inline ("outro"). 
+- Controllers não usam entidades nas assinaturas: apenas DTOs de request/response.
+- **Queries derivadas em associações**: se a entidade tem `@ManyToOne Exam exam` (sem campo `examId` literal), use `findByExam(Exam)`; `findByExamId(Long)` quebra (`Could not resolve attribute 'examId'`) e `findByExam_Id` viola o checkstyle `GoogleMethodName`. Detalhes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#consultas-derivadas-em-associações).
 
 ## Convenções rápidas
 

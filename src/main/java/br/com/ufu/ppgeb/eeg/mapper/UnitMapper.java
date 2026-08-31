@@ -13,6 +13,20 @@ import lombok.experimental.UtilityClass;
 public class UnitMapper {
 
   /**
+   * Builds a Unit reference from its id (null-safe).
+   *
+   * @param unitId the unit id
+   * @return the Unit reference or null if unitId is null
+   */
+  public static Unit buildReference(Long unitId) {
+
+    if (isNull(unitId)) {
+      return null;
+    }
+    return Unit.builder().id(unitId).build();
+  }
+
+  /**
    * Maps a Unit entity to a response DTO.
    *
    * @param unit the Unit entity

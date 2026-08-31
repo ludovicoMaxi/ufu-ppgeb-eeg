@@ -7,7 +7,6 @@ import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequest;
 import br.com.ufu.ppgeb.eeg.dto.ExamResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamMapper;
-import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -106,41 +105,5 @@ public class ExamController {
 
     logger.info("Recebendo atualização de exame id={}", id);
     return ExamMapper.toResponse(examService.update(ExamMapper.toEntity(request, id)));
-  }
-
-  /**
-   * Updates exam medicaments.
-   *
-   * @param id the exam id
-   * @param request the exam with medicament list
-   * @return the updated exam
-   */
-  @PutMapping("/{id}" + ApiPaths.MEDICAMENTS_SUBPATH)
-  public ExamResponse updateExamMedicament(
-      @PathVariable(value = "id") Long id,
-      @RequestBody ExamRequest request) {
-
-    logger.info("Recebendo atualização de medicamentos do exame id={}", id);
-    Exam exam = examService.updateExamMedicament(
-        ExamMapper.toEntity(request, id));
-    return ExamMapper.toResponse(exam);
-  }
-
-  /**
-   * Updates exam equipment.
-   *
-   * @param id the exam id
-   * @param request the exam with equipment list
-   * @return the updated exam
-   */
-  @PutMapping("/{id}" + ApiPaths.EQUIPMENTS_SUBPATH)
-  public ExamResponse updateExamEquipment(
-      @PathVariable(value = "id") Long id,
-      @RequestBody ExamRequest request) {
-
-    logger.info("Recebendo atualização de equipamentos do exame id={}", id);
-    Exam exam = examService.updateExamEquipment(
-        ExamMapper.toEntity(request, id));
-    return ExamMapper.toResponse(exam);
   }
 }

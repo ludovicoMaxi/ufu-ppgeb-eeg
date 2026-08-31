@@ -1,8 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EQUIPMENTS_SUBPATH;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM;
-import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.MEDICAMENTS_SUBPATH;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,40 +124,6 @@ class ExamControllerTest {
         .andExpect(jsonPath(JSON_PATH_BED).value(BED));
 
     verify(examService).update(any(Exam.class));
-  }
-
-  @Test
-  @DisplayName("Given an exam when updating exam medicaments then return updated exam")
-  void givenExam_whenUpdatingExamMedicaments_thenReturnUpdatedExam() throws Exception {
-    Exam exam = createExam();
-    when(examService.updateExamMedicament(any(Exam.class))).thenReturn(exam);
-
-    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
-
-    mockMvc.perform(put(EXAM + PATH_SEPARATOR + EXAM_ID + MEDICAMENTS_SUBPATH)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(body))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath(JSON_PATH_BED).value(BED));
-
-    verify(examService).updateExamMedicament(any(Exam.class));
-  }
-
-  @Test
-  @DisplayName("Given an exam when updating exam equipment then return updated exam")
-  void givenExam_whenUpdatingExamEquipment_thenReturnUpdatedExam() throws Exception {
-    Exam exam = createExam();
-    when(examService.updateExamEquipment(any(Exam.class))).thenReturn(exam);
-
-    String body = objectMapper.writeValueAsString(Instancio.create(ExamRequest.class));
-
-    mockMvc.perform(put(EXAM + PATH_SEPARATOR + EXAM_ID + EQUIPMENTS_SUBPATH)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(body))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath(JSON_PATH_BED).value(BED));
-
-    verify(examService).updateExamEquipment(any(Exam.class));
   }
 
   private Exam createExam() {

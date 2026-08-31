@@ -16,6 +16,20 @@ import lombok.experimental.UtilityClass;
 public class ExamRequestMapper {
 
   /**
+   * Builds an ExamRequest reference from its id (null-safe).
+   *
+   * @param examRequestId the exam request id
+   * @return the ExamRequest reference or null if examRequestId is null
+   */
+  public static ExamRequest buildReference(Long examRequestId) {
+
+    if (isNull(examRequestId)) {
+      return null;
+    }
+    return ExamRequest.builder().id(examRequestId).build();
+  }
+
+  /**
    * Maps a create request to an ExamRequest entity.
    *
    * @param request the create request
@@ -39,10 +53,7 @@ public class ExamRequestMapper {
       return null;
     }
 
-    Patient patient = null;
-    if (nonNull(request.patientId())) {
-      patient = Patient.builder().id(request.patientId()).build();
-    }
+    final Patient patient = PatientMapper.buildReference(request.patientId());
 
     return ExamRequest.builder()
         .id(id)
