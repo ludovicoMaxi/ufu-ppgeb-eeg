@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,24 +23,35 @@ import jakarta.validation.constraints.Size;
 public record ContactRequest(
     @NotBlank
     @Size(max = 256)
+    @JsonProperty("name")
     String name,
     @NotNull
+    @JsonProperty("active")
     Boolean active,
     @NotNull
+    @JsonProperty("objectId")
     Long objectId,
     @NotNull
+    @JsonProperty("objectType")
     Long objectType,
     @Size(max = 20)
+    @JsonProperty("phone")
     String phone,
     @Size(max = 20)
+    @JsonProperty("cellphone")
     String cellphone,
     @Size(max = 20)
+    @JsonProperty("whatsapp")
     String whatsapp,
     @Size(max = 200)
+    @JsonProperty("facebook")
     String facebook,
     @Size(max = 200)
+    @JsonProperty("instagram")
     String instagram,
     @Size(max = 100)
+    @JsonProperty("email")
     String email,
+    @JsonProperty("main")
     Boolean main) {
 }

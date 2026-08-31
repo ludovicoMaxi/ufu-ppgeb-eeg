@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 /**
@@ -11,7 +12,10 @@ import lombok.Builder;
  */
 @Builder
 public record UnitResponse(
+    @JsonProperty("id")
     Long id,
+    @JsonProperty("name")
     String name,
+    @JsonProperty("description")
     String description) {
 }

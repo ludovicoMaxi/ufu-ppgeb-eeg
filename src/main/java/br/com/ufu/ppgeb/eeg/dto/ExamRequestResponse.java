@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 /**
@@ -28,24 +29,40 @@ import lombok.Builder;
  */
 @Builder
 public record ExamRequestResponse(
+    @JsonProperty("id")
     Long id,
+    @JsonProperty("medicalRecord")
     Long medicalRecord,
+    @JsonProperty("medicalRequest")
     Long medicalRequest,
+    @JsonProperty("sector")
     String sector,
+    @JsonProperty("agreement")
     String agreement,
+    @JsonProperty("doctorRequestant")
     String doctorRequestant,
+    @JsonProperty("user")
     String user,
+    @JsonProperty("clinicOrigin")
     String clinicOrigin,
+    @JsonProperty("cityOrigin")
     String cityOrigin,
+    @JsonProperty("patientId")
     Long patientId,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("requestDate")
     ZonedDateTime requestDate,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("achievementDate")
     ZonedDateTime achievementDate,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("createdAt")
     ZonedDateTime createdAt,
+    @JsonProperty("createdBy")
     String createdBy,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("updatedAt")
     ZonedDateTime updatedAt,
+    @JsonProperty("updatedBy")
     String updatedBy) {
 }

@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -13,11 +14,15 @@ import jakarta.validation.constraints.NotNull;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ExamMedicamentRequest(
+    @JsonProperty("id")
     Long id,
     @NotNull
+    @JsonProperty("medicament")
     MedicamentRequest medicament,
     @NotNull
+    @JsonProperty("amount")
     Long amount,
     @NotNull
+    @JsonProperty("unitId")
     Long unitId) {
 }

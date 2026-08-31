@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 /**
@@ -29,23 +30,39 @@ import lombok.Builder;
  */
 @Builder
 public record ExamResponse(
+    @JsonProperty("id")
     Long id,
+    @JsonProperty("patientId")
     Long patientId,
+    @JsonProperty("examRequestId")
     Long examRequestId,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("achievementDate")
     ZonedDateTime achievementDate,
+    @JsonProperty("medicalReport")
     String medicalReport,
+    @JsonProperty("conclusion")
     String conclusion,
+    @JsonProperty("bed")
     String bed,
+    @JsonProperty("height")
     Long height,
+    @JsonProperty("weight")
     Double weight,
+    @JsonProperty("clinicalData")
     String clinicalData,
+    @JsonProperty("examMedicaments")
     List<ExamMedicamentResponse> examMedicaments,
+    @JsonProperty("examEquipments")
     List<ExamEquipmentResponse> examEquipments,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("createdAt")
     ZonedDateTime createdAt,
+    @JsonProperty("createdBy")
     String createdBy,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("updatedAt")
     ZonedDateTime updatedAt,
+    @JsonProperty("updatedBy")
     String updatedBy) {
 }

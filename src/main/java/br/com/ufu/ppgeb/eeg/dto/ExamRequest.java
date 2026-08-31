@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -25,23 +26,35 @@ import jakarta.validation.constraints.Size;
  * @param examEquipments the exam equipments
  */
 public record ExamRequest(
+    @JsonProperty("id")
     Long id,
     @NotNull
+    @JsonProperty("patientId")
     Long patientId,
+    @JsonProperty("examRequestId")
     Long examRequestId,
     @NotNull
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
+    @JsonProperty("achievementDate")
     ZonedDateTime achievementDate,
     @Size(max = 256)
+    @JsonProperty("medicalReport")
     String medicalReport,
     @Size(max = 256)
+    @JsonProperty("conclusion")
     String conclusion,
     @Size(max = 256)
+    @JsonProperty("bed")
     String bed,
+    @JsonProperty("height")
     Long height,
+    @JsonProperty("weight")
     Double weight,
     @Size(max = 256)
+    @JsonProperty("clinicalData")
     String clinicalData,
+    @JsonProperty("examMedicaments")
     List<ExamMedicamentRequest> examMedicaments,
+    @JsonProperty("examEquipments")
     List<ExamEquipmentRequest> examEquipments) {
 }
