@@ -21,7 +21,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * Security configuration for the application.
@@ -30,6 +32,13 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 public class SecurityConfig {
 
   private static final String ROLE_USER = "USER";
+
+  private static final String CONTENT_SECURITY_POLICY =
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+          + "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; "
+          + "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
+
+  private static final String PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=()";
 
   /**
    * Configures the security filter chain.
@@ -42,9 +51,16 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http)
       throws Exception {
 
-    http.csrf(AbstractHttpConfigurer::disable)
+    http.csrf(csrf -> csrf.spa())
+        .headers(headers -> headers
+            .contentSecurityPolicy(csp -> csp.policyDirectives(CONTENT_SECURITY_POLICY))
+            .referrerPolicy(referrer -> referrer
+                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+            .permissionsPolicyHeader(permissions -> permissions.policy(PERMISSIONS_POLICY)))
         .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            .maximumSessions(1)
+            .expiredUrl(ApiPaths.LOGIN))
         .exceptionHandling(e -> e
             .defaultAuthenticationEntryPointFor(apiUnauthorizedEntryPoint(),
                 PathPatternRequestMatcher.pathPattern(ApiPaths.API_ROOT))
@@ -61,6 +77,18 @@ public class SecurityConfig {
             .logoutSuccessUrl(ApiPaths.LOGIN_LOGOUT));
 
     return http.build();
+  }
+
+  /**
+   * Publishes HTTP session lifecycle events to the session registry used by concurrent-session
+   * control.
+   *
+   * @return the HTTP session event publisher
+   */
+  @Bean
+  public HttpSessionEventPublisher httpSessionEventPublisher() {
+
+    return new HttpSessionEventPublisher();
   }
 
   private static AuthenticationEntryPoint apiUnauthorizedEntryPoint() {
