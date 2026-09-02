@@ -1,6 +1,7 @@
 package br.com.ufu.ppgeb.eeg;
 
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATIENT;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -63,6 +64,7 @@ class ApiIntegrationTest {
 
     mockMvc.perform(post(PATIENT)
             .with(httpBasic(USERNAME, PASSWORD))
+            .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isCreated())
@@ -101,6 +103,7 @@ class ApiIntegrationTest {
 
     mockMvc.perform(put(PATIENT + PATH_SEPARATOR + PATIENT_ID_1002)
             .with(httpBasic(USERNAME, PASSWORD))
+            .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isOk())
