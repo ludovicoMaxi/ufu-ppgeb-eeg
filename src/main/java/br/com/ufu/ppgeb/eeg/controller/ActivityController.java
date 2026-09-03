@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,14 +15,14 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -76,14 +77,18 @@ public class ActivityController {
    * @param request the activity to save
    * @return the saved activity
    */
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ActivityResponse save(
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ActivityResponse> save(
       @PathVariable(value = "examId") Long examId,
       @Valid @RequestBody ActivityRequest request) {
 
     logger.info("Recebendo criação de atividade do exame id={}", examId);
-    return ActivityMapper.toResponse(activityService.save(ActivityMapper.toEntity(request, examId)));
+    Activity saved = activityService.save(ActivityMapper.toEntity(request, examId));
+    URI location = URI.create(ApiPaths.EXAM_ACTIVITIES
+        .replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())
+        + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location)
+        .body(ActivityMapper.toResponse(saved));
   }
 
   /**
@@ -93,10 +98,10 @@ public class ActivityController {
    * @param activities the activities to update
    * @return the updated activity list
    */
-  @PutMapping
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public List<ActivityResponse> updateList(
       @PathVariable(value = "examId") Long examId,
-      @RequestBody List<ActivityRequest> activities) {
+      @Valid @RequestBody List<@Valid ActivityRequest> activities) {
 
     logger.info("Recebendo atualização de atividades do exame id={}", examId);
     List<Activity> entities = Optional.ofNullable(activities)

@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,7 +78,7 @@ public class PatientController {
    * @param request the patient to save
    * @return the saved patient
    */
-  @PostMapping
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PatientResponse> save(
       @Valid @RequestBody PatientRequest request) {
 
@@ -95,7 +96,7 @@ public class PatientController {
    * @param request the patient to update
    * @return the updated patient
    */
-  @PutMapping("/{id}")
+  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public PatientResponse update(
       @PathVariable(value = "id") Long id,
       @Valid @RequestBody PatientRequest request) {

@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,14 +15,14 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -76,14 +77,18 @@ public class EpochController {
    * @param request the epoch to save
    * @return the saved epoch
    */
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public EpochResponse save(
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<EpochResponse> save(
       @PathVariable(value = "examId") Long examId,
       @Valid @RequestBody EpochRequest request) {
 
     logger.info("Recebendo criação de época do exame id={}", examId);
-    return EpochMapper.toResponse(epochService.save(EpochMapper.toEntity(request, examId)));
+    Epoch saved = epochService.save(EpochMapper.toEntity(request, examId));
+    URI location = URI.create(ApiPaths.EXAM_EPOCHS
+        .replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())
+        + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location)
+        .body(EpochMapper.toResponse(saved));
   }
 
   /**
@@ -93,10 +98,10 @@ public class EpochController {
    * @param epochs the epochs to update
    * @return the updated epoch list
    */
-  @PutMapping
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public List<EpochResponse> updateList(
       @PathVariable(value = "examId") Long examId,
-      @RequestBody List<EpochRequest> epochs) {
+      @Valid @RequestBody List<@Valid EpochRequest> epochs) {
 
     logger.info("Recebendo atualização de épocas do exame id={}", examId);
     List<Epoch> entities = Optional.ofNullable(epochs)
