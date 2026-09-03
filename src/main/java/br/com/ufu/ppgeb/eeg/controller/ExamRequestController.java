@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,12 +8,14 @@ import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequestRequest;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequestResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamRequestMapper;
+import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -80,13 +82,14 @@ public class ExamRequestController {
    * @param request the exam request to save
    * @return the saved exam request
    */
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ExamRequestResponse save(@Valid @RequestBody ExamRequestRequest request) {
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ExamRequestResponse> save(@Valid @RequestBody ExamRequestRequest request) {
 
     logger.info("Recebendo criação de solicitação de exame");
-    return ExamRequestMapper.toResponse(
-        examRequestService.save(ExamRequestMapper.toEntity(request)));
+    ExamRequest saved = examRequestService.save(ExamRequestMapper.toEntity(request));
+    URI location = URI.create(ApiPaths.EXAM_REQUEST + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location)
+        .body(ExamRequestMapper.toResponse(saved));
   }
 
   /**
@@ -96,7 +99,7 @@ public class ExamRequestController {
    * @param request the exam request to update
    * @return the updated exam request
    */
-  @PutMapping("/{id}")
+  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ExamRequestResponse update(
       @PathVariable(value = "id") Long id,
       @Valid @RequestBody ExamRequestRequest request) {

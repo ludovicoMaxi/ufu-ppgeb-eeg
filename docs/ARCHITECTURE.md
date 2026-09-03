@@ -155,6 +155,76 @@ private static Medicament mapMedicament(ExamMedicamentRequest request) {
 }
 ```
 
+## Controllers REST: respostas, validação e content type
+
+Convenções aplicadas aos handlers dos controllers REST. Seguir o padrão do `PatientController`
+(create com `ResponseEntity.created`) e dos demais controllers.
+
+### POST (criação) → `201 Created` + header `Location`
+
+Um endpoint de criação deve retornar `ResponseEntity.created(location).body(...)` — e **não**
+`@ResponseStatus(HttpStatus.CREATED)` — pois só o `ResponseEntity` permite emitir o header
+`Location` do recurso recém-criado.
+
+- Capture a entidade salva (para usar o `id` na URL), retorne o DTO de resposta:
+  ```java
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ExamResponse> save(@Valid @RequestBody ExamRequest request) {
+    Exam saved = examService.save(ExamMapper.toEntity(request));
+    URI location = URI.create(ApiPaths.EXAM + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location).body(ExamMapper.toResponse(saved));
+  }
+  ```
+- Recurso raiz: `ApiPaths.PATIENT + PATH_SEPARATOR + id`.
+- Recurso de sub-resource (ex.: `Epoch` dentro de `/api/exams/{examId}/epochs`): monte a URL
+  substituindo o placeholder por `replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())`:
+  ```java
+  URI location = URI.create(ApiPaths.EXAM_EPOCHS
+      .replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())
+      + ApiPaths.PATH_SEPARATOR + saved.getId());
+  ```
+
+### PUT (atualização) → `200 OK`, retorno direto do DTO
+
+Um endpoint de atualização **não** precisa de `ResponseEntity`: o status default já é `200 OK`
+e não há `Location` a expor (o recurso já existe na URL do request). Retorne o DTO
+diretamente e declare `consumes` + `@Valid @RequestBody`:
+
+```java
+@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+public ExamResponse update(@PathVariable("id") Long id,
+    @Valid @RequestBody ExamRequest request) {
+  return ExamMapper.toResponse(examService.update(ExamMapper.toEntity(request, id)));
+}
+```
+
+### Validação de `List` em `@RequestBody` (`updateList`)
+
+Para validar **cada elemento** de uma lista no corpo, use `@Valid` no parâmetro **e** na
+declaração do tipo de elemento (a cascata):
+
+```java
+@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+public List<ActivityResponse> updateList(
+    @PathVariable("examId") Long examId,
+    @Valid @RequestBody List<@Valid ActivityRequest> activities) { ... }
+```
+
+- Só o `@Valid` do parâmetro **não** cascateia para os elementos de uma lista; o
+  `List<@Valid X>` garante a validação de cada item.
+- As anotações de constraint devem estar nos DTOs (`@NotNull`, `@NotBlank`, `@Size`).
+
+### Regras gerais
+
+- **`@RequestBody` sempre com `@Valid`** (ou `List<@Valid X>`) para que payloads malformados
+  não cheguem ao negócio.
+- **Endpoints mutantes com corpo declaram `consumes = MediaType.APPLICATION_JSON_VALUE`**
+  (POST/PUT com `@RequestBody`), restringindo a negociação de conteúdo.
+- Todo handler de POST/PUT com `@RequestBody` segue esse padrão; consulte
+  `ExamController`, `ExamRequestController`, `ContactController`, `PatientController`,
+  `EpochController`, `ActivityController`, `ExamMedicamentController` e
+  `ExamEquipmentController`.
+
 ## Auditoria
 
 Os campos de auditoria (`createdAt`, `createdBy`, `updatedAt`, `updatedBy`) são preenchidos

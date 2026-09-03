@@ -49,6 +49,12 @@
 - **Reutilize o mapper dedicado da entidade** (`XxxMapper.buildReference(id)`, `XxxMapper.toResponse(entity)`) em mappers compostos em vez de duplicar helpers.
 - **Referências usam id plano** (`Long unitId`) no request; aninhe objeto apenas quando há cadastro inline ("outro"). 
 - Controllers não usam entidades nas assinaturas: apenas DTOs de request/response.
+- **Controllers REST**: siga as convenções de criação/atualização, validação e content type em
+  [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#controllers-rest-respostas-validação-e-content-type)
+  — criação (POST) retorna `ResponseEntity.created(uri).body(...)` (201 + `Location`);
+  atualização (PUT) retorna o DTO diretamente (200); `@RequestBody` é sempre `@Valid` (use
+  `List<@Valid X>` para validar os elementos de uma lista); e endpoints mutantes com corpo
+  declaram `consumes = MediaType.APPLICATION_JSON_VALUE`.
 - **Queries derivadas em associações**: se a entidade tem `@ManyToOne Exam exam` (sem campo `examId` literal), use `findByExam(Exam)`; `findByExamId(Long)` quebra (`Could not resolve attribute 'examId'`) e `findByExam_Id` viola o checkstyle `GoogleMethodName`. Detalhes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#consultas-derivadas-em-associações).
 
 ## Convenções rápidas

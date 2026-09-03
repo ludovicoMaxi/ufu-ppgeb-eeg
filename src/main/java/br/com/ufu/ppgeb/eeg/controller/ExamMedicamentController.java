@@ -10,9 +10,11 @@ import br.com.ufu.ppgeb.eeg.dto.ExamMedicamentResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamMedicamentMapper;
 import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
 import br.com.ufu.ppgeb.eeg.service.ExamMedicamentService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,10 +58,10 @@ public class ExamMedicamentController {
    * @param medicaments the medicaments to update
    * @return the updated medicament list
    */
-  @PutMapping
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public List<ExamMedicamentResponse> updateList(
       @PathVariable(value = "examId") Long examId,
-      @RequestBody List<ExamMedicamentRequest> medicaments) {
+      @Valid @RequestBody List<@Valid ExamMedicamentRequest> medicaments) {
 
     logger.info("Recebendo atualização de medicamentos do exame id={}", examId);
     List<ExamMedicament> entities = Optional.ofNullable(medicaments)

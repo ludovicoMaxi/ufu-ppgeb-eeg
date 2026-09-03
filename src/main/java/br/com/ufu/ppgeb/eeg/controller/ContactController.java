@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,12 +8,15 @@ import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ContactRequest;
 import br.com.ufu.ppgeb.eeg.dto.ContactResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ContactMapper;
+import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,12 +80,14 @@ public class ContactController {
    * @param request the contact to save
    * @return the saved contact
    */
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ContactResponse save(@Valid @RequestBody ContactRequest request) {
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ContactResponse> save(@Valid @RequestBody ContactRequest request) {
 
     logger.info("Recebendo criação de contato");
-    return ContactMapper.toResponse(contactService.save(ContactMapper.toEntity(request)));
+    Contact saved = contactService.save(ContactMapper.toEntity(request));
+    URI location = URI.create(ApiPaths.CONTACT + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location)
+        .body(ContactMapper.toResponse(saved));
   }
 
   /**
@@ -104,7 +110,7 @@ public class ContactController {
    * @param request the contact to update
    * @return the updated contact
    */
-  @PutMapping("/{id}")
+  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ContactResponse update(
       @PathVariable(value = "id") Long id,
       @Valid @RequestBody ContactRequest request) {

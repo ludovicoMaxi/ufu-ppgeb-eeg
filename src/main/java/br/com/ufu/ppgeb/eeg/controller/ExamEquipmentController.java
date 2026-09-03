@@ -10,9 +10,11 @@ import br.com.ufu.ppgeb.eeg.dto.ExamEquipmentResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamEquipmentMapper;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
 import br.com.ufu.ppgeb.eeg.service.ExamEquipmentService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,10 +58,10 @@ public class ExamEquipmentController {
    * @param equipments the equipments to update
    * @return the updated equipment list
    */
-  @PutMapping
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public List<ExamEquipmentResponse> updateList(
       @PathVariable(value = "examId") Long examId,
-      @RequestBody List<ExamEquipmentRequest> equipments) {
+      @Valid @RequestBody List<@Valid ExamEquipmentRequest> equipments) {
 
     logger.info("Recebendo atualização de equipamentos do exame id={}", examId);
     List<ExamEquipment> entities = Optional.ofNullable(equipments)

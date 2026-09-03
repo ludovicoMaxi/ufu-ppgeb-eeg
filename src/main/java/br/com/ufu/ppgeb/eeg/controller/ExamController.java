@@ -1,5 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,12 +8,14 @@ import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequest;
 import br.com.ufu.ppgeb.eeg.dto.ExamResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamMapper;
+import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -83,12 +85,14 @@ public class ExamController {
    * @param request the exam to save
    * @return the saved exam
    */
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ExamResponse save(@Valid @RequestBody ExamRequest request) {
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ExamResponse> save(@Valid @RequestBody ExamRequest request) {
 
     logger.info("Recebendo criação de exame");
-    return ExamMapper.toResponse(examService.save(ExamMapper.toEntity(request)));
+    Exam saved = examService.save(ExamMapper.toEntity(request));
+    URI location = URI.create(ApiPaths.EXAM + ApiPaths.PATH_SEPARATOR + saved.getId());
+    return ResponseEntity.created(location)
+        .body(ExamMapper.toResponse(saved));
   }
 
   /**
@@ -98,7 +102,7 @@ public class ExamController {
    * @param request the exam to update
    * @return the updated exam
    */
-  @PutMapping("/{id}")
+  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ExamResponse update(
       @PathVariable(value = "id") Long id,
       @Valid @RequestBody ExamRequest request) {
