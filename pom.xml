@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -29,6 +29,8 @@
         <node.version>v22.18.0</node.version>
         <npm.version>10.8.2</npm.version>
         <lombok.version>1.18.46</lombok.version>
+        <!-- Override Tomcat version to fix CVE-2026-65905, CVE-2026-65182, CVE-2026-68525 -->
+        <tomcat.version>11.0.25</tomcat.version>
     </properties>
 
     <dependencies>
