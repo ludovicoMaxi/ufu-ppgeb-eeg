@@ -161,8 +161,12 @@ public class SecurityConfig {
       http.securityMatcher("/h2/**")
           .csrf(AbstractHttpConfigurer::disable)
           .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-          .headers(headers ->
-              headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+          .headers(headers -> headers
+              .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+              .contentSecurityPolicy(csp -> csp.policyDirectives(CONTENT_SECURITY_POLICY))
+              .referrerPolicy(referrer -> referrer
+                  .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+              .permissionsPolicyHeader(permissions -> permissions.policy(PERMISSIONS_POLICY)));
 
       return http.build();
     }
