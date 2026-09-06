@@ -22,6 +22,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -42,7 +44,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Patient {
 
   @Id
-  @Column(name = "ID")
+  @Column(name = "ID", nullable = false)
   @SequenceGenerator(
       name = "PATIENT_SQ",
       sequenceName = "PATIENT_SQ",
@@ -60,6 +62,7 @@ public class Patient {
   private String documentNumber;
 
   @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(name = "SEX", length = 10)
   private Sex sex;
 
@@ -71,6 +74,7 @@ public class Patient {
   private String nationality;
 
   @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(name = "CIVIL_STATUS", length = 25)
   private CivilStatus civilStatus;
 

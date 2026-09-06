@@ -41,6 +41,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Equipment {
 
   @Id
+  @Column(name = "ID", nullable = false)
   @SequenceGenerator(
       name = "EQUIPMENT_SQ",
       sequenceName = "EQUIPMENT_SQ",
