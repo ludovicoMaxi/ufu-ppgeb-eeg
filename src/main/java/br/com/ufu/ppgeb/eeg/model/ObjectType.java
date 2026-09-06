@@ -22,6 +22,7 @@ public class ObjectType {
       new ObjectType(1L);
 
   @Id
+  @Column(name = "ID", nullable = false)
   private Long id;
 
   @Column(name = "NAME", length = 256, nullable = false)

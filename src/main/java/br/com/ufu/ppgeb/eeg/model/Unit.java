@@ -29,6 +29,7 @@ import lombok.Setter;
 public class Unit {
 
   @Id
+  @Column(name = "ID", nullable = false)
   @SequenceGenerator(
       name = "UNIT_SQ",
       sequenceName = "UNIT_SQ",

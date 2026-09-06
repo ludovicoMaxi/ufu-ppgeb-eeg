@@ -39,6 +39,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Epoch {
 
   @Id
+  @Column(name = "ID", nullable = false)
   @SequenceGenerator(name = "EPOCH_SQ",
       sequenceName = "EPOCH_SQ",
       allocationSize = 1)
