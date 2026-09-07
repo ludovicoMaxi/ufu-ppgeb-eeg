@@ -7,6 +7,8 @@ import { showTabs, selectTab } from '../common/tab/tabActions'
 
 const INITIAL_VALUES = {};
 
+const DEFAULT_PAGE_SIZE = 10;
+
 export function getPatientById(id) {
     return dispatch => {
         axios.get(`${BASE_URL_PATIENT}/${id}`)
@@ -85,7 +87,7 @@ export function submitPatient(values) {
     }
 }
 
-export function searchPatients(values) {
+export function searchPatients(values, page) {
 
     var errors = {}
 
@@ -97,15 +99,18 @@ export function searchPatients(values) {
     }
 
     return dispatch => {
-        var params = (!!values.name ? `name=${values.name}` : '')
-            + (!!values.documentNumber ? `documentNumber=${values.documentNumber}` : '');
+        var params = `page=${page || 0}&size=${DEFAULT_PAGE_SIZE}`
+            + (!!values.name ? `&name=${values.name}` : '')
+            + (!!values.documentNumber ? `&documentNumber=${values.documentNumber}` : '');
         axios.get(`${BASE_URL_PATIENT}?${params}`)
             .then(resp => {
-                if (!!resp.data && resp.data.content.length > 0) {
-                    dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: resp.data.content });
+                if (!!resp.data) {
+                    if (resp.data.content.length > 0) {
+                        dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: resp.data });
+                    }
+                    else
+                        toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
                 }
-                else
-                    toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)

@@ -9,6 +9,8 @@ import { updateExamEquipmentList } from '../examEquipment/examEquipmentActions'
 
 const INITIAL_VALUES = {};
 
+const DEFAULT_PAGE_SIZE = 10;
+
 export function getExamById(id) {
     return dispatch => {
         axios.get(`${BASE_URL_EXAM}/${id}`)
@@ -87,7 +89,7 @@ export function toExamRequestPayload(values) {
     }
 }
 
-export function searchExam(values) {
+export function searchExam(values, page) {
 
     var errors = {}
 
@@ -99,15 +101,18 @@ export function searchExam(values) {
     }
 
     return dispatch => {
-        var params = (!!values.id ? `id=${values.id}` : '')
-            + (!!values.bed ? `bed=${values.bed}` : '');
+        var params = `page=${page || 0}&size=${DEFAULT_PAGE_SIZE}`
+            + (!!values.id ? `&id=${values.id}` : '')
+            + (!!values.bed ? `&bed=${values.bed}` : '');
         axios.get(`${BASE_URL_EXAM}?${params}`)
             .then(resp => {
-                if (!!resp.data && resp.data.content.length > 0) {
-                    dispatch({ type: 'EXAM_SEARCH_RESULT', payload: resp.data.content });
+                if (!!resp.data) {
+                    if (resp.data.content.length > 0) {
+                        dispatch({ type: 'EXAM_SEARCH_RESULT', payload: resp.data });
+                    }
+                    else
+                        toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
                 }
-                else
-                    toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
             })
             .catch(e => {
                 toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
