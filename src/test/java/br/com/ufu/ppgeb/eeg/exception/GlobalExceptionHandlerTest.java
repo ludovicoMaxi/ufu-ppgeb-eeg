@@ -49,9 +49,9 @@ class GlobalExceptionHandlerTest {
   private MethodArgumentNotValidException
       setupGivenValidationErrorWhenHandlingValidationThenReturnBadRequestWithFieldMessage()
           throws Exception {
-    Method method = PatientController.class.getMethod("save", PatientRequest.class,
-        String.class);
-    MethodParameter parameter = new MethodParameter(method, 0);
+    Method method = PatientController.class.getMethod("save", String.class,
+        PatientRequest.class);
+    MethodParameter parameter = new MethodParameter(method, 1);
     BeanPropertyBindingResult bindingResult =
         new BeanPropertyBindingResult(new Object(), BINDING_OBJECT_NAME);
     bindingResult.addError(new FieldError(BINDING_OBJECT_NAME, "name", "must not be blank"));
