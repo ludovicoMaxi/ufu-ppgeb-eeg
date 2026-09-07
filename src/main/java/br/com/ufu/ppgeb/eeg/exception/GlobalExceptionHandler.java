@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,14 +25,18 @@ public class GlobalExceptionHandler {
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   /**
-   * Represents an API error response.
+   * Builds an RFC 9457 ProblemDetail for the given status and message.
+   *
+   * @param status the HTTP status
+   * @param message the detail message
+   * @return the problem detail
    */
-  public record ApiError(Instant timestamp, int status, String error, String message) {
+  private static ProblemDetail problemDetail(HttpStatus status, String message) {
 
-    static ApiError of(HttpStatus status, String message) {
-
-      return new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message);
-    }
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, message);
+    problem.setTitle(status.getReasonPhrase());
+    problem.setProperty("timestamp", Instant.now());
+    return problem;
   }
 
   /**
@@ -41,10 +46,10 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
+  public ResponseEntity<ProblemDetail> handleNotFound(ResourceNotFoundException ex) {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiError.of(HttpStatus.NOT_FOUND, ex.getMessage()));
+        .body(problemDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
   }
 
   /**
@@ -54,11 +59,11 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
-  public ResponseEntity<ApiError> handleEntityNotFound(
+  public ResponseEntity<ProblemDetail> handleEntityNotFound(
       jakarta.persistence.EntityNotFoundException ex) {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiError.of(HttpStatus.NOT_FOUND, ex.getMessage()));
+        .body(problemDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
   }
 
   /**
@@ -68,10 +73,10 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(NoResourceFoundException.class)
-  public ResponseEntity<ApiError> handleMissingResource(NoResourceFoundException ex) {
+  public ResponseEntity<ProblemDetail> handleMissingResource(NoResourceFoundException ex) {
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiError.of(HttpStatus.NOT_FOUND, "Recurso não encontrado."));
+        .body(problemDetail(HttpStatus.NOT_FOUND, "Recurso não encontrado."));
   }
 
   /**
@@ -81,10 +86,10 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
+  public ResponseEntity<ProblemDetail> handleIllegalArgument(IllegalArgumentException ex) {
 
     return ResponseEntity.badRequest()
-        .body(ApiError.of(HttpStatus.BAD_REQUEST, ex.getMessage()));
+        .body(problemDetail(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }
 
   /**
@@ -94,11 +99,11 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ApiError> handleUnreadableMessage(HttpMessageNotReadableException ex) {
+  public ResponseEntity<ProblemDetail> handleUnreadableMessage(HttpMessageNotReadableException ex) {
 
     logger.warn("Requisição com corpo inválido: {}", ex.getMostSpecificCause().getMessage());
     return ResponseEntity.badRequest()
-        .body(ApiError.of(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido."));
+        .body(problemDetail(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido."));
   }
 
   /**
@@ -108,14 +113,14 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+  public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex) {
 
     String message = ex.getBindingResult().getFieldErrors().stream()
         .findFirst()
         .map(error -> error.getField() + " " + error.getDefaultMessage())
         .orElse("Requisição inválida.");
     return ResponseEntity.badRequest()
-        .body(ApiError.of(HttpStatus.BAD_REQUEST, message));
+        .body(problemDetail(HttpStatus.BAD_REQUEST, message));
   }
 
   /**
@@ -128,10 +133,10 @@ public class GlobalExceptionHandler {
       MissingServletRequestParameterException.class,
       MethodArgumentTypeMismatchException.class
   })
-  public ResponseEntity<ApiError> handleInvalidRequest(Exception ex) {
+  public ResponseEntity<ProblemDetail> handleInvalidRequest(Exception ex) {
 
     return ResponseEntity.badRequest()
-        .body(ApiError.of(HttpStatus.BAD_REQUEST, ex.getMessage()));
+        .body(problemDetail(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }
 
   /**
@@ -141,11 +146,12 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex) {
+  public ResponseEntity<ProblemDetail> handleDataIntegrity(DataIntegrityViolationException ex) {
 
     logger.warn("Violação de integridade de dados", ex);
     return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(ApiError.of(HttpStatus.CONFLICT, "Registro conflitante ou referenciado por outro cadastro."));
+        .body(problemDetail(HttpStatus.CONFLICT,
+            "Registro conflitante ou referenciado por outro cadastro."));
   }
 
   /**
@@ -155,10 +161,11 @@ public class GlobalExceptionHandler {
    * @return the response entity
    */
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiError> handleUnexpected(Exception ex) {
+  public ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
 
     logger.error("Erro inesperado ao processar requisição", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiError.of(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno ao processar a requisição."));
+        .body(problemDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Erro interno ao processar a requisição."));
   }
 }

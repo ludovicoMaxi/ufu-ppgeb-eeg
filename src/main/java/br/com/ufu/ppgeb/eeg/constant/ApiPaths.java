@@ -8,7 +8,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ApiPaths {
 
-  private static final String API = "/api";
+  public static final String API_VERSION = "v1";
+  private static final String API = "/api/" + API_VERSION;
   public static final String PATH_SEPARATOR = "/";
 
   public static final String HOME = PATH_SEPARATOR;

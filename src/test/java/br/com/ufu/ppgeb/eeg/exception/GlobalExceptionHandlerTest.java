@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -37,18 +38,19 @@ class GlobalExceptionHandlerTest {
     MethodArgumentNotValidException ex =
         setupGivenValidationErrorWhenHandlingValidationThenReturnBadRequestWithFieldMessage();
 
-    ResponseEntity<GlobalExceptionHandler.ApiError> response =
+    ResponseEntity<ProblemDetail> response =
         exceptionHandler.handleValidation(ex);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().message()).isEqualTo(VALIDATION_MESSAGE);
+    assertThat(response.getBody().getDetail()).isEqualTo(VALIDATION_MESSAGE);
   }
 
   private MethodArgumentNotValidException
       setupGivenValidationErrorWhenHandlingValidationThenReturnBadRequestWithFieldMessage()
           throws Exception {
-    Method method = PatientController.class.getMethod("save", PatientRequest.class);
+    Method method = PatientController.class.getMethod("save", PatientRequest.class,
+        String.class);
     MethodParameter parameter = new MethodParameter(method, 0);
     BeanPropertyBindingResult bindingResult =
         new BeanPropertyBindingResult(new Object(), BINDING_OBJECT_NAME);
@@ -61,11 +63,11 @@ class GlobalExceptionHandlerTest {
   void givenResourceNotFound_whenHandlingNotFound_thenReturnNotFoundWithMessage() {
     ResourceNotFoundException exception = new ResourceNotFoundException("Paciente", NOT_FOUND_ID);
 
-    ResponseEntity<GlobalExceptionHandler.ApiError> response =
+    ResponseEntity<ProblemDetail> response =
         exceptionHandler.handleNotFound(exception);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().message()).isEqualTo(NOT_FOUND_MESSAGE);
+    assertThat(response.getBody().getDetail()).isEqualTo(NOT_FOUND_MESSAGE);
   }
 }
