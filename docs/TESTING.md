@@ -274,7 +274,7 @@ Quando o cenário compara entidades com `assertEquals`/`containsOnly`, verifique
 
 ### Quando usar
 
-Use o teste de repositório para validar o comportamento real da camada de persistência: queries derivadas, métodos do `JpaRepository` e implementações customizadas (como o `ContactRepositoryImpl` com Criteria). O repositório real é executado contra o banco H2 em memória do perfil `test`.
+Use o teste de repositório para validar o comportamento real da camada de persistência: queries derivadas, métodos do `JpaRepository` e specifications (classes `XxxSpecifications` usadas com `JpaSpecificationExecutor.findAll(Specification, Pageable)`). O repositório real é executado contra o banco H2 em memória do perfil `test`.
 
 ### Configuração
 

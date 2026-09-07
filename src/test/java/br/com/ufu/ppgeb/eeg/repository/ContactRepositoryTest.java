@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Contact;
+import br.com.ufu.ppgeb.eeg.repository.ContactSpecifications;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,9 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,6 +45,7 @@ class ContactRepositoryTest {
   private static final String PHONE_1 = "9999-9999";
   private static final String USERNAME = "joaol";
   private static final int TWO_CONTACTS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Autowired
   private ContactRepository contactRepository;
@@ -157,58 +162,63 @@ class ContactRepositoryTest {
   }
 
   @Test
-  @DisplayName("Given contacts with distinct types when findByFilter objectType then return only matches")
-  void givenContactsWithDistinctTypes_whenFindByFilterObjectType_thenReturnOnlyMatches() {
+  @DisplayName("Given contacts with distinct types when findAll with object type filter then return only matches")
+  void givenContactsWithDistinctTypes_whenFindAllWithObjectTypeFilter_thenReturnOnlyMatches() {
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
     contactRepository.save(createContact(OBJECT_TYPE_200, OBJECT_ID_2, NAME_2));
 
-    List<Contact> result = contactRepository.findByFilter(OBJECT_TYPE_100, null);
+    Page<Contact> result = contactRepository.findAll(
+        ContactSpecifications.withFilters(OBJECT_TYPE_100, null), PAGEABLE);
 
-    assertThat(result).extracting(Contact::getName).containsExactly(NAME_1);
+    assertThat(result.getContent()).extracting(Contact::getName).containsExactly(NAME_1);
   }
 
   @Test
-  @DisplayName("Given contacts with distinct objects when findByFilter objectId then return only matches")
-  void givenContactsWithDistinctObjects_whenFindByFilterObjectId_thenReturnOnlyMatches() {
+  @DisplayName("Given contacts with distinct objects when findAll with object id filter then return only matches")
+  void givenContactsWithDistinctObjects_whenFindAllWithObjectIdFilter_thenReturnOnlyMatches() {
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_2, NAME_2));
 
-    List<Contact> result = contactRepository.findByFilter(null, OBJECT_ID_2);
+    Page<Contact> result = contactRepository.findAll(
+        ContactSpecifications.withFilters(null, OBJECT_ID_2), PAGEABLE);
 
-    assertThat(result).extracting(Contact::getName).containsExactly(NAME_2);
+    assertThat(result.getContent()).extracting(Contact::getName).containsExactly(NAME_2);
   }
 
   @Test
-  @DisplayName("Given contacts when findByFilter objectType and objectId then return only matches")
-  void givenContacts_whenFindByFilterObjectTypeAndObjectId_thenReturnOnlyMatches() {
+  @DisplayName("Given contacts when findAll with object type and object id filters then return only matches")
+  void givenContacts_whenFindAllWithObjectTypeAndObjectIdFilters_thenReturnOnlyMatches() {
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_2, NAME_2));
     contactRepository.save(createContact(OBJECT_TYPE_200, OBJECT_ID_2, NAME_2));
 
-    List<Contact> result = contactRepository.findByFilter(OBJECT_TYPE_100, OBJECT_ID_2);
+    Page<Contact> result = contactRepository.findAll(
+        ContactSpecifications.withFilters(OBJECT_TYPE_100, OBJECT_ID_2), PAGEABLE);
 
-    assertThat(result).extracting(Contact::getName).containsExactly(NAME_2);
+    assertThat(result.getContent()).extracting(Contact::getName).containsExactly(NAME_2);
   }
 
   @Test
-  @DisplayName("Given saved contacts when findByFilter without filters then return all contacts")
-  void givenSavedContacts_whenFindByFilterWithoutFilters_thenReturnAllContacts() {
+  @DisplayName("Given saved contacts when findAll without filters then return all contacts")
+  void givenSavedContacts_whenFindAllWithoutFilters_thenReturnAllContacts() {
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
     contactRepository.save(createContact(OBJECT_TYPE_200, OBJECT_ID_2, NAME_2));
 
-    List<Contact> result = contactRepository.findByFilter(null, null);
+    Page<Contact> result = contactRepository.findAll(
+        ContactSpecifications.withFilters(null, null), PAGEABLE);
 
-    assertThat(result).hasSize(TWO_CONTACTS);
+    assertThat(result.getContent()).hasSize(TWO_CONTACTS);
   }
 
   @Test
-  @DisplayName("Given no matching contacts when findByFilter then return empty list")
-  void givenNoMatchingContacts_whenFindByFilter_thenReturnEmptyList() {
+  @DisplayName("Given no matching contacts when findAll with filter then return empty list")
+  void givenNoMatchingContacts_whenFindAllWithFilter_thenReturnEmptyList() {
     contactRepository.save(createContact(OBJECT_TYPE_100, OBJECT_ID_1, NAME_1));
 
-    List<Contact> result = contactRepository.findByFilter(OBJECT_TYPE_200, null);
+    Page<Contact> result = contactRepository.findAll(
+        ContactSpecifications.withFilters(OBJECT_TYPE_200, null), PAGEABLE);
 
-    assertThat(result).isEmpty();
+    assertThat(result.getContent()).isEmpty();
   }
 
   @Test

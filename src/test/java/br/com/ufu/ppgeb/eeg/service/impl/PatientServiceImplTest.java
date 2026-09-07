@@ -3,6 +3,7 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class PatientServiceImplTest {
@@ -231,13 +233,13 @@ class PatientServiceImplTest {
   void givenValidName_whenFindByFilter_thenReturnMatchingPatients() {
     Patient patient = Instancio.create(Patient.class);
 
-    when(patientRepository.findByFilter(PATIENT_NAME, null, PAGEABLE))
+    when(patientRepository.findAll(any(Specification.class), eq(PAGEABLE)))
         .thenReturn(new PageImpl<>(List.of(patient)));
 
     Page<Patient> result = patientService.findByFilter(PATIENT_NAME, null, PAGEABLE);
 
     assertThat(result.getContent()).hasSize(1);
-    verify(patientRepository).findByFilter(PATIENT_NAME, null, PAGEABLE);
+    verify(patientRepository).findAll(any(Specification.class), eq(PAGEABLE));
   }
 
   @Test
@@ -247,7 +249,7 @@ class PatientServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_FILTER_EMPTY);
 
-    verify(patientRepository, never()).findByFilter(any(), any(), any());
+    verify(patientRepository, never()).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test
