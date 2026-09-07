@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
@@ -170,13 +172,13 @@ class ExamServiceImplTest {
   void givenValidId_whenFindByFilter_thenReturnMatchingExams() {
     Exam exam = Instancio.create(Exam.class);
 
-    when(examRepository.findByFilter(EXAM_ID, null, null, null, PAGEABLE))
+    when(examRepository.findAll(any(Specification.class), eq(PAGEABLE)))
         .thenReturn(new PageImpl<>(List.of(exam)));
 
     Page<Exam> result = examService.findByFilter(EXAM_ID, null, null, null, PAGEABLE);
 
     assertThat(result.getContent()).hasSize(1);
-    verify(examRepository).findByFilter(EXAM_ID, null, null, null, PAGEABLE);
+    verify(examRepository).findAll(any(Specification.class), eq(PAGEABLE));
   }
 
   @Test
@@ -186,7 +188,7 @@ class ExamServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_FILTER_EMPTY);
 
-    verify(examRepository, never()).findByFilter(any(), any(), any(), any(), any());
+    verify(examRepository, never()).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test

@@ -9,6 +9,7 @@ import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
 import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
+import br.com.ufu.ppgeb.eeg.repository.ContactSpecifications;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +90,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     validateSearchContact(objectType, objectId);
-    return contactRepository.findByFilter(objectType, objectId, pageable);
+    return contactRepository.findAll(
+        ContactSpecifications.withFilters(objectType, objectId), pageable);
   }
 
   private void validateSearchContact(Long objectType, Long objectId) {

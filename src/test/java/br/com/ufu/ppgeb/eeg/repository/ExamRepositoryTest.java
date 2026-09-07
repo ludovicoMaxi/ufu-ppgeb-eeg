@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -14,6 +13,7 @@ import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
+import br.com.ufu.ppgeb.eeg.repository.ExamSpecifications;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,9 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -44,7 +46,7 @@ class ExamRepositoryTest {
   private static final String BED_1 = "Leito Norte";
   private static final String BED_2 = "Leito Sul";
   private static final String USERNAME = "joaol";
-  private static final String MSG_FILTER = "Informe pelo menos um campo para consultar!";
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Autowired
   private ExamRepository examRepository;
@@ -167,48 +169,57 @@ class ExamRepositoryTest {
   }
 
   @Test
-  @DisplayName("Given saved exams when findByFilter id then return only matches")
-  void givenSavedExams_whenFindByFilterId_thenReturnOnlyMatches() {
+  @DisplayName("Given saved exams when findAll with id filter then return only matches")
+  void givenSavedExams_whenFindAllWithIdFilter_thenReturnOnlyMatches() {
     Patient patient = persistPatient(PATIENT_DOC_1);
     Exam exam1 = examRepository.save(createExam(patient, BED_1));
     examRepository.save(createExam(patient, BED_2));
 
-    List<Exam> result = examRepository.findByFilter(exam1.getId(), null, null, null);
+    Page<Exam> result = examRepository.findAll(
+        ExamSpecifications.withFilters(exam1.getId(), null, null, null), PAGEABLE);
 
-    assertThat(result).extracting(Exam::getId).containsExactly(exam1.getId());
+    assertThat(result.getContent()).extracting(Exam::getId).containsExactly(exam1.getId());
   }
 
   @Test
-  @DisplayName("Given saved exams when findByFilter bed then return only matches")
-  void givenSavedExams_whenFindByFilterBed_thenReturnOnlyMatches() {
+  @DisplayName("Given saved exams when findAll with bed filter then return only matches")
+  void givenSavedExams_whenFindAllWithBedFilter_thenReturnOnlyMatches() {
     Patient patient = persistPatient(PATIENT_DOC_1);
     Exam saved = examRepository.save(createExam(patient, BED_1));
     examRepository.save(createExam(patient, BED_2));
 
-    List<Exam> result = examRepository.findByFilter(null, BED_1, null, null);
+    Page<Exam> result = examRepository.findAll(
+        ExamSpecifications.withFilters(null, BED_1, null, null), PAGEABLE);
 
-    assertThat(result).extracting(Exam::getId).containsExactly(saved.getId());
+    assertThat(result.getContent()).extracting(Exam::getId).containsExactly(saved.getId());
   }
 
   @Test
-  @DisplayName("Given saved exams when findByFilter patientId then return only matches")
-  void givenSavedExams_whenFindByFilterPatientId_thenReturnOnlyMatches() {
+  @DisplayName("Given saved exams when findAll with patient id filter then return only matches")
+  void givenSavedExams_whenFindAllWithPatientIdFilter_thenReturnOnlyMatches() {
     Patient patient1 = persistPatient(PATIENT_DOC_1);
     Patient patient2 = persistPatient("987.654.321-00");
     Exam saved = examRepository.save(createExam(patient1, BED_1));
     examRepository.save(createExam(patient2, BED_2));
 
-    List<Exam> result = examRepository.findByFilter(null, null, patient1.getId(), null);
+    Page<Exam> result = examRepository.findAll(
+        ExamSpecifications.withFilters(null, null, patient1.getId(), null), PAGEABLE);
 
-    assertThat(result).extracting(Exam::getId).containsExactly(saved.getId());
+    assertThat(result.getContent()).extracting(Exam::getId).containsExactly(saved.getId());
   }
 
   @Test
-  @DisplayName("Given blank filters when findByFilter then throw exception")
-  void givenBlankFilters_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> examRepository.findByFilter(null, null, null, null))
-        .isInstanceOf(InvalidDataAccessApiUsageException.class)
-        .hasMessage(MSG_FILTER);
+  @DisplayName("Given saved exams when findAll without filters then return all exams")
+  void givenSavedExams_whenFindAllWithoutFilters_thenReturnAllExams() {
+    Patient patient = persistPatient(PATIENT_DOC_1);
+    Exam exam1 = examRepository.save(createExam(patient, BED_1));
+    Exam exam2 = examRepository.save(createExam(patient, BED_2));
+
+    Page<Exam> result = examRepository.findAll(
+        ExamSpecifications.withFilters(null, null, null, null), PAGEABLE);
+
+    assertThat(result.getContent()).extracting(Exam::getId).containsExactlyInAnyOrder(
+        exam1.getId(), exam2.getId());
   }
 
   private Patient persistPatient(String documentNumber) {

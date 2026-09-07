@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class ContactServiceImplTest {
@@ -184,7 +185,7 @@ class ContactServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_OBJECT_TYPE_FILTER);
 
-    verify(contactRepository, never()).findByFilter(any(), any(), any());
+    verify(contactRepository, never()).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test
@@ -194,7 +195,7 @@ class ContactServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_OBJECT_ID_FILTER);
 
-    verify(contactRepository, never()).findByFilter(any(), any(), any());
+    verify(contactRepository, never()).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test

@@ -5,6 +5,7 @@ import java.util.List;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.repository.PatientRepository;
+import br.com.ufu.ppgeb.eeg.repository.PatientSpecifications;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +83,8 @@ public class PatientServiceImpl implements PatientService {
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return patientRepository.findByFilter(name, documentNumber, pageable);
+    return patientRepository.findAll(
+        PatientSpecifications.withFilters(name, documentNumber), pageable);
   }
 
   @Override

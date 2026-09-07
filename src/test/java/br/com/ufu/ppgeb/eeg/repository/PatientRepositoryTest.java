@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -12,6 +11,7 @@ import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Patient;
 import br.com.ufu.ppgeb.eeg.model.Sex;
+import br.com.ufu.ppgeb.eeg.repository.PatientSpecifications;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,9 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -43,7 +45,7 @@ class PatientRepositoryTest {
   private static final String DOCUMENT_1 = "111.111.111-11";
   private static final String DOCUMENT_2 = "222.222.222-22";
   private static final String USERNAME = "joaol";
-  private static final String MSG_FILTER = "Informe pelo menos um campo para consultar!";
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Autowired
   private PatientRepository patientRepository;
@@ -181,44 +183,52 @@ class PatientRepositoryTest {
   }
 
   @Test
-  @DisplayName("Given saved patients when findByFilter name then return only matches")
-  void givenSavedPatients_whenFindByFilterName_thenReturnOnlyMatches() {
+  @DisplayName("Given saved patients when findAll with name filter then return only matches")
+  void givenSavedPatients_whenFindAllWithNameFilter_thenReturnOnlyMatches() {
     patientRepository.save(createPatient(NAME_1, DOCUMENT_1));
     patientRepository.save(createPatient(NAME_2, DOCUMENT_2));
 
-    List<Patient> result = patientRepository.findByFilter(NAME_FILTER, null);
+    Page<Patient> result = patientRepository.findAll(
+        PatientSpecifications.withFilters(NAME_FILTER, null), PAGEABLE);
 
-    assertThat(result).extracting(Patient::getName).containsExactly(NAME_1);
+    assertThat(result.getContent()).extracting(Patient::getName).containsExactly(NAME_1);
   }
 
   @Test
-  @DisplayName("Given saved patients when findByFilter documentNumber then return only matches")
-  void givenSavedPatients_whenFindByFilterDocumentNumber_thenReturnOnlyMatches() {
+  @DisplayName("Given saved patients when findAll with document number filter then return only matches")
+  void givenSavedPatients_whenFindAllWithDocumentNumberFilter_thenReturnOnlyMatches() {
     patientRepository.save(createPatient(NAME_1, DOCUMENT_1));
     patientRepository.save(createPatient(NAME_2, DOCUMENT_2));
 
-    List<Patient> result = patientRepository.findByFilter(null, DOCUMENT_2);
+    Page<Patient> result = patientRepository.findAll(
+        PatientSpecifications.withFilters(null, DOCUMENT_2), PAGEABLE);
 
-    assertThat(result).extracting(Patient::getName).containsExactly(NAME_2);
+    assertThat(result.getContent()).extracting(Patient::getName).containsExactly(NAME_2);
   }
 
   @Test
-  @DisplayName("Given saved patients when findByFilter name and documentNumber then return only matches")
-  void givenSavedPatients_whenFindByFilterNameAndDocumentNumber_thenReturnOnlyMatches() {
+  @DisplayName("Given saved patients when findAll with name and document number filters then return only matches")
+  void givenSavedPatients_whenFindAllWithNameAndDocumentNumberFilters_thenReturnOnlyMatches() {
     patientRepository.save(createPatient(NAME_1, DOCUMENT_1));
     patientRepository.save(createPatient(NAME_2, DOCUMENT_2));
 
-    List<Patient> result = patientRepository.findByFilter(NAME_FILTER, DOCUMENT_1);
+    Page<Patient> result = patientRepository.findAll(
+        PatientSpecifications.withFilters(NAME_FILTER, DOCUMENT_1), PAGEABLE);
 
-    assertThat(result).extracting(Patient::getName).containsExactly(NAME_1);
+    assertThat(result.getContent()).extracting(Patient::getName).containsExactly(NAME_1);
   }
 
   @Test
-  @DisplayName("Given blank filters when findByFilter then throw exception")
-  void givenBlankFilters_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> patientRepository.findByFilter(null, "  "))
-        .isInstanceOf(InvalidDataAccessApiUsageException.class)
-        .hasMessage(MSG_FILTER);
+  @DisplayName("Given saved patients when findAll without filters then return all patients")
+  void givenSavedPatients_whenFindAllWithoutFilters_thenReturnAllPatients() {
+    patientRepository.save(createPatient(NAME_1, DOCUMENT_1));
+    patientRepository.save(createPatient(NAME_2, DOCUMENT_2));
+
+    Page<Patient> result = patientRepository.findAll(
+        PatientSpecifications.withFilters(null, null), PAGEABLE);
+
+    assertThat(result.getContent()).extracting(Patient::getName)
+        .containsExactly(NAME_1, NAME_2);
   }
 
   private Patient createPatient(String name, String documentNumber) {
