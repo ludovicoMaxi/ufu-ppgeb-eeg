@@ -19,8 +19,8 @@ export function getActivitysByExamId(examId) {
                 activityList.examId = examId;
 
                 if (!!resp.data) {
-                    if (resp.data.length > 0) {
-                        activityList.activities = convertSecondsInMinutesAndSeconds(resp.data);
+                    if (resp.data.content.length > 0) {
+                        activityList.activities = convertSecondsInMinutesAndSeconds(resp.data.content);
                     }
                 }
                 dispatch(initialize('activityListForm', activityList));

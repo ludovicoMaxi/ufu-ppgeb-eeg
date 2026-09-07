@@ -10,7 +10,7 @@ export function getOptionsUnit() {
         axios.get(`${BASE_URL_UNIT}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPTIONS_UNIT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_UNIT', payload: resp.data.content });
                 }
                 else
                     toastr.error('Erro', `Não existe unidades!!!`)
@@ -26,7 +26,7 @@ export function getOptionsEquipment() {
         axios.get(`${BASE_URL_EQUIPMENT}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPTIONS_EQUIPMENT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_EQUIPMENT', payload: resp.data.content });
                 }
                 else
                     toastr.error('Erro', `Não existe Equipamentos!!!`)

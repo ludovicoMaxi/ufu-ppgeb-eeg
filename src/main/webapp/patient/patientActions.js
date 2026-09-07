@@ -28,7 +28,7 @@ export function getExamByPatientId(id) {
         axios.get(`${BASE_URL_EXAM}?patientId=${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'PATIENT_EXAM_FETCHED', payload: resp.data });
+                    dispatch({ type: 'PATIENT_EXAM_FETCHED', payload: resp.data.content });
                 }
             })
             .catch(e => {
@@ -101,8 +101,8 @@ export function searchPatients(values) {
             + (!!values.documentNumber ? `documentNumber=${values.documentNumber}` : '');
         axios.get(`${BASE_URL_PATIENT}?${params}`)
             .then(resp => {
-                if (!!resp.data && resp.data.length > 0) {
-                    dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: resp.data });
+                if (!!resp.data && resp.data.content.length > 0) {
+                    dispatch({ type: 'PATIENT_SEARCH_RESULT', payload: resp.data.content });
                 }
                 else
                     toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)

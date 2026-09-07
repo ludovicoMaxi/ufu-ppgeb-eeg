@@ -103,8 +103,8 @@ export function searchExam(values) {
             + (!!values.bed ? `bed=${values.bed}` : '');
         axios.get(`${BASE_URL_EXAM}?${params}`)
             .then(resp => {
-                if (!!resp.data && resp.data.length > 0) {
-                    dispatch({ type: 'EXAM_SEARCH_RESULT', payload: resp.data });
+                if (!!resp.data && resp.data.content.length > 0) {
+                    dispatch({ type: 'EXAM_SEARCH_RESULT', payload: resp.data.content });
                 }
                 else
                     toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)

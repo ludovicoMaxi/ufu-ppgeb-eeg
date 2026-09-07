@@ -19,8 +19,8 @@ export function getEpochsByExamId(examId) {
                 epochList.examId = examId;
 
                 if (!!resp.data) {
-                    if (resp.data.length > 0) {
-                        epochList.epochs = convertSecondsInMinutesAndSeconds(resp.data);
+                    if (resp.data.content.length > 0) {
+                        epochList.epochs = convertSecondsInMinutesAndSeconds(resp.data.content);
                     }
                 }
                 dispatch(initialize('epochListForm', epochList));
