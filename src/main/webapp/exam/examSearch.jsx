@@ -1,18 +1,23 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { reduxForm, Field, Form } from 'redux-form'
+import { reduxForm, Field, Form, formValueSelector } from 'redux-form'
 import { Link } from 'react-router-dom'
 
 import { searchExam as onSubmit, clearSearchExam } from './examActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
+import Pagination from '../common/pagination/pagination'
 import { onlyNumbers, upper } from '../common/form/formatValues'
 
 class ExamSearch extends Component {
 
     componentWillUnmount() {
         this.props.clearSearchExam();
+    }
+
+    onPageChange = (page) => {
+        this.props.onSubmit(this.props.formValues, page);
     }
 
     renderRows() {
@@ -72,6 +77,10 @@ class ExamSearch extends Component {
                                     {this.renderRows()}
                                 </tbody>
                             </table>
+                            <Pagination page={this.props.pagination.number}
+                                totalPages={this.props.pagination.totalPages}
+                                totalElements={this.props.pagination.totalElements}
+                                onPageChange={this.onPageChange} />
                         </div>
                     </If>
                 </Form>
@@ -81,8 +90,11 @@ class ExamSearch extends Component {
 }
 
 ExamSearch = reduxForm({ form: 'examSearch' })(ExamSearch)
+const selector = formValueSelector('examSearch')
 const mapStateToProps = state => ({
-    list: state.exam.resultSearch
+    list: state.exam.resultSearch,
+    pagination: state.exam.pagination,
+    formValues: selector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchExam }, dispatch)

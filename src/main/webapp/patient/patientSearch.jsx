@@ -1,18 +1,23 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { reduxForm, Field, Form } from 'redux-form'
+import { reduxForm, Field, Form, formValueSelector } from 'redux-form'
 import { Link } from 'react-router-dom'
 
 import { searchPatients as onSubmit, clearSearchPatients } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
+import Pagination from '../common/pagination/pagination'
 import { upper } from '../common/form/formatValues'
 
 class PatientSearch extends Component {
 
     componentWillUnmount() {
         this.props.clearSearchPatients();
+    }
+
+    onPageChange = (page) => {
+        this.props.onSubmit(this.props.formValues, page);
     }
 
     renderRows() {
@@ -72,6 +77,10 @@ class PatientSearch extends Component {
                                     {this.renderRows()}
                                 </tbody>
                             </table>
+                            <Pagination page={this.props.pagination.number}
+                                totalPages={this.props.pagination.totalPages}
+                                totalElements={this.props.pagination.totalElements}
+                                onPageChange={this.onPageChange} />
                         </div>
                     </If>
                 </Form>
@@ -81,8 +90,11 @@ class PatientSearch extends Component {
 }
 
 PatientSearch = reduxForm({ form: 'patientSearch' })(PatientSearch)
+const selector = formValueSelector('patientSearch')
 const mapStateToProps = state => ({
-    list: state.patient.resultSearch
+    list: state.patient.resultSearch,
+    pagination: state.patient.pagination,
+    formValues: selector(state)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchPatients }, dispatch)
