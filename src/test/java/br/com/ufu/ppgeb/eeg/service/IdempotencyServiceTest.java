@@ -29,6 +29,7 @@ class IdempotencyServiceTest {
 
   private static final String RESOURCE = "PATIENT";
   private static final String KEY = "key-1";
+  private static final String BLANK_KEY = " ";
   private static final Long ID_1 = 1L;
   private static final Long ID_2 = 2L;
   private static final Long ID_3 = 3L;
@@ -55,7 +56,7 @@ class IdempotencyServiceTest {
     ResponseEntity<DemoResponse> operationResult = ResponseEntity.ok(body);
 
     ResponseEntity<DemoResponse> response =
-        service.execute(RESOURCE, KEY, DemoResponse.class, () -> operationResult);
+        service.execute(RESOURCE, BLANK_KEY, DemoResponse.class, () -> operationResult);
 
     assertThat(response).isSameAs(operationResult);
     verify(repository, never()).findByIdempotencyResourceNameAndIdempotencyKey(any(), any());
