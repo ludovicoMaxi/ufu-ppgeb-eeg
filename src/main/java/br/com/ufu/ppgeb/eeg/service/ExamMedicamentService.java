@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for ExamMedicament operations.
@@ -10,12 +12,13 @@ import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
 public interface ExamMedicamentService {
 
   /**
-   * Finds exam medicaments by exam id.
+   * Finds exam medicaments by exam id paginated.
    *
    * @param examId the exam id
-   * @return the list of exam medicaments
+   * @param pageable the pagination information
+   * @return the page of exam medicaments
    */
-  List<ExamMedicament> findByExamId(Long examId);
+  Page<ExamMedicament> findByExamId(Long examId, Pageable pageable);
 
   /**
    * Finds an exam medicament by id.

@@ -15,6 +15,8 @@ import br.com.ufu.ppgeb.eeg.repository.EpochRepository;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -72,11 +74,11 @@ public class EpochServiceImpl implements EpochService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Epoch> findByFilter(Long examId) {
+  public Page<Epoch> findByExamId(Long examId, Pageable pageable) {
 
     Assert.notNull(examId, "examId cannot be null.");
 
-    return epochRepository.findByExamId(examId);
+    return epochRepository.findByExamId(examId, pageable);
   }
 
   @Override

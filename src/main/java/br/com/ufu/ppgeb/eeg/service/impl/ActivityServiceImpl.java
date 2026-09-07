@@ -15,6 +15,8 @@ import br.com.ufu.ppgeb.eeg.repository.ActivityRepository;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -72,11 +74,11 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Activity> findByExamId(Long examId) {
+  public Page<Activity> findByExamId(Long examId, Pageable pageable) {
 
     Assert.notNull(examId, "examId cannot be null.");
 
-    return activityRepository.findByExamId(examId);
+    return activityRepository.findByExamId(examId, pageable);
   }
 
   @Override

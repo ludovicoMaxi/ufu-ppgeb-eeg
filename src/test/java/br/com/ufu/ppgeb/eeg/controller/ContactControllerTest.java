@@ -4,6 +4,8 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.CONTACT;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -15,12 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import br.com.ufu.ppgeb.eeg.dto.ContactRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -40,10 +48,15 @@ class ContactControllerTest {
   private static final Long OBJECT_TYPE = 1L;
   private static final String CONTACT_NAME = "MARIA";
   private static final String JSON_PATH_NAME = "$.name";
-  private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String JSON_PATH_LENGTH = "$.content.length()";
+  private static final int OPERATION_ARGUMENT_INDEX = 3;
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private ContactService contactService;
+
+  @Mock
+  private IdempotencyService idempotencyService;
 
   private MockMvc mockMvc;
 
@@ -51,7 +64,9 @@ class ContactControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new ContactController(contactService))
+    mockMvc = MockMvcBuilders.standaloneSetup(
+        new ContactController(contactService, idempotencyService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
   }
@@ -60,16 +75,17 @@ class ContactControllerTest {
   @DisplayName("Given contacts in service when listing contacts then return contacts")
   void givenContactsInService_whenListingContacts_thenReturnContacts() throws Exception {
     Contact contact = createContact();
-    when(contactService.findByFilter(OBJECT_TYPE, CONTACT_ID)).thenReturn(List.of(contact));
+    when(contactService.findByFilter(eq(OBJECT_TYPE), eq(CONTACT_ID), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(contact), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(CONTACT)
             .param("objectType", String.valueOf(OBJECT_TYPE))
             .param("objectId", String.valueOf(CONTACT_ID)))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
-        .andExpect(jsonPath("$[0].name").value(CONTACT_NAME));
+        .andExpect(jsonPath("$.content[0].name").value(CONTACT_NAME));
 
-    verify(contactService).findByFilter(OBJECT_TYPE, CONTACT_ID);
+    verify(contactService).findByFilter(eq(OBJECT_TYPE), eq(CONTACT_ID), any(Pageable.class));
   }
 
   @Test
@@ -102,6 +118,11 @@ class ContactControllerTest {
   void givenContact_whenSavingContact_thenReturnCreatedContact() throws Exception {
     Contact contact = createContact();
     when(contactService.save(any(Contact.class))).thenReturn(contact);
+
+    doAnswer(invocation -> {
+      Supplier<?> operation = invocation.getArgument(OPERATION_ARGUMENT_INDEX);
+      return operation.get();
+    }).when(idempotencyService).execute(any(), any(), any(), any());
 
     String body = objectMapper.writeValueAsString(Instancio.create(ContactRequest.class));
 

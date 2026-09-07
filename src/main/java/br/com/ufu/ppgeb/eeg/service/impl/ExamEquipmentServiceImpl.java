@@ -19,6 +19,8 @@ import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import br.com.ufu.ppgeb.eeg.service.ExamEquipmentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -40,10 +42,10 @@ public class ExamEquipmentServiceImpl implements ExamEquipmentService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<ExamEquipment> findByExamId(Long examId) {
+  public Page<ExamEquipment> findByExamId(Long examId, Pageable pageable) {
 
     Assert.notNull(examId, "examId cannot be null.");
-    return examEquipmentRepository.findByExam(Exam.builder().id(examId).build());
+    return examEquipmentRepository.findByExam(Exam.builder().id(examId).build(), pageable);
   }
 
   @Override

@@ -20,11 +20,11 @@ class ExamRequestMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given an exam request request when mapping to entity then map every field keeping id null")
-  void givenExamRequestRequest_whenToEntity_thenMapEveryFieldKeepingIdNull() {
+  @DisplayName("Given an exam request request when mapping to domain then map every field keeping id null")
+  void givenExamRequestRequest_whenToDomain_thenMapEveryFieldKeepingIdNull() {
     ExamRequestRequest request = Instancio.create(ExamRequestRequest.class);
 
-    ExamRequest examRequest = ExamRequestMapper.toEntity(request);
+    ExamRequest examRequest = ExamRequestMapper.toDomain(request);
 
     assertThat(examRequest)
         .hasNoNullFieldsOrPropertiesExcept(ID_FIELD, CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -45,11 +45,11 @@ class ExamRequestMapperTest {
   }
 
   @Test
-  @DisplayName("Given an exam request request and an id when mapping to entity then map every field with the id")
-  void givenExamRequestRequestAndId_whenToEntity_thenMapEveryFieldWithTheId() {
+  @DisplayName("Given an exam request request and an id when mapping to domain then map every field with the id")
+  void givenExamRequestRequestAndId_whenToDomain_thenMapEveryFieldWithTheId() {
     ExamRequestRequest request = Instancio.create(ExamRequestRequest.class);
 
-    ExamRequest examRequest = ExamRequestMapper.toEntity(request, ID);
+    ExamRequest examRequest = ExamRequestMapper.toDomain(request, ID);
 
     assertThat(examRequest)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -69,10 +69,10 @@ class ExamRequestMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null exam request request when mapping to entity then return null")
-  void givenNullExamRequestRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null exam request request when mapping to domain then return null")
+  void givenNullExamRequestRequest_whenToDomain_thenReturnNull() {
 
-    ExamRequest examRequest = ExamRequestMapper.toEntity((ExamRequestRequest) null);
+    ExamRequest examRequest = ExamRequestMapper.toDomain((ExamRequestRequest) null);
 
     assertThat(examRequest).isNull();
   }

@@ -19,11 +19,11 @@ class ExamMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given an exam request when mapping to entity then map every field")
-  void givenExamRequest_whenToEntity_thenMapEveryField() {
+  @DisplayName("Given an exam request when mapping to domain then map every field")
+  void givenExamRequest_whenToDomain_thenMapEveryField() {
     ExamRequest request = Instancio.create(ExamRequest.class);
 
-    Exam exam = ExamMapper.toEntity(request);
+    Exam exam = ExamMapper.toDomain(request);
 
     assertThat(exam)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -46,11 +46,11 @@ class ExamMapperTest {
   }
 
   @Test
-  @DisplayName("Given an exam request and an id when mapping to entity then map every field with the id")
-  void givenExamRequestAndId_whenToEntity_thenMapEveryFieldWithTheId() {
+  @DisplayName("Given an exam request and an id when mapping to domain then map every field with the id")
+  void givenExamRequestAndId_whenToDomain_thenMapEveryFieldWithTheId() {
     ExamRequest request = Instancio.create(ExamRequest.class);
 
-    Exam exam = ExamMapper.toEntity(request, ID);
+    Exam exam = ExamMapper.toDomain(request, ID);
 
     assertThat(exam)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -67,10 +67,10 @@ class ExamMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null exam request when mapping to entity then return null")
-  void givenNullExamRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null exam request when mapping to domain then return null")
+  void givenNullExamRequest_whenToDomain_thenReturnNull() {
 
-    Exam exam = ExamMapper.toEntity((ExamRequest) null);
+    Exam exam = ExamMapper.toDomain((ExamRequest) null);
 
     assertThat(exam).isNull();
   }

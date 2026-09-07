@@ -20,11 +20,11 @@ class ExamMedicamentMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given a request and an exam id when mapping to entity then map every field")
-  void givenExamMedicamentRequestAndExamId_whenToEntity_thenMapEveryFieldWithTheExamId() {
+  @DisplayName("Given a request and an exam id when mapping to domain then map every field")
+  void givenExamMedicamentRequestAndExamId_whenToDomain_thenMapEveryFieldWithTheExamId() {
     ExamMedicamentRequest request = Instancio.create(ExamMedicamentRequest.class);
 
-    ExamMedicament examMedicament = ExamMedicamentMapper.toEntity(request, EXAM_ID);
+    ExamMedicament examMedicament = ExamMedicamentMapper.toDomain(request, EXAM_ID);
 
     assertThat(examMedicament)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -43,10 +43,10 @@ class ExamMedicamentMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null exam medicament request when mapping to entity then return null")
-  void givenNullExamMedicamentRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null exam medicament request when mapping to domain then return null")
+  void givenNullExamMedicamentRequest_whenToDomain_thenReturnNull() {
 
-    ExamMedicament examMedicament = ExamMedicamentMapper.toEntity(null, EXAM_ID);
+    ExamMedicament examMedicament = ExamMedicamentMapper.toDomain(null, EXAM_ID);
 
     assertThat(examMedicament).isNull();
   }

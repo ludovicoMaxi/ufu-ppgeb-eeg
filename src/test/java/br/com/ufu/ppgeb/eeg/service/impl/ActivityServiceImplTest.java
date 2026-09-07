@@ -21,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class ActivityServiceImplTest {
@@ -38,6 +42,7 @@ class ActivityServiceImplTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long DIFFERENT_EXAM_ID = 999L;
   private static final int TWO_ACTIVITIES = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private ActivityRepository activityRepository;
@@ -189,22 +194,23 @@ class ActivityServiceImplTest {
   void givenValidExamId_whenFindByExamId_thenReturnMatchingActivities() {
     Activity activity = Instancio.create(Activity.class);
 
-    when(activityRepository.findByExamId(EXAM_ID)).thenReturn(List.of(activity));
+    when(activityRepository.findByExamId(EXAM_ID, PAGEABLE))
+        .thenReturn(new PageImpl<>(List.of(activity)));
 
-    List<Activity> result = activityService.findByExamId(EXAM_ID);
+    Page<Activity> result = activityService.findByExamId(EXAM_ID, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(activityRepository).findByExamId(EXAM_ID);
+    assertThat(result.getContent()).hasSize(1);
+    verify(activityRepository).findByExamId(EXAM_ID, PAGEABLE);
   }
 
   @Test
   @DisplayName("Given null exam id when findByExamId then throw exception")
   void givenNullExamId_whenFindByExamId_thenThrowException() {
-    assertThatThrownBy(() -> activityService.findByExamId(null))
+    assertThatThrownBy(() -> activityService.findByExamId(null, PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_EXAM_ID_NULL);
 
-    verify(activityRepository, never()).findByExamId(any());
+    verify(activityRepository, never()).findByExamId(any(), any());
   }
 
   @Test

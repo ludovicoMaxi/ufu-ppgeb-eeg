@@ -16,11 +16,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class UnitServiceImplTest {
 
   private static final int TWO_UNITS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private UnitRepository unitRepository;
@@ -35,22 +40,22 @@ class UnitServiceImplTest {
     Unit unit2 = Instancio.create(Unit.class);
 
     List<Unit> units = List.of(unit1, unit2);
-    when(unitRepository.findAll()).thenReturn(units);
+    when(unitRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(units));
 
-    List<Unit> result = unitService.findAll();
+    Page<Unit> result = unitService.findAll(PAGEABLE);
 
-    assertThat(result).hasSize(TWO_UNITS);
-    verify(unitRepository).findAll();
+    assertThat(result.getContent()).hasSize(TWO_UNITS);
+    verify(unitRepository).findAll(PAGEABLE);
   }
 
   @Test
   @DisplayName("Given no units in database when findAll then return empty list")
   void givenNoUnitsInDatabase_whenFindAll_thenReturnEmptyList() {
-    when(unitRepository.findAll()).thenReturn(Collections.emptyList());
+    when(unitRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-    List<Unit> result = unitService.findAll();
+    Page<Unit> result = unitService.findAll(PAGEABLE);
 
-    assertThat(result).isEmpty();
-    verify(unitRepository).findAll();
+    assertThat(result.getContent()).isEmpty();
+    verify(unitRepository).findAll(PAGEABLE);
   }
 }

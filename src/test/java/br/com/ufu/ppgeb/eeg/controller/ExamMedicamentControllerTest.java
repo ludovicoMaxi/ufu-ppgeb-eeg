@@ -4,6 +4,7 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.MEDICAMENTS_SUBPATH;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +41,7 @@ class ExamMedicamentControllerTest {
   private static final Long EXAM_ID = 1001L;
   private static final String URL = EXAM + PATH_SEPARATOR + EXAM_ID + MEDICAMENTS_SUBPATH;
   private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private ExamMedicamentService examMedicamentService;
@@ -46,7 +52,10 @@ class ExamMedicamentControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new ExamMedicamentController(examMedicamentService)).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(
+        new ExamMedicamentController(examMedicamentService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
   }
 
   @Test
@@ -55,13 +64,14 @@ class ExamMedicamentControllerTest {
     ExamMedicament em = Instancio.of(ExamMedicament.class)
         .set(field(ExamMedicament::getId), 1L)
         .create();
-    when(examMedicamentService.findByExamId(EXAM_ID)).thenReturn(List.of(em));
+    when(examMedicamentService.findByExamId(eq(EXAM_ID), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(em), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(URL))
         .andExpect(status().isOk())
-        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1));
+        .andExpect(jsonPath("$.content.length()").value(1));
 
-    verify(examMedicamentService).findByExamId(EXAM_ID);
+    verify(examMedicamentService).findByExamId(eq(EXAM_ID), any(Pageable.class));
   }
 
   @Test

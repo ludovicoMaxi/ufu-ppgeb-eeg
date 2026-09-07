@@ -7,6 +7,7 @@ import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,10 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import br.com.ufu.ppgeb.eeg.dto.EpochRequest;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,12 +46,17 @@ class EpochControllerTest {
   private static final Long EXAM_ID = 1001L;
   private static final String EPOCH_URL = EXAM + PATH_SEPARATOR + EXAM_ID + EPOCHS_SUBPATH;
   private static final String DESCRIPTION = "Em Silencio";
-  private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String JSON_PATH_LENGTH = "$.content.length()";
   private static final String JSON_PATH_FIRST_DESCRIPTION = "$[0].description";
   private static final String JSON_PATH_DESCRIPTION = "$.description";
+  private static final int OPERATION_ARGUMENT_INDEX = 3;
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private EpochService epochService;
+
+  @Mock
+  private IdempotencyService idempotencyService;
 
   private MockMvc mockMvc;
 
@@ -52,21 +64,25 @@ class EpochControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new EpochController(epochService)).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(
+        new EpochController(epochService, idempotencyService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
   }
 
   @Test
   @DisplayName("Given exam ID when listing epochs then return epochs")
   void givenExamId_whenListingEpochs_thenReturnEpochs() throws Exception {
     Epoch epoch = createEpoch();
-    when(epochService.findByFilter(EXAM_ID)).thenReturn(List.of(epoch));
+    when(epochService.findByExamId(eq(EXAM_ID), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(epoch), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(EPOCH_URL))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
-        .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
+        .andExpect(jsonPath("$.content[0].description").value(DESCRIPTION));
 
-    verify(epochService).findByFilter(EXAM_ID);
+    verify(epochService).findByExamId(eq(EXAM_ID), any(Pageable.class));
   }
 
   @Test
@@ -87,6 +103,11 @@ class EpochControllerTest {
   void givenEpoch_whenSavingEpoch_thenReturnCreatedEpoch() throws Exception {
     Epoch epoch = createEpoch();
     when(epochService.save(any(Epoch.class))).thenReturn(epoch);
+
+    doAnswer(invocation -> {
+      Supplier<?> operation = invocation.getArgument(OPERATION_ARGUMENT_INDEX);
+      return operation.get();
+    }).when(idempotencyService).execute(any(), any(), any(), any());
 
     String body = objectMapper.writeValueAsString(Instancio.create(EpochRequest.class));
 

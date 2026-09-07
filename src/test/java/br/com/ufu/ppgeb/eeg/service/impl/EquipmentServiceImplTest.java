@@ -21,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class EquipmentServiceImplTest {
@@ -33,6 +37,7 @@ class EquipmentServiceImplTest {
   private static final String MSG_DUPLICATED = "Equipamento já cadastrado: ";
   private static final int TWO_EQUIPMENTS = 2;
   private static final int ONE_EQUIPMENT = 1;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private EquipmentRepository equipmentRepository;
@@ -47,23 +52,23 @@ class EquipmentServiceImplTest {
     Equipment equipment2 = Instancio.create(Equipment.class);
 
     List<Equipment> equipments = List.of(equipment1, equipment2);
-    when(equipmentRepository.findAll()).thenReturn(equipments);
+    when(equipmentRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(equipments));
 
-    List<Equipment> result = equipmentService.findAll();
+    Page<Equipment> result = equipmentService.findAll(PAGEABLE);
 
-    assertThat(result).hasSize(TWO_EQUIPMENTS);
-    verify(equipmentRepository).findAll();
+    assertThat(result.getContent()).hasSize(TWO_EQUIPMENTS);
+    verify(equipmentRepository).findAll(PAGEABLE);
   }
 
   @Test
   @DisplayName("Given no equipments in database when findAll then return empty list")
   void givenNoEquipmentsInDatabase_whenFindAll_thenReturnEmptyList() {
-    when(equipmentRepository.findAll()).thenReturn(Collections.emptyList());
+    when(equipmentRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-    List<Equipment> result = equipmentService.findAll();
+    Page<Equipment> result = equipmentService.findAll(PAGEABLE);
 
-    assertThat(result).isEmpty();
-    verify(equipmentRepository).findAll();
+    assertThat(result.getContent()).isEmpty();
+    verify(equipmentRepository).findAll(PAGEABLE);
   }
 
   @Test

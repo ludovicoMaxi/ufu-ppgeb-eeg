@@ -35,9 +35,9 @@ public class ExamRequestMapper {
    * @param request the create request
    * @return the ExamRequest entity
    */
-  public static ExamRequest toEntity(ExamRequestRequest request) {
+  public static ExamRequest toDomain(ExamRequestRequest request) {
 
-    return toEntity(request, null);
+    return toDomain(request, null);
   }
 
   /**
@@ -47,7 +47,7 @@ public class ExamRequestMapper {
    * @param id the exam request id
    * @return the ExamRequest entity
    */
-  public static ExamRequest toEntity(ExamRequestRequest request, Long id) {
+  public static ExamRequest toDomain(ExamRequestRequest request, Long id) {
 
     if (isNull(request)) {
       return null;

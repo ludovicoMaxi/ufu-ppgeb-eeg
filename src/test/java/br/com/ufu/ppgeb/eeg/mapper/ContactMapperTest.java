@@ -19,11 +19,11 @@ class ContactMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given a contact request when mapping to entity then map every field keeping id null")
-  void givenContactRequest_whenToEntity_thenMapEveryFieldKeepingIdNull() {
+  @DisplayName("Given a contact request when mapping to domain then map every field keeping id null")
+  void givenContactRequest_whenToDomain_thenMapEveryFieldKeepingIdNull() {
     ContactRequest request = Instancio.create(ContactRequest.class);
 
-    Contact contact = ContactMapper.toEntity(request);
+    Contact contact = ContactMapper.toDomain(request);
 
     assertThat(contact)
         .hasNoNullFieldsOrPropertiesExcept(ID_FIELD, CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -43,11 +43,11 @@ class ContactMapperTest {
   }
 
   @Test
-  @DisplayName("Given a contact request and an id when mapping to entity then map every field with the id")
-  void givenContactRequestAndId_whenToEntity_thenMapEveryFieldWithTheId() {
+  @DisplayName("Given a contact request and an id when mapping to domain then map every field with the id")
+  void givenContactRequestAndId_whenToDomain_thenMapEveryFieldWithTheId() {
     ContactRequest request = Instancio.create(ContactRequest.class);
 
-    Contact contact = ContactMapper.toEntity(request, ID);
+    Contact contact = ContactMapper.toDomain(request, ID);
 
     assertThat(contact)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -67,10 +67,10 @@ class ContactMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null contact request when mapping to entity then return null")
-  void givenNullContactRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null contact request when mapping to domain then return null")
+  void givenNullContactRequest_whenToDomain_thenReturnNull() {
 
-    Contact contact = ContactMapper.toEntity((ContactRequest) null);
+    Contact contact = ContactMapper.toDomain((ContactRequest) null);
 
     assertThat(contact).isNull();
   }

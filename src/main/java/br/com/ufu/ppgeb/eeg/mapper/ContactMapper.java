@@ -19,9 +19,9 @@ public class ContactMapper {
    * @param request the create request
    * @return the Contact entity
    */
-  public static Contact toEntity(ContactRequest request) {
+  public static Contact toDomain(ContactRequest request) {
 
-    return toEntity(request, null);
+    return toDomain(request, null);
   }
 
   /**
@@ -31,7 +31,7 @@ public class ContactMapper {
    * @param id the contact id
    * @return the Contact entity
    */
-  public static Contact toEntity(ContactRequest request, Long id) {
+  public static Contact toDomain(ContactRequest request, Long id) {
 
     if (isNull(request)) {
       return null;

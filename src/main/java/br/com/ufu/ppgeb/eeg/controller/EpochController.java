@@ -11,10 +11,13 @@ import br.com.ufu.ppgeb.eeg.dto.EpochResponse;
 import br.com.ufu.ppgeb.eeg.mapper.EpochMapper;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import br.com.ufu.ppgeb.eeg.service.EpochService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,22 +40,23 @@ public class EpochController {
   private static final Logger logger = LoggerFactory.getLogger(EpochController.class);
 
   private final EpochService epochService;
+  private final IdempotencyService idempotencyService;
 
   /**
    * Lists epochs by exam id.
    *
    * @param examId the exam id
-   * @return the list of epochs
+   * @param pageable the pagination information
+   * @return the page of epochs
    */
   @GetMapping
-  public List<EpochResponse> list(@PathVariable(value = "examId") Long examId) {
+  public Page<EpochResponse> list(
+      @PathVariable(value = "examId") Long examId,
+      Pageable pageable) {
 
     logger.info("Consultando épocas do exame id={}", examId);
-    return Optional.ofNullable(epochService.findByFilter(examId))
-        .orElse(List.of())
-        .stream()
-        .map(EpochMapper::toResponse)
-        .toList();
+    return epochService.findByExamId(examId, pageable)
+        .map(EpochMapper::toResponse);
   }
 
   /**
@@ -74,21 +79,28 @@ public class EpochController {
    * Saves a new epoch for an exam.
    *
    * @param examId the exam id
+   * @param idempotencyKey the idempotency key
    * @param request the epoch to save
    * @return the saved epoch
    */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EpochResponse> save(
       @PathVariable(value = "examId") Long examId,
+      @RequestHeader(name = IdempotencyService.IDEMPOTENCY_KEY_HEADER,
+          required = false) String idempotencyKey,
       @Valid @RequestBody EpochRequest request) {
 
     logger.info("Recebendo criação de época do exame id={}", examId);
-    Epoch saved = epochService.save(EpochMapper.toEntity(request, examId));
-    URI location = URI.create(ApiPaths.EXAM_EPOCHS
-        .replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())
-        + ApiPaths.PATH_SEPARATOR + saved.getId());
-    return ResponseEntity.created(location)
-        .body(EpochMapper.toResponse(saved));
+    return idempotencyService.execute(
+        "EPOCH:" + examId, idempotencyKey, EpochResponse.class,
+        () -> {
+          Epoch saved = epochService.save(EpochMapper.toDomain(request, examId));
+          URI location = URI.create(ApiPaths.EXAM_EPOCHS
+              .replace(ApiPaths.EXAM_ID_PATTERN, examId.toString())
+              + ApiPaths.PATH_SEPARATOR + saved.getId());
+          return ResponseEntity.created(location)
+              .body(EpochMapper.toResponse(saved));
+        });
   }
 
   /**
@@ -108,7 +120,7 @@ public class EpochController {
         .orElse(List.of())
         .stream()
         .filter(Objects::nonNull)
-        .map(request -> EpochMapper.toEntity(request, examId))
+        .map(request -> EpochMapper.toDomain(request, examId))
         .toList();
     return epochService.updateList(examId, entities)
         .stream()

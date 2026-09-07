@@ -1,8 +1,5 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.EquipmentResponse;
 import br.com.ufu.ppgeb.eeg.mapper.EquipmentMapper;
@@ -10,6 +7,8 @@ import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,16 +28,13 @@ public class EquipmentController {
   /**
    * Lists all equipment.
    *
-   * @return the list of equipment
+   * @param pageable the pagination information
+   * @return the page of equipment
    */
   @GetMapping
-  public List<EquipmentResponse> list() {
+  public Page<EquipmentResponse> list(Pageable pageable) {
 
     logger.info("Consultando equipamentos");
-    return Optional.ofNullable(equipmentService.findAll())
-        .orElse(List.of())
-        .stream()
-        .map(EquipmentMapper::toResponse)
-        .toList();
+    return equipmentService.findAll(pageable).map(EquipmentMapper::toResponse);
   }
 }

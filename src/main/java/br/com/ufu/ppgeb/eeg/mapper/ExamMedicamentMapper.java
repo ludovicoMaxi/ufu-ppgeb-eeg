@@ -23,7 +23,7 @@ public class ExamMedicamentMapper {
    * @param examId the exam id
    * @return the ExamMedicament entity
    */
-  public static ExamMedicament toEntity(ExamMedicamentRequest request, Long examId) {
+  public static ExamMedicament toDomain(ExamMedicamentRequest request, Long examId) {
 
     if (isNull(request)) {
       return null;

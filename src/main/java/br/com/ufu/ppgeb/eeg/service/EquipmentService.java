@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Equipment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Equipment operations.
@@ -10,11 +12,12 @@ import br.com.ufu.ppgeb.eeg.model.Equipment;
 public interface EquipmentService {
 
   /**
-   * Finds all equipment.
+   * Finds all equipment paginated.
    *
-   * @return the list of equipment
+   * @param pageable the pagination information
+   * @return the page of equipment
    */
-  List<Equipment> findAll();
+  Page<Equipment> findAll(Pageable pageable);
 
   /**
    * Finds equipment by name.

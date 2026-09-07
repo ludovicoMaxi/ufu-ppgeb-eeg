@@ -7,6 +7,7 @@ import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,10 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import br.com.ufu.ppgeb.eeg.dto.ActivityRequest;
 import br.com.ufu.ppgeb.eeg.model.Activity;
 import br.com.ufu.ppgeb.eeg.service.ActivityService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,12 +46,17 @@ class ActivityControllerTest {
   private static final Long EXAM_ID = 1001L;
   private static final String ACTIVITY_URL = EXAM + PATH_SEPARATOR + EXAM_ID + ACTIVITIES_SUBPATH;
   private static final String DESCRIPTION = "Repouso";
-  private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String JSON_PATH_LENGTH = "$.content.length()";
   private static final String JSON_PATH_FIRST_DESCRIPTION = "$[0].description";
   private static final String JSON_PATH_DESCRIPTION = "$.description";
+  private static final int OPERATION_ARGUMENT_INDEX = 3;
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private ActivityService activityService;
+
+  @Mock
+  private IdempotencyService idempotencyService;
 
   private MockMvc mockMvc;
 
@@ -52,21 +64,25 @@ class ActivityControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new ActivityController(activityService)).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(
+        new ActivityController(activityService, idempotencyService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
   }
 
   @Test
   @DisplayName("Given exam ID when listing activities then return activities")
   void givenExamId_whenListingActivities_thenReturnActivities() throws Exception {
     Activity activity = createActivity();
-    when(activityService.findByExamId(EXAM_ID)).thenReturn(List.of(activity));
+    when(activityService.findByExamId(eq(EXAM_ID), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(activity), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(ACTIVITY_URL))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
-        .andExpect(jsonPath(JSON_PATH_FIRST_DESCRIPTION).value(DESCRIPTION));
+        .andExpect(jsonPath("$.content[0].description").value(DESCRIPTION));
 
-    verify(activityService).findByExamId(EXAM_ID);
+    verify(activityService).findByExamId(eq(EXAM_ID), any(Pageable.class));
   }
 
   @Test
@@ -87,6 +103,11 @@ class ActivityControllerTest {
   void givenActivity_whenSavingActivity_thenReturnCreatedActivity() throws Exception {
     Activity activity = createActivity();
     when(activityService.save(any(Activity.class))).thenReturn(activity);
+
+    doAnswer(invocation -> {
+      Supplier<?> operation = invocation.getArgument(OPERATION_ARGUMENT_INDEX);
+      return operation.get();
+    }).when(idempotencyService).execute(any(), any(), any(), any());
 
     String body = objectMapper.writeValueAsString(Instancio.create(ActivityRequest.class));
 

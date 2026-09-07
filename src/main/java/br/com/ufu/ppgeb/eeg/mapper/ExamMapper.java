@@ -42,9 +42,9 @@ public class ExamMapper {
    * @param request the create request
    * @return the Exam entity
    */
-  public static Exam toEntity(ExamRequest request) {
+  public static Exam toDomain(ExamRequest request) {
 
-    return toEntity(request, null);
+    return toDomain(request, null);
   }
 
   /**
@@ -54,7 +54,7 @@ public class ExamMapper {
    * @param id the exam id
    * @return the Exam entity
    */
-  public static Exam toEntity(ExamRequest request, Long id) {
+  public static Exam toDomain(ExamRequest request, Long id) {
 
     if (isNull(request)) {
       return null;
@@ -86,7 +86,7 @@ public class ExamMapper {
     }
     return medicaments.stream()
         .filter(medicament -> nonNull(medicament))
-        .map(medicament -> ExamMedicamentMapper.toEntity(medicament, examId))
+        .map(medicament -> ExamMedicamentMapper.toDomain(medicament, examId))
         .toList();
   }
 
@@ -98,7 +98,7 @@ public class ExamMapper {
     }
     return equipments.stream()
         .filter(equipment -> nonNull(equipment))
-        .map(equipment -> ExamEquipmentMapper.toEntity(equipment, examId))
+        .map(equipment -> ExamEquipmentMapper.toDomain(equipment, examId))
         .toList();
   }
 

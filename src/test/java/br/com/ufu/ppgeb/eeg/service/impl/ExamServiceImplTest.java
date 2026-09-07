@@ -23,6 +23,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
@@ -44,6 +48,7 @@ class ExamServiceImplTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long DIFFERENT_PATIENT_ID = 999L;
   private static final int TWO_EXAMS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private ExamRepository examRepository;
@@ -165,22 +170,23 @@ class ExamServiceImplTest {
   void givenValidId_whenFindByFilter_thenReturnMatchingExams() {
     Exam exam = Instancio.create(Exam.class);
 
-    when(examRepository.findByFilter(EXAM_ID, null, null, null)).thenReturn(List.of(exam));
+    when(examRepository.findByFilter(EXAM_ID, null, null, null, PAGEABLE))
+        .thenReturn(new PageImpl<>(List.of(exam)));
 
-    List<Exam> result = examService.findByFilter(EXAM_ID, null, null, null);
+    Page<Exam> result = examService.findByFilter(EXAM_ID, null, null, null, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(examRepository).findByFilter(EXAM_ID, null, null, null);
+    assertThat(result.getContent()).hasSize(1);
+    verify(examRepository).findByFilter(EXAM_ID, null, null, null, PAGEABLE);
   }
 
   @Test
   @DisplayName("Given all filter fields blank when findByFilter then throw exception")
   void givenAllFilterFieldsBlank_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> examService.findByFilter(null, "", null, null))
+    assertThatThrownBy(() -> examService.findByFilter(null, "", null, null, PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_FILTER_EMPTY);
 
-    verify(examRepository, never()).findByFilter(any(), any(), any(), any());
+    verify(examRepository, never()).findByFilter(any(), any(), any(), any(), any());
   }
 
   @Test

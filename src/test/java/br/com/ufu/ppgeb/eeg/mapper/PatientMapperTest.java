@@ -18,11 +18,11 @@ class PatientMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given a patient request when mapping to entity then map every field keeping id null")
-  void givenPatientRequest_whenToEntity_thenMapEveryFieldKeepingIdNull() {
+  @DisplayName("Given a patient request when mapping to domain then map every field keeping id null")
+  void givenPatientRequest_whenToDomain_thenMapEveryFieldKeepingIdNull() {
     PatientRequest request = Instancio.create(PatientRequest.class);
 
-    Patient patient = PatientMapper.toEntity(request);
+    Patient patient = PatientMapper.toDomain(request);
 
     assertThat(patient)
         .hasNoNullFieldsOrPropertiesExcept("id", CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -37,11 +37,11 @@ class PatientMapperTest {
   }
 
   @Test
-  @DisplayName("Given a patient request and an id when mapping to entity then map every field with the id")
-  void givenPatientRequestAndId_whenToEntity_thenMapEveryFieldWithTheId() {
+  @DisplayName("Given a patient request and an id when mapping to domain then map every field with the id")
+  void givenPatientRequestAndId_whenToDomain_thenMapEveryFieldWithTheId() {
     PatientRequest request = Instancio.create(PatientRequest.class);
 
-    Patient patient = PatientMapper.toEntity(request, ID);
+    Patient patient = PatientMapper.toDomain(request, ID);
 
     assertThat(patient)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -57,10 +57,10 @@ class PatientMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null patient request when mapping to entity then return null")
-  void givenNullPatientRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null patient request when mapping to domain then return null")
+  void givenNullPatientRequest_whenToDomain_thenReturnNull() {
 
-    Patient patient = PatientMapper.toEntity(null);
+    Patient patient = PatientMapper.toDomain(null);
 
     assertThat(patient).isNull();
   }

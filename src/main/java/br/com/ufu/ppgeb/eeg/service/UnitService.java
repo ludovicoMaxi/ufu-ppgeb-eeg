@@ -1,8 +1,8 @@
 package br.com.ufu.ppgeb.eeg.service;
 
-import java.util.List;
-
 import br.com.ufu.ppgeb.eeg.model.Unit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Unit operations.
@@ -10,10 +10,11 @@ import br.com.ufu.ppgeb.eeg.model.Unit;
 public interface UnitService {
 
   /**
-   * Finds all units.
+   * Finds all units paginated.
    *
-   * @return the list of units
+   * @param pageable the pagination information
+   * @return the page of units
    */
-  List<Unit> findAll();
+  Page<Unit> findAll(Pageable pageable);
 
 }

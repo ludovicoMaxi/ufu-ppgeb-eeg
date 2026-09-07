@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Activity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Activity operations.
@@ -26,12 +28,13 @@ public interface ActivityService {
   Activity findById(Long id);
 
   /**
-   * Finds activities by exam id.
+   * Finds activities by exam id paginated.
    *
    * @param examId the exam id
-   * @return the list of activities
+   * @param pageable the pagination information
+   * @return the page of activities
    */
-  List<Activity> findByExamId(Long examId);
+  Page<Activity> findByExamId(Long examId, Pageable pageable);
 
   /**
    * Finds all activities.

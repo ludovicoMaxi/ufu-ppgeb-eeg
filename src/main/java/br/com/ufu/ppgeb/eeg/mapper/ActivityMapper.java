@@ -20,7 +20,7 @@ public class ActivityMapper {
    * @param examId the exam id
    * @return the Activity entity
    */
-  public static Activity toEntity(ActivityRequest request, Long examId) {
+  public static Activity toDomain(ActivityRequest request, Long examId) {
 
     if (isNull(request)) {
       return null;

@@ -10,6 +10,7 @@ import br.com.ufu.ppgeb.eeg.dto.ExamRequestResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ExamRequestMapper;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +38,7 @@ public class ExamRequestController {
   private static final Logger logger = LoggerFactory.getLogger(ExamRequestController.class);
 
   private final ExamRequestService examRequestService;
+  private final IdempotencyService idempotencyService;
 
   /**
    * Lists exam requests with optional filters.
@@ -79,17 +82,26 @@ public class ExamRequestController {
   /**
    * Saves a new exam request.
    *
+   * @param idempotencyKey the idempotency key
    * @param request the exam request to save
    * @return the saved exam request
    */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ExamRequestResponse> save(@Valid @RequestBody ExamRequestRequest request) {
+  public ResponseEntity<ExamRequestResponse> save(
+      @RequestHeader(name = IdempotencyService.IDEMPOTENCY_KEY_HEADER,
+          required = false) String idempotencyKey,
+      @Valid @RequestBody ExamRequestRequest request) {
 
     logger.info("Recebendo criação de solicitação de exame");
-    ExamRequest saved = examRequestService.save(ExamRequestMapper.toEntity(request));
-    URI location = URI.create(ApiPaths.EXAM_REQUEST + ApiPaths.PATH_SEPARATOR + saved.getId());
-    return ResponseEntity.created(location)
-        .body(ExamRequestMapper.toResponse(saved));
+    return idempotencyService.execute(
+        "EXAM_REQUEST", idempotencyKey, ExamRequestResponse.class,
+        () -> {
+          ExamRequest saved = examRequestService.save(ExamRequestMapper.toDomain(request));
+          URI location = URI.create(
+              ApiPaths.EXAM_REQUEST + ApiPaths.PATH_SEPARATOR + saved.getId());
+          return ResponseEntity.created(location)
+              .body(ExamRequestMapper.toResponse(saved));
+        });
   }
 
   /**
@@ -106,6 +118,6 @@ public class ExamRequestController {
 
     logger.info("Recebendo atualização de solicitação de exame id={}", id);
     return ExamRequestMapper.toResponse(
-        examRequestService.update(ExamRequestMapper.toEntity(request, id)));
+        examRequestService.update(ExamRequestMapper.toDomain(request, id)));
   }
 }

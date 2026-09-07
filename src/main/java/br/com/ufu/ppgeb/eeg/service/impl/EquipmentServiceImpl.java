@@ -7,6 +7,8 @@ import br.com.ufu.ppgeb.eeg.repository.EquipmentRepository;
 import br.com.ufu.ppgeb.eeg.service.EquipmentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,9 +25,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Equipment> findAll() {
+  public Page<Equipment> findAll(Pageable pageable) {
 
-    return equipmentRepository.findAll();
+    return equipmentRepository.findAll(pageable);
   }
 
   @Override

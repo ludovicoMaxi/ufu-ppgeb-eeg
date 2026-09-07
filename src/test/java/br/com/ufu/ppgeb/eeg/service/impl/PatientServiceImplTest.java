@@ -22,6 +22,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class PatientServiceImplTest {
@@ -46,6 +50,7 @@ class PatientServiceImplTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final String OLD_NAME = "OLD NAME";
   private static final int TWO_PATIENTS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private PatientRepository patientRepository;
@@ -226,22 +231,23 @@ class PatientServiceImplTest {
   void givenValidName_whenFindByFilter_thenReturnMatchingPatients() {
     Patient patient = Instancio.create(Patient.class);
 
-    when(patientRepository.findByFilter(PATIENT_NAME, null)).thenReturn(List.of(patient));
+    when(patientRepository.findByFilter(PATIENT_NAME, null, PAGEABLE))
+        .thenReturn(new PageImpl<>(List.of(patient)));
 
-    List<Patient> result = patientService.findByFilter(PATIENT_NAME, null);
+    Page<Patient> result = patientService.findByFilter(PATIENT_NAME, null, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(patientRepository).findByFilter(PATIENT_NAME, null);
+    assertThat(result.getContent()).hasSize(1);
+    verify(patientRepository).findByFilter(PATIENT_NAME, null, PAGEABLE);
   }
 
   @Test
   @DisplayName("Given both filter fields blank when findByFilter then throw exception")
   void givenBothFilterFieldsBlank_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> patientService.findByFilter("", ""))
+    assertThatThrownBy(() -> patientService.findByFilter("", "", PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_FILTER_EMPTY);
 
-    verify(patientRepository, never()).findByFilter(any(), any());
+    verify(patientRepository, never()).findByFilter(any(), any(), any());
   }
 
   @Test
