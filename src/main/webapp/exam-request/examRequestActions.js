@@ -33,7 +33,7 @@ export function getExamByExamRequestId(id) {
         axios.get(`${BASE_URL_EXAM}?examRequestId=${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'EXAM_REQUEST_EXAM_FETCHED', payload: resp.data });
+                    dispatch({ type: 'EXAM_REQUEST_EXAM_FETCHED', payload: resp.data.content });
                 }
             })
             .catch(e => {

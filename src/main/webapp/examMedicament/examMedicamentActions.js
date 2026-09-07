@@ -10,7 +10,7 @@ export function getOptionsUnit() {
         axios.get(`${BASE_URL_UNIT}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPTIONS_UNIT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_UNIT', payload: resp.data.content });
                 }
                 else
                     toastr.error('Erro', `Não existe unidades!!!`)
@@ -26,7 +26,7 @@ export function getOptionsMedicament() {
         axios.get(`${BASE_URL_MEDICAMENT}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'OPTIONS_MEDICAMENT', payload: resp.data });
+                    dispatch({ type: 'OPTIONS_MEDICAMENT', payload: resp.data.content });
                 }
                 else
                     toastr.error('Erro', `Não existe Medicamentos!!!`)
