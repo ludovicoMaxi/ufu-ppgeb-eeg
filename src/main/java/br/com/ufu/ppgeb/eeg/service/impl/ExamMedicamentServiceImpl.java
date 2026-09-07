@@ -19,6 +19,8 @@ import br.com.ufu.ppgeb.eeg.service.ExamMedicamentService;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -40,10 +42,10 @@ public class ExamMedicamentServiceImpl implements ExamMedicamentService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<ExamMedicament> findByExamId(Long examId) {
+  public Page<ExamMedicament> findByExamId(Long examId, Pageable pageable) {
 
     Assert.notNull(examId, "examId cannot be null.");
-    return examMedicamentRepository.findByExam(Exam.builder().id(examId).build());
+    return examMedicamentRepository.findByExam(Exam.builder().id(examId).build(), pageable);
   }
 
   @Override

@@ -18,11 +18,11 @@ class ActivityMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given an activity request and an exam id when mapping to entity then map every field with the exam id")
-  void givenActivityRequestAndExamId_whenToEntity_thenMapEveryFieldWithTheExamId() {
+  @DisplayName("Given an activity request and an exam id when mapping to domain then map every field with the exam id")
+  void givenActivityRequestAndExamId_whenToDomain_thenMapEveryFieldWithTheExamId() {
     ActivityRequest request = Instancio.create(ActivityRequest.class);
 
-    Activity activity = ActivityMapper.toEntity(request, EXAM_ID);
+    Activity activity = ActivityMapper.toDomain(request, EXAM_ID);
 
     assertThat(activity)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -35,10 +35,10 @@ class ActivityMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null activity request when mapping to entity then return null")
-  void givenNullActivityRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null activity request when mapping to domain then return null")
+  void givenNullActivityRequest_whenToDomain_thenReturnNull() {
 
-    Activity activity = ActivityMapper.toEntity((ActivityRequest) null, EXAM_ID);
+    Activity activity = ActivityMapper.toDomain((ActivityRequest) null, EXAM_ID);
 
     assertThat(activity).isNull();
   }

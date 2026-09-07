@@ -12,6 +12,8 @@ import br.com.ufu.ppgeb.eeg.repository.ContactRepository;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -80,14 +82,14 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Contact> findByFilter(Long objectType, Long objectId) {
+  public Page<Contact> findByFilter(Long objectType, Long objectId, Pageable pageable) {
 
     if (isNull(objectType) && isNull(objectId)) {
-      return contactRepository.findAll();
+      return contactRepository.findAll(pageable);
     }
 
     validateSearchContact(objectType, objectId);
-    return contactRepository.findByFilter(objectType, objectId);
+    return contactRepository.findByFilter(objectType, objectId, pageable);
   }
 
   private void validateSearchContact(Long objectType, Long objectId) {

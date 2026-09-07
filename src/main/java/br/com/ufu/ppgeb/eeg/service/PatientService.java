@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Patient operations.
@@ -30,9 +32,10 @@ public interface PatientService {
    *
    * @param name the name
    * @param documentNumber the document number
-   * @return the list of patients
+   * @param pageable the pagination information
+   * @return the page of patients
    */
-  List<Patient> findByFilter(String name, String documentNumber);
+  Page<Patient> findByFilter(String name, String documentNumber, Pageable pageable);
 
   /**
    * Finds all patients.

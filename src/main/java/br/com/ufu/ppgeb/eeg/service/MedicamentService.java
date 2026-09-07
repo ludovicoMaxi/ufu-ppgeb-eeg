@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Medicament;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Medicament operations.
@@ -10,11 +12,12 @@ import br.com.ufu.ppgeb.eeg.model.Medicament;
 public interface MedicamentService {
 
   /**
-   * Finds all medicaments.
+   * Finds all medicaments paginated.
    *
-   * @return the list of medicaments
+   * @param pageable the pagination information
+   * @return the page of medicaments
    */
-  List<Medicament> findAll();
+  Page<Medicament> findAll(Pageable pageable);
 
   /**
    * Finds medicaments by name.

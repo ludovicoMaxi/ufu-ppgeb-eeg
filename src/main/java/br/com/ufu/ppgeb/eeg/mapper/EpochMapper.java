@@ -20,7 +20,7 @@ public class EpochMapper {
    * @param examId the exam id
    * @return the Epoch entity
    */
-  public static Epoch toEntity(EpochRequest request, Long examId) {
+  public static Epoch toDomain(EpochRequest request, Long examId) {
 
     if (isNull(request)) {
       return null;

@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Contact operations.
@@ -41,9 +43,10 @@ public interface ContactService {
    *
    * @param objectType the object type
    * @param objectId the object id
-   * @return the list of contacts
+   * @param pageable the pagination information
+   * @return the page of contacts
    */
-  List<Contact> findByFilter(Long objectType, Long objectId);
+  Page<Contact> findByFilter(Long objectType, Long objectId, Pageable pageable);
 
   /**
    * Finds all contacts.

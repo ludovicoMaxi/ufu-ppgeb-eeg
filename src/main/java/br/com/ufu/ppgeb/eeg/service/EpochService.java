@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.Epoch;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for Epoch operations.
@@ -26,12 +28,13 @@ public interface EpochService {
   Epoch findById(Long id);
 
   /**
-   * Finds epochs by filter.
+   * Finds epochs by exam id paginated.
    *
    * @param examId the exam id
-   * @return the list of epochs
+   * @param pageable the pagination information
+   * @return the page of epochs
    */
-  List<Epoch> findByFilter(Long examId);
+  Page<Epoch> findByExamId(Long examId, Pageable pageable);
 
   /**
    * Finds all epochs.

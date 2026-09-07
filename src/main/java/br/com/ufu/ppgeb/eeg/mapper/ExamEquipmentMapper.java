@@ -23,7 +23,7 @@ public class ExamEquipmentMapper {
    * @param examId the exam id
    * @return the ExamEquipment entity
    */
-  public static ExamEquipment toEntity(ExamEquipmentRequest request, Long examId) {
+  public static ExamEquipment toDomain(ExamEquipmentRequest request, Long examId) {
 
     if (isNull(request)) {
       return null;

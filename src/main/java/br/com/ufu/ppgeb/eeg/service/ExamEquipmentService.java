@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for ExamEquipment operations.
@@ -10,12 +12,13 @@ import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
 public interface ExamEquipmentService {
 
   /**
-   * Finds exam equipments by exam id.
+   * Finds exam equipments by exam id paginated.
    *
    * @param examId the exam id
-   * @return the list of exam equipments
+   * @param pageable the pagination information
+   * @return the page of exam equipments
    */
-  List<ExamEquipment> findByExamId(Long examId);
+  Page<ExamEquipment> findByExamId(Long examId, Pageable pageable);
 
   /**
    * Finds an exam equipment by id.

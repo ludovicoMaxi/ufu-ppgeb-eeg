@@ -12,6 +12,8 @@ import br.com.ufu.ppgeb.eeg.service.ExamService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -68,8 +70,8 @@ public class ExamServiceImpl implements ExamService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Exam> findByFilter(Long id, String bed,
-      Long patientId, Long examRequestId) {
+  public Page<Exam> findByFilter(Long id, String bed,
+      Long patientId, Long examRequestId, Pageable pageable) {
 
     if (isNull(id)
         && StringUtils.isBlank(bed)
@@ -78,7 +80,7 @@ public class ExamServiceImpl implements ExamService {
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return examRepository.findByFilter(id, bed, patientId, examRequestId);
+    return examRepository.findByFilter(id, bed, patientId, examRequestId, pageable);
   }
 
   @Override

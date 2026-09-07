@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,17 +40,17 @@ public class ExamMedicamentController {
    * Lists medicaments by exam id.
    *
    * @param examId the exam id
-   * @return the list of medicaments
+   * @param pageable the pagination information
+   * @return the page of medicaments
    */
   @GetMapping
-  public List<ExamMedicamentResponse> list(@PathVariable(value = "examId") Long examId) {
+  public Page<ExamMedicamentResponse> list(
+      @PathVariable(value = "examId") Long examId,
+      Pageable pageable) {
 
     logger.info("Consultando medicamentos do exame id={}", examId);
-    return Optional.ofNullable(examMedicamentService.findByExamId(examId))
-        .orElse(List.of())
-        .stream()
-        .map(ExamMedicamentMapper::toResponse)
-        .toList();
+    return examMedicamentService.findByExamId(examId, pageable)
+        .map(ExamMedicamentMapper::toResponse);
   }
 
   /**
@@ -68,7 +70,7 @@ public class ExamMedicamentController {
         .orElse(List.of())
         .stream()
         .filter(Objects::nonNull)
-        .map(request -> ExamMedicamentMapper.toEntity(request, examId))
+        .map(request -> ExamMedicamentMapper.toDomain(request, examId))
         .toList();
     return examMedicamentService.updateList(examId, entities)
         .stream()

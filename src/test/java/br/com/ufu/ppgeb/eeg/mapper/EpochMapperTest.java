@@ -18,11 +18,11 @@ class EpochMapperTest {
   private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Test
-  @DisplayName("Given an epoch request and an exam id when mapping to entity then map every field with the exam id")
-  void givenEpochRequestAndExamId_whenToEntity_thenMapEveryFieldWithTheExamId() {
+  @DisplayName("Given an epoch request and an exam id when mapping to domain then map every field with the exam id")
+  void givenEpochRequestAndExamId_whenToDomain_thenMapEveryFieldWithTheExamId() {
     EpochRequest request = Instancio.create(EpochRequest.class);
 
-    Epoch epoch = EpochMapper.toEntity(request, EXAM_ID);
+    Epoch epoch = EpochMapper.toDomain(request, EXAM_ID);
 
     assertThat(epoch)
         .hasNoNullFieldsOrPropertiesExcept(CREATED_AT_FIELD, CREATED_BY_FIELD,
@@ -35,10 +35,10 @@ class EpochMapperTest {
   }
 
   @Test
-  @DisplayName("Given a null epoch request when mapping to entity then return null")
-  void givenNullEpochRequest_whenToEntity_thenReturnNull() {
+  @DisplayName("Given a null epoch request when mapping to domain then return null")
+  void givenNullEpochRequest_whenToDomain_thenReturnNull() {
 
-    Epoch epoch = EpochMapper.toEntity((EpochRequest) null, EXAM_ID);
+    Epoch epoch = EpochMapper.toDomain((EpochRequest) null, EXAM_ID);
 
     assertThat(epoch).isNull();
   }

@@ -33,9 +33,9 @@ public class PatientMapper {
    * @param request the create request
    * @return the Patient entity
    */
-  public static Patient toEntity(PatientRequest request) {
+  public static Patient toDomain(PatientRequest request) {
 
-    return toEntity(request, null);
+    return toDomain(request, null);
   }
 
   /**
@@ -45,7 +45,7 @@ public class PatientMapper {
    * @param id the patient id
    * @return the Patient entity
    */
-  public static Patient toEntity(PatientRequest request, Long id) {
+  public static Patient toDomain(PatientRequest request, Long id) {
 
     if (isNull(request)) {
       return null;

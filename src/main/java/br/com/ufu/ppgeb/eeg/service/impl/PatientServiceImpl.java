@@ -9,6 +9,8 @@ import br.com.ufu.ppgeb.eeg.service.PatientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -72,14 +74,15 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Patient> findByFilter(String name, String documentNumber) {
+  public Page<Patient> findByFilter(String name, String documentNumber,
+      Pageable pageable) {
 
     if (StringUtils.isBlank(name)
         && StringUtils.isBlank(documentNumber)) {
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return patientRepository.findByFilter(name, documentNumber);
+    return patientRepository.findByFilter(name, documentNumber, pageable);
   }
 
   @Override

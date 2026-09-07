@@ -4,6 +4,9 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATIENT;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,10 +16,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.function.Supplier;
+
 import br.com.ufu.ppgeb.eeg.dto.PatientRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Patient;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import br.com.ufu.ppgeb.eeg.service.PatientService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,9 +49,14 @@ class PatientControllerTest {
   private static final String JSON_PATH_NAME = "$.name";
   private static final String JSON_PATH_ID = "$.id";
   private static final String MESSAGE = "name must not be blank";
+  private static final int OPERATION_ARGUMENT_INDEX = 3;
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private PatientService patientService;
+
+  @Mock
+  private IdempotencyService idempotencyService;
 
   private MockMvc mockMvc;
 
@@ -51,7 +66,9 @@ class PatientControllerTest {
   void setUp() {
     LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
     validator.afterPropertiesSet();
-    mockMvc = MockMvcBuilders.standaloneSetup(new PatientController(patientService))
+    mockMvc = MockMvcBuilders.standaloneSetup(
+        new PatientController(patientService, idempotencyService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         .setValidator(validator)
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
@@ -86,14 +103,15 @@ class PatientControllerTest {
   @DisplayName("Given patient name when searching patients then return matching patient")
   void givenPatientName_whenSearchingPatients_thenReturnPatient() throws Exception {
     Patient patient = createPatient();
-    when(patientService.findByFilter(NAME, null)).thenReturn(java.util.List.of(patient));
+    when(patientService.findByFilter(eq(NAME), isNull(), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(java.util.List.of(patient), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(PATIENT).param("name", NAME))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].name").value(NAME));
+        .andExpect(jsonPath("$.content.length()").value(1))
+        .andExpect(jsonPath("$.content[0].name").value(NAME));
 
-    verify(patientService).findByFilter(NAME, null);
+    verify(patientService).findByFilter(eq(NAME), isNull(), any(Pageable.class));
   }
 
   @Test
@@ -101,6 +119,11 @@ class PatientControllerTest {
   void givenValidPatient_whenCreatingPatient_thenReturnCreated() throws Exception {
     Patient saved = createPatient();
     when(patientService.save(any(Patient.class))).thenReturn(saved);
+
+    doAnswer(invocation -> {
+      Supplier<?> operation = invocation.getArgument(OPERATION_ARGUMENT_INDEX);
+      return operation.get();
+    }).when(idempotencyService).execute(any(), any(), any(), any());
 
     String body = objectMapper.writeValueAsString(Instancio.create(PatientRequest.class));
 
@@ -129,7 +152,7 @@ class PatientControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(body))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(MESSAGE));
+        .andExpect(jsonPath("$.detail").value(MESSAGE));
   }
 
   @Test

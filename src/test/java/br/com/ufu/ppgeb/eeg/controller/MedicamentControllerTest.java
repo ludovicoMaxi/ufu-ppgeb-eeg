@@ -2,6 +2,7 @@ package br.com.ufu.ppgeb.eeg.controller;
 
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.MEDICAMENT;
 import static org.instancio.Select.field;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,6 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -26,8 +31,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class MedicamentControllerTest {
 
   private static final String FIRST_MEDICAMENT_NAME = "DIPIRONA";
-  private static final String JSON_PATH_LENGTH = "$.length()";
-  private static final String JSON_PATH_FIRST_NAME = "$[0].name";
+  private static final String JSON_PATH_LENGTH = "$.content.length()";
+  private static final String JSON_PATH_FIRST_NAME = "$.content[0].name";
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
   private static final int TWO_MEDICAMENTS = 2;
 
   @Mock
@@ -37,7 +43,9 @@ class MedicamentControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new MedicamentController(medicamentService)).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(new MedicamentController(medicamentService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+        .build();
   }
 
   @Test
@@ -49,25 +57,27 @@ class MedicamentControllerTest {
         .create();
     Medicament second = Instancio.create(Medicament.class);
 
-    when(medicamentService.findAll()).thenReturn(List.of(first, second));
+    when(medicamentService.findAll(any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(first, second), PAGE_REQUEST, TWO_MEDICAMENTS));
 
     mockMvc.perform(get(MEDICAMENT))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(TWO_MEDICAMENTS))
         .andExpect(jsonPath(JSON_PATH_FIRST_NAME).value(FIRST_MEDICAMENT_NAME));
 
-    verify(medicamentService).findAll();
+    verify(medicamentService).findAll(any(Pageable.class));
   }
 
   @Test
   @DisplayName("Given empty list when finding all medicaments then no medicaments are returned")
   void givenEmptyList_whenFindingAllMedicaments_thenReturnEmptyList() throws Exception {
-    when(medicamentService.findAll()).thenReturn(List.of());
+    when(medicamentService.findAll(any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(), PAGE_REQUEST, 0));
 
     mockMvc.perform(get(MEDICAMENT))
         .andExpect(status().isOk())
         .andExpect(jsonPath(JSON_PATH_LENGTH).value(0));
 
-    verify(medicamentService).findAll();
+    verify(medicamentService).findAll(any(Pageable.class));
   }
 }

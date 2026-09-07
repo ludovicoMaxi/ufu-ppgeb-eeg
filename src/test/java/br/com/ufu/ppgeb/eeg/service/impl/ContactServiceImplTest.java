@@ -22,6 +22,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class ContactServiceImplTest {
@@ -44,6 +48,7 @@ class ContactServiceImplTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long OBJECT_ID = 100L;
   private static final int TWO_CONTACTS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private ContactRepository contactRepository;
@@ -164,32 +169,32 @@ class ContactServiceImplTest {
   @DisplayName("Given both filter params null when findByFilter then return all contacts")
   void givenBothFilterParamsNull_whenFindByFilter_thenReturnAllContacts() {
     Contact contact = Instancio.create(Contact.class);
-    when(contactRepository.findAll()).thenReturn(List.of(contact));
+    when(contactRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(List.of(contact)));
 
-    List<Contact> result = contactService.findByFilter(null, null);
+    Page<Contact> result = contactService.findByFilter(null, null, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(contactRepository).findAll();
+    assertThat(result.getContent()).hasSize(1);
+    verify(contactRepository).findAll(PAGEABLE);
   }
 
   @Test
   @DisplayName("Given null object type when findByFilter then throw exception")
   void givenNullObjectType_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> contactService.findByFilter(null, OBJECT_ID))
+    assertThatThrownBy(() -> contactService.findByFilter(null, OBJECT_ID, PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_OBJECT_TYPE_FILTER);
 
-    verify(contactRepository, never()).findByFilter(any(), any());
+    verify(contactRepository, never()).findByFilter(any(), any(), any());
   }
 
   @Test
   @DisplayName("Given null object id when findByFilter then throw exception")
   void givenNullObjectId_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> contactService.findByFilter(1L, null))
+    assertThatThrownBy(() -> contactService.findByFilter(1L, null, PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_OBJECT_ID_FILTER);
 
-    verify(contactRepository, never()).findByFilter(any(), any());
+    verify(contactRepository, never()).findByFilter(any(), any(), any());
   }
 
   @Test

@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,17 +40,17 @@ public class ExamEquipmentController {
    * Lists equipments by exam id.
    *
    * @param examId the exam id
-   * @return the list of equipments
+   * @param pageable the pagination information
+   * @return the page of equipments
    */
   @GetMapping
-  public List<ExamEquipmentResponse> list(@PathVariable(value = "examId") Long examId) {
+  public Page<ExamEquipmentResponse> list(
+      @PathVariable(value = "examId") Long examId,
+      Pageable pageable) {
 
     logger.info("Consultando equipamentos do exame id={}", examId);
-    return Optional.ofNullable(examEquipmentService.findByExamId(examId))
-        .orElse(List.of())
-        .stream()
-        .map(ExamEquipmentMapper::toResponse)
-        .toList();
+    return examEquipmentService.findByExamId(examId, pageable)
+        .map(ExamEquipmentMapper::toResponse);
   }
 
   /**
@@ -68,7 +70,7 @@ public class ExamEquipmentController {
         .orElse(List.of())
         .stream()
         .filter(Objects::nonNull)
-        .map(request -> ExamEquipmentMapper.toEntity(request, examId))
+        .map(request -> ExamEquipmentMapper.toDomain(request, examId))
         .toList();
     return examEquipmentService.updateList(examId, entities)
         .stream()

@@ -7,6 +7,8 @@ import br.com.ufu.ppgeb.eeg.repository.MedicamentRepository;
 import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,9 +25,9 @@ public class MedicamentServiceImpl implements MedicamentService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Medicament> findAll() {
+  public Page<Medicament> findAll(Pageable pageable) {
 
-    return medicamentRepository.findAll();
+    return medicamentRepository.findAll(pageable);
   }
 
   @Override

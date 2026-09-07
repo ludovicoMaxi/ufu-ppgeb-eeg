@@ -21,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class MedicamentServiceImplTest {
@@ -33,6 +37,7 @@ class MedicamentServiceImplTest {
   private static final String MSG_DUPLICATED = "Medicamento já cadastrado: ";
   private static final int TWO_MEDICAMENTS = 2;
   private static final int ONE_MEDICAMENT = 1;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private MedicamentRepository medicamentRepository;
@@ -47,23 +52,23 @@ class MedicamentServiceImplTest {
     Medicament medicament2 = Instancio.create(Medicament.class);
 
     List<Medicament> medicaments = List.of(medicament1, medicament2);
-    when(medicamentRepository.findAll()).thenReturn(medicaments);
+    when(medicamentRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(medicaments));
 
-    List<Medicament> result = medicamentService.findAll();
+    Page<Medicament> result = medicamentService.findAll(PAGEABLE);
 
-    assertThat(result).hasSize(TWO_MEDICAMENTS);
-    verify(medicamentRepository).findAll();
+    assertThat(result.getContent()).hasSize(TWO_MEDICAMENTS);
+    verify(medicamentRepository).findAll(PAGEABLE);
   }
 
   @Test
   @DisplayName("Given no medicaments in database when findAll then return empty list")
   void givenNoMedicamentsInDatabase_whenFindAll_thenReturnEmptyList() {
-    when(medicamentRepository.findAll()).thenReturn(Collections.emptyList());
+    when(medicamentRepository.findAll(PAGEABLE)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-    List<Medicament> result = medicamentService.findAll();
+    Page<Medicament> result = medicamentService.findAll(PAGEABLE);
 
-    assertThat(result).isEmpty();
-    verify(medicamentRepository).findAll();
+    assertThat(result.getContent()).isEmpty();
+    verify(medicamentRepository).findAll(PAGEABLE);
   }
 
   @Test

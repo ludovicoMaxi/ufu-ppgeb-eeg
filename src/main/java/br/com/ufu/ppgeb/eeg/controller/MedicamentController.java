@@ -1,8 +1,5 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.MedicamentResponse;
 import br.com.ufu.ppgeb.eeg.mapper.MedicamentMapper;
@@ -10,6 +7,8 @@ import br.com.ufu.ppgeb.eeg.service.MedicamentService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,16 +28,13 @@ public class MedicamentController {
   /**
    * Lists all medicaments.
    *
-   * @return the list of medicaments
+   * @param pageable the pagination information
+   * @return the page of medicaments
    */
   @GetMapping
-  public List<MedicamentResponse> list() {
+  public Page<MedicamentResponse> list(Pageable pageable) {
 
     logger.info("Consultando medicamentos");
-    return Optional.ofNullable(medicamentService.findAll())
-        .orElse(List.of())
-        .stream()
-        .map(MedicamentMapper::toResponse)
-        .toList();
+    return medicamentService.findAll(pageable).map(MedicamentMapper::toResponse);
   }
 }

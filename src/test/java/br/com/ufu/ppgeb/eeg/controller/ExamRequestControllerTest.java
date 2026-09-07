@@ -4,6 +4,7 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM_REQUEST;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,12 +15,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import br.com.ufu.ppgeb.eeg.dto.ExamRequestRequest;
 import br.com.ufu.ppgeb.eeg.exception.GlobalExceptionHandler;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +42,13 @@ class ExamRequestControllerTest {
   private static final String SECTOR = "NEUROLOGIA";
   private static final String JSON_PATH_SECTOR = "$.sector";
   private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final int OPERATION_ARGUMENT_INDEX = 3;
 
   @Mock
   private ExamRequestService examRequestService;
+
+  @Mock
+  private IdempotencyService idempotencyService;
 
   private MockMvc mockMvc;
 
@@ -49,7 +56,8 @@ class ExamRequestControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(new ExamRequestController(examRequestService))
+    mockMvc = MockMvcBuilders.standaloneSetup(
+            new ExamRequestController(examRequestService, idempotencyService))
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
   }
@@ -101,6 +109,10 @@ class ExamRequestControllerTest {
   void givenExamRequest_whenSavingExamRequest_thenReturnCreatedExamRequest() throws Exception {
     ExamRequest examRequest = createExamRequest();
     when(examRequestService.save(any(ExamRequest.class))).thenReturn(examRequest);
+    doAnswer(invocation -> {
+      Supplier<?> operation = invocation.getArgument(OPERATION_ARGUMENT_INDEX);
+      return operation.get();
+    }).when(idempotencyService).execute(any(), any(), any(), any());
 
     String body = objectMapper.writeValueAsString(Instancio.create(ExamRequestRequest.class));
 

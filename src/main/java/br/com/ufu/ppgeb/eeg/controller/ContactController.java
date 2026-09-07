@@ -1,8 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ContactRequest;
@@ -10,10 +8,13 @@ import br.com.ufu.ppgeb.eeg.dto.ContactResponse;
 import br.com.ufu.ppgeb.eeg.mapper.ContactMapper;
 import br.com.ufu.ppgeb.eeg.model.Contact;
 import br.com.ufu.ppgeb.eeg.service.ContactService;
+import br.com.ufu.ppgeb.eeg.service.IdempotencyService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,26 +41,26 @@ public class ContactController {
   private static final Logger logger = LoggerFactory.getLogger(ContactController.class);
 
   private final ContactService contactService;
+  private final IdempotencyService idempotencyService;
 
   /**
    * Lists contacts with optional filters.
    *
    * @param objectType the object type filter
    * @param objectId the object id filter
-   * @return the list of contacts
+   * @param pageable the pagination information
+   * @return the page of contacts
    */
   @GetMapping
-  public List<ContactResponse> list(@RequestParam(value = "objectType",
+  public Page<ContactResponse> list(@RequestParam(value = "objectType",
           required = false) Long objectType,
       @RequestParam(value = "objectId",
-          required = false) Long objectId) {
+          required = false) Long objectId,
+      Pageable pageable) {
 
     logger.info("Consultando contatos; objectType={}, objectId={}", objectType, objectId);
-    return Optional.ofNullable(contactService.findByFilter(objectType, objectId))
-        .orElse(List.of())
-        .stream()
-        .map(ContactMapper::toResponse)
-        .toList();
+    return contactService.findByFilter(objectType, objectId, pageable)
+        .map(ContactMapper::toResponse);
   }
 
   /**
@@ -77,17 +79,26 @@ public class ContactController {
   /**
    * Saves a new contact.
    *
+   * @param idempotencyKey the idempotency key
    * @param request the contact to save
    * @return the saved contact
    */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ContactResponse> save(@Valid @RequestBody ContactRequest request) {
+  public ResponseEntity<ContactResponse> save(
+      @RequestHeader(name = IdempotencyService.IDEMPOTENCY_KEY_HEADER,
+          required = false) String idempotencyKey,
+      @Valid @RequestBody ContactRequest request) {
 
     logger.info("Recebendo criação de contato");
-    Contact saved = contactService.save(ContactMapper.toEntity(request));
-    URI location = URI.create(ApiPaths.CONTACT + ApiPaths.PATH_SEPARATOR + saved.getId());
-    return ResponseEntity.created(location)
-        .body(ContactMapper.toResponse(saved));
+    return idempotencyService.execute(
+        "CONTACT", idempotencyKey, ContactResponse.class,
+        () -> {
+          Contact saved = contactService.save(ContactMapper.toDomain(request));
+          URI location = URI.create(
+              ApiPaths.CONTACT + ApiPaths.PATH_SEPARATOR + saved.getId());
+          return ResponseEntity.created(location)
+              .body(ContactMapper.toResponse(saved));
+        });
   }
 
   /**
@@ -116,6 +127,6 @@ public class ContactController {
       @Valid @RequestBody ContactRequest request) {
 
     logger.info("Recebendo atualização de contato id={}", id);
-    return ContactMapper.toResponse(contactService.update(ContactMapper.toEntity(request, id)));
+    return ContactMapper.toResponse(contactService.update(ContactMapper.toDomain(request, id)));
   }
 }

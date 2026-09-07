@@ -1,11 +1,11 @@
 package br.com.ufu.ppgeb.eeg.service.impl;
 
-import java.util.List;
-
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import br.com.ufu.ppgeb.eeg.repository.UnitRepository;
 import br.com.ufu.ppgeb.eeg.service.UnitService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +20,8 @@ public class UnitServiceImpl implements UnitService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Unit> findAll() {
+  public Page<Unit> findAll(Pageable pageable) {
 
-    return unitRepository.findAll();
+    return unitRepository.findAll(pageable);
   }
 }

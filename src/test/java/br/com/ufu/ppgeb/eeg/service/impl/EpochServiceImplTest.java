@@ -21,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class EpochServiceImplTest {
@@ -38,6 +42,7 @@ class EpochServiceImplTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long DIFFERENT_EXAM_ID = 999L;
   private static final int TWO_EPOCHS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private EpochRepository epochRepository;
@@ -189,22 +194,23 @@ class EpochServiceImplTest {
   void givenValidExamId_whenFindByFilter_thenReturnMatchingEpochs() {
     Epoch epoch = Instancio.create(Epoch.class);
 
-    when(epochRepository.findByExamId(EXAM_ID)).thenReturn(List.of(epoch));
+    when(epochRepository.findByExamId(EXAM_ID, PAGEABLE))
+        .thenReturn(new PageImpl<>(List.of(epoch)));
 
-    List<Epoch> result = epochService.findByFilter(EXAM_ID);
+    Page<Epoch> result = epochService.findByExamId(EXAM_ID, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(epochRepository).findByExamId(EXAM_ID);
+    assertThat(result.getContent()).hasSize(1);
+    verify(epochRepository).findByExamId(EXAM_ID, PAGEABLE);
   }
 
   @Test
   @DisplayName("Given null exam id when findByFilter then throw exception")
   void givenNullExamId_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> epochService.findByFilter(null))
+    assertThatThrownBy(() -> epochService.findByExamId(null, PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_EXAM_ID_NULL);
 
-    verify(epochRepository, never()).findByExamId(any());
+    verify(epochRepository, never()).findByExamId(any(), any());
   }
 
   @Test
