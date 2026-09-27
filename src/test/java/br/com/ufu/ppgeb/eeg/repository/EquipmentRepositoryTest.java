@@ -35,6 +35,8 @@ class EquipmentRepositoryTest {
   private static final String NAME_2 = "EQUIPAMENTO BETA";
   private static final String UNREGISTERED_NAME = "Nao Existe";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Autowired
   private EquipmentRepository equipmentRepository;
@@ -71,6 +73,7 @@ class EquipmentRepositoryTest {
 
     Equipment saved = equipmentRepository.save(equipment);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getName()).isEqualTo(NAME_1);
     assertThat(saved.getCreatedAt()).isNotNull();

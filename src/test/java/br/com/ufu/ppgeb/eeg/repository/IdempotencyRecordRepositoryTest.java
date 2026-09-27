@@ -55,13 +55,13 @@ class IdempotencyRecordRepositoryTest {
   void givenValidRecord_whenSave_thenReturnRecord() {
     IdempotencyRecord record = createRecord(KEY, LocalDateTime.now().plusHours(1));
 
-    IdempotencyRecord saved = repository.save(record);
+    repository.save(record);
     repository.flush();
 
     Optional<IdempotencyRecord> found = repository
         .findByIdempotencyResourceNameAndIdempotencyKey(RESOURCE, KEY);
-    assertThat(found).isPresent();
-    assertThat(found.get().getId()).isEqualTo(saved.getId());
+
+    assertThat(found.get()).hasNoNullFieldsOrProperties();
     assertThat(found.get().getResponseStatus()).isEqualTo(STATUS_CREATED);
   }
 

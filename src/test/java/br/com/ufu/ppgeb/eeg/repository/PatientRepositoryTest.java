@@ -45,6 +45,8 @@ class PatientRepositoryTest {
   private static final String DOCUMENT_1 = "111.111.111-11";
   private static final String DOCUMENT_2 = "222.222.222-22";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
   private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Autowired
@@ -82,6 +84,7 @@ class PatientRepositoryTest {
 
     Patient saved = patientRepository.save(patient);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getName()).isEqualTo(NAME_1);
     assertThat(saved.getCreatedAt()).isNotNull();

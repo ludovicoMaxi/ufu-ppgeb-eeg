@@ -35,6 +35,8 @@ class MedicamentRepositoryTest {
   private static final String NAME_2 = "MEDICAMENTO BETA";
   private static final String UNREGISTERED_NAME = "Nao Existe";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Autowired
   private MedicamentRepository medicamentRepository;
@@ -71,6 +73,7 @@ class MedicamentRepositoryTest {
 
     Medicament saved = medicamentRepository.save(medicament);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getName()).isEqualTo(NAME_1);
     assertThat(saved.getCreatedAt()).isNotNull();
     assertThat(saved.getCreatedBy()).isEqualTo(USERNAME);
