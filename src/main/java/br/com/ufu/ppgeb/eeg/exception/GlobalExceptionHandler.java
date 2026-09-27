@@ -1,18 +1,23 @@
 package br.com.ufu.ppgeb.eeg.exception;
 
+import static java.util.Objects.nonNull;
+
 import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -23,6 +28,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  private static final String INVALID_REQUEST = "Requisição inválida.";
+  private static final String FIELD_SEPARATOR = " ";
 
   /**
    * Builds an RFC 9457 ProblemDetail for the given status and message.
@@ -117,10 +124,38 @@ public class GlobalExceptionHandler {
 
     String message = ex.getBindingResult().getFieldErrors().stream()
         .findFirst()
-        .map(error -> error.getField() + " " + error.getDefaultMessage())
-        .orElse("Requisição inválida.");
+        .map(error -> error.getField() + FIELD_SEPARATOR + error.getDefaultMessage())
+        .orElse(INVALID_REQUEST);
     return ResponseEntity.badRequest()
         .body(problemDetail(HttpStatus.BAD_REQUEST, message));
+  }
+
+  /**
+   * Handles method-level validation failures (e.g. collection element constraints).
+   *
+   * @param ex the exception
+   * @return the response entity
+   */
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ResponseEntity<ProblemDetail> handleMethodValidation(
+      HandlerMethodValidationException ex) {
+
+    String message = ex.getAllErrors().stream()
+            .findFirst()
+            .map(this::validationFailureMessage)
+            .orElse(INVALID_REQUEST);
+    return ResponseEntity.badRequest()
+        .body(problemDetail(HttpStatus.BAD_REQUEST, message));
+  }
+
+  private String validationFailureMessage(MessageSourceResolvable error) {
+
+    String field = null;
+    if (error instanceof FieldError fieldError) {
+      field = fieldError.getField();
+    }
+    return (nonNull(field) ? field + FIELD_SEPARATOR : "")
+        + error.getDefaultMessage();
   }
 
   /**
