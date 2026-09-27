@@ -1,13 +1,13 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Represents an object type for contacts.
@@ -16,6 +16,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "OBJECT_TYPE")
+@EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = false)
 public class ObjectType {
 
   public static final ObjectType PATIENT =
@@ -49,35 +51,5 @@ public class ObjectType {
   public ObjectType(Long id) {
 
     this.id = id;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof ObjectType that)) {
-      return false;
-    }
-    return Objects.equals(id, that.id)
-        && Objects.equals(name, that.name)
-        && Objects.equals(description, that.description);
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(id, name, description);
-  }
-
-  @Override
-  public String toString() {
-
-    return "ObjectType{"
-        + "id=" + id
-        + ", name='" + name + '\''
-        + ", description=" + description
-        + '}';
   }
 }

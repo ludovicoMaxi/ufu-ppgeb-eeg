@@ -2,14 +2,12 @@ package br.com.ufu.ppgeb.eeg.model;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.ufu.ppgeb.eeg.constant.DateFormats;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,16 +22,13 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Represents an exam.
@@ -47,8 +42,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "EXAM", indexes = {
     @Index(name = "EXAM_PATIENT_IDX", columnList = "PATIENT_ID"),
     @Index(name = "EXAM_REQUEST_ID_IDX", columnList = "EXAM_REQUEST_ID")})
-@EntityListeners(AuditingEntityListener.class)
-public class Exam {
+@EqualsAndHashCode(callSuper = false, exclude = {"examMedicaments", "examEquipments"})
+@ToString(callSuper = true)
+public class Exam extends AuditableEntity {
 
   @Id
   @Column(name = "ID", nullable = false)
@@ -101,26 +97,6 @@ public class Exam {
   @JsonManagedReference
   private List<ExamEquipment> examEquipments;
 
-  @CreatedDate
-  @Column(name = "CREATED_AT", nullable = false,
-      updatable = false)
-  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
-  private ZonedDateTime createdAt;
-
-  @CreatedBy
-  @Column(name = "CREATED_BY", nullable = false,
-      updatable = false)
-  private String createdBy;
-
-  @LastModifiedDate
-  @Column(name = "UPDATED_AT")
-  @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
-  private ZonedDateTime updatedAt;
-
-  @LastModifiedBy
-  @Column(name = "UPDATED_BY", length = 20)
-  private String updatedBy;
-
   /**
    * Constructs an Exam with the given id.
    *
@@ -129,63 +105,5 @@ public class Exam {
   public Exam(Long id) {
 
     this.id = id;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Exam exam)) {
-      return false;
-    }
-    return Objects.equals(getId(), exam.getId())
-        && Objects.equals(getExamRequest(), exam.getExamRequest())
-        && Objects.equals(getPatient(), exam.getPatient())
-        && Objects.equals(getAchievementDate(), exam.getAchievementDate())
-        && Objects.equals(getMedicalReport(), exam.getMedicalReport())
-        && Objects.equals(getConclusion(), exam.getConclusion())
-        && Objects.equals(getBed(), exam.getBed())
-        && Objects.equals(getHeight(), exam.getHeight())
-        && Objects.equals(getWeight(), exam.getWeight())
-        && Objects.equals(getClinicalData(), exam.getClinicalData());
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(getId(),
-        getPatient(),
-        getAchievementDate(),
-        getMedicalReport(),
-        getConclusion(),
-        getBed(),
-        getHeight(),
-        getWeight(),
-        getClinicalData());
-  }
-
-  @Override
-  public String toString() {
-
-    return "Exam{"
-        + "id=" + id
-        + ", examRequest=" + examRequest
-        + ", patient=" + patient
-        + ", achievementDate=" + achievementDate
-        + ", medicalReport='" + medicalReport + '\''
-        + ", conclusion='" + conclusion + '\''
-        + ", bed='" + bed + '\''
-        + ", height=" + height
-        + ", weight=" + weight
-        + ", clinicalData='" + clinicalData + '\''
-        + ", examMedicaments=" + examMedicaments
-        + ", examEquipments=" + examEquipments
-        + ", createdAt=" + createdAt
-        + ", createdBy='" + createdBy + '\''
-        + ", updatedAt=" + updatedAt
-        + ", updatedBy='" + updatedBy + '\''
-        + '}';
   }
 }

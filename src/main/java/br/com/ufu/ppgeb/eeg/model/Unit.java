@@ -1,7 +1,5 @@
 package br.com.ufu.ppgeb.eeg.model;
 
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,9 +10,11 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Represents a unit.
@@ -26,6 +26,8 @@ import lombok.Setter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
 @Table(name = "UNIT")
+@EqualsAndHashCode(callSuper = false, exclude = {"id"})
+@ToString(callSuper = false)
 public class Unit {
 
   @Id
@@ -45,33 +47,4 @@ public class Unit {
 
   @Column(name = "DESCRIPTION")
   private String description;
-
-  @Override
-  public boolean equals(Object o) {
-
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Unit unit)) {
-      return false;
-    }
-    return Objects.equals(getName(), unit.getName())
-        && Objects.equals(getDescription(), unit.getDescription());
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(getName(), getDescription());
-  }
-
-  @Override
-  public String toString() {
-
-    return "Unit{"
-        + "id=" + id
-        + ", name='" + name + '\''
-        + ", description='" + description + '\''
-        + '}';
-  }
 }
