@@ -25,6 +25,7 @@ class UnitRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final String NAME_1 = "litro";
   private static final String NAME_2 = "centimetro";
+  private static final String DESCRIPTION_1 = "Descricao da unidade";
 
   @Autowired
   private UnitRepository unitRepository;
@@ -47,6 +48,7 @@ class UnitRepositoryTest {
 
     Unit saved = unitRepository.save(unit);
 
+    assertThat(saved).hasNoNullFieldsOrProperties();
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getName()).isEqualTo(NAME_1);
   }
@@ -105,6 +107,7 @@ class UnitRepositoryTest {
   private Unit createUnit(String name) {
     return Unit.builder()
         .name(name)
+        .description(DESCRIPTION_1)
         .build();
   }
 }

@@ -38,6 +38,8 @@ class ActivityRepositoryTest {
   private static final String DESCRIPTION_1 = "Atividade alfa";
   private static final String DESCRIPTION_2 = "Atividade beta";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Autowired
   private ActivityRepository activityRepository;
@@ -74,6 +76,7 @@ class ActivityRepositoryTest {
 
     Activity saved = activityRepository.save(activity);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getExamId()).isEqualTo(EXAM_ID_1);
     assertThat(saved.getCreatedAt()).isNotNull();

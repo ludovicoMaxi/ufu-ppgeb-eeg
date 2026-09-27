@@ -43,7 +43,14 @@ class ContactRepositoryTest {
   private static final String NAME_1 = "Contato 1";
   private static final String NAME_2 = "Contato 2";
   private static final String PHONE_1 = "9999-9999";
+  private static final String CELLPHONE_1 = "9888-8888";
+  private static final String WHATSAPP_1 = "9777-7777";
+  private static final String FACEBOOK_1 = "contato.um";
+  private static final String INSTAGRAM_1 = "@contato_um";
+  private static final String EMAIL_1 = "contato@ufu.br";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
   private static final int TWO_CONTACTS = 2;
   private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
@@ -74,6 +81,7 @@ class ContactRepositoryTest {
 
     Contact saved = contactRepository.save(contact);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getName()).isEqualTo(NAME_1);
     assertThat(saved.getObjectType()).isEqualTo(OBJECT_TYPE_100);
@@ -117,6 +125,7 @@ class ContactRepositoryTest {
 
     Contact detached = createContact(OBJECT_TYPE_200, OBJECT_ID_2, NAME_2);
     detached.setId(saved.getId());
+    detached.setPhone(null);
 
     Contact merged = contactRepository.save(detached);
     testEntityManager.flush();
@@ -258,6 +267,13 @@ class ContactRepositoryTest {
         .active(true)
         .objectId(objectId)
         .objectType(objectType)
+        .phone(PHONE_1)
+        .cellphone(CELLPHONE_1)
+        .whatsapp(WHATSAPP_1)
+        .facebook(FACEBOOK_1)
+        .instagram(INSTAGRAM_1)
+        .email(EMAIL_1)
+        .main(Boolean.TRUE)
         .build();
   }
 }

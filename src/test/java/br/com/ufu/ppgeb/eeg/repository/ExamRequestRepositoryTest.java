@@ -49,6 +49,12 @@ class ExamRequestRepositoryTest {
   private static final String SECTOR_1 = "NEURO";
   private static final String SECTOR_2 = "PEDIATRIA";
   private static final String USERNAME = "joaol";
+  private static final String AGREEMENT_1 = "SUS";
+  private static final String USER_REQUEST_1 = "USUARIO_TESTE";
+  private static final String CLINIC_ORIGIN_1 = "CLINICA X";
+  private static final String CITY_ORIGIN_1 = "Uberlandia";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
   private static final String MSG_FILTER = "Informe pelo menos um campo para consultar!";
 
   @Autowired
@@ -87,6 +93,7 @@ class ExamRequestRepositoryTest {
 
     ExamRequest saved = examRequestRepository.save(examRequest);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getPatient().getId()).isEqualTo(patient.getId());
     assertThat(saved.getCreatedAt()).isNotNull();
     assertThat(saved.getCreatedBy()).isEqualTo(USERNAME);
@@ -242,8 +249,12 @@ class ExamRequestRepositoryTest {
         .medicalRequest(MEDICAL_REQUEST_1)
         .doctorRequestant(doctor)
         .sector(sector)
+        .agreement(AGREEMENT_1)
+        .user(USER_REQUEST_1)
+        .clinicOrigin(CLINIC_ORIGIN_1)
+        .cityOrigin(CITY_ORIGIN_1)
         .requestDate(ZonedDateTime.now())
-        .user("USUARIO_TESTE")
+        .achievementDate(ZonedDateTime.now())
         .build();
   }
 }

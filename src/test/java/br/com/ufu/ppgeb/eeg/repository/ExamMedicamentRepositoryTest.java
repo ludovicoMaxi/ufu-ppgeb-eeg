@@ -46,6 +46,8 @@ class ExamMedicamentRepositoryTest {
   private static final String MEDICAMENT_NAME_2 = "Medicamento Dois";
   private static final String UNIT_NAME = "mililitro";
   private static final String USERNAME = "joaol";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Autowired
   private ExamMedicamentRepository examMedicamentRepository;
@@ -85,6 +87,7 @@ class ExamMedicamentRepositoryTest {
 
     ExamMedicament saved = examMedicamentRepository.save(examMedicament);
 
+    assertThat(saved).hasNoNullFieldsOrPropertiesExcept(UPDATED_AT_FIELD, UPDATED_BY_FIELD);
     assertThat(saved.getId()).isNotNull();
     assertThat(saved.getExam().getId()).isEqualTo(exam.getId());
     assertThat(saved.getMedicament().getId()).isEqualTo(medicament.getId());
