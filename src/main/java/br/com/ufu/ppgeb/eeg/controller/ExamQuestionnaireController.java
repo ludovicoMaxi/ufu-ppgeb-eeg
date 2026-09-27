@@ -74,7 +74,7 @@ public class ExamQuestionnaireController {
     logger.info("Consultando respostas do questionário id={} do exame id={}",
         questionnaireId, examId);
     return questionnaireAnswerService
-        .findByApplication(questionnaireId, ObjectType.EXAM.getId(), examId)
+        .findAppliedAnswers(questionnaireId, ObjectType.EXAM.getId(), examId)
         .stream()
         .map(QuestionnaireAnswerMapper::toResponse)
         .toList();

@@ -19,7 +19,7 @@ import lombok.experimental.UtilityClass;
 public class QuestionnaireAnswerMapper {
 
   /**
-   * Maps a request to a QuestionnaireAnswer entity setting the application context.
+   * Maps a request to a QuestionnaireAnswer entity setting the questionnaire and object context.
    *
    * @param request the request
    * @param questionnaireId the questionnaire id

@@ -17,7 +17,7 @@ public interface QuestionnaireAnswerRepository extends
     JpaRepository<QuestionnaireAnswer, Long> {
 
   /**
-   * Finds the answers of the given application (questionnaire, object type and object id).
+   * Finds the answers of the given questionnaire and object (type and id).
    *
    * @param questionnaire the questionnaire
    * @param objectType the object type
@@ -28,7 +28,7 @@ public interface QuestionnaireAnswerRepository extends
       Questionnaire questionnaire, Long objectType, Long objectId);
 
   /**
-   * Checks whether the given application has any answer.
+   * Checks whether the given questionnaire and object (type and id) have any answer.
    *
    * @param questionnaire the questionnaire
    * @param objectType the object type

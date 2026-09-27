@@ -39,7 +39,7 @@ import org.hibernate.annotations.FetchMode;
 @ToString(callSuper = true)
 @Entity
 @Table(name = "QUESTIONNAIRE_ANSWER", indexes = {
-    @Index(name = "QUESTIONNAIRE_ANSWER_APPLICATION_IDX",
+    @Index(name = "QUESTIONNAIRE_ANSWER_OBJ_CTX_IDX",
         columnList = "QUESTIONNAIRE_ID, OBJECT_TYPE, OBJECT_ID"),
     @Index(name = "QUESTIONNAIRE_ANSWER_QUESTION_IDX", columnList = "QUESTION_ID")},
     uniqueConstraints = {
