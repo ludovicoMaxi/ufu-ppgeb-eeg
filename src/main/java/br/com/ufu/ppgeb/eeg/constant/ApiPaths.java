@@ -21,11 +21,14 @@ public class ApiPaths {
   public static final String API_ROOT = API + ANY;
 
   public static final String EXAM_ID_PATTERN = "{examId}";
+  public static final String QUESTIONNAIRE_ID_PATTERN = "{questionnaireId}";
 
   public static final String ACTIVITIES_SUBPATH = "/activities";
   public static final String EPOCHS_SUBPATH = "/epochs";
   public static final String MEDICAMENTS_SUBPATH = "/medicaments";
   public static final String EQUIPMENTS_SUBPATH = "/equipments";
+  public static final String QUESTIONNAIRES_SUBPATH = "/questionnaires";
+  public static final String ANSWERS_SUBPATH = "/answers";
 
   public static final String EXAM = API + "/exams";
   public static final String EXAM_REQUEST = API + "/exam-requests";
@@ -34,9 +37,16 @@ public class ApiPaths {
   public static final String UNIT = API + "/units";
   public static final String MEDICAMENT = API + MEDICAMENTS_SUBPATH;
   public static final String EQUIPMENT = API + EQUIPMENTS_SUBPATH;
+  public static final String QUESTION = API + "/questions";
+  public static final String ANSWER_OPTION = API + "/answer-options";
+  public static final String QUESTIONNAIRE = API + QUESTIONNAIRES_SUBPATH;
 
   public static final String EXAM_ACTIVITIES = EXAM + PATH_SEPARATOR + EXAM_ID_PATTERN + ACTIVITIES_SUBPATH;
   public static final String EXAM_EPOCHS = EXAM + PATH_SEPARATOR + EXAM_ID_PATTERN + EPOCHS_SUBPATH;
   public static final String EXAM_MEDICAMENTS = EXAM + PATH_SEPARATOR + EXAM_ID_PATTERN + MEDICAMENTS_SUBPATH;
   public static final String EXAM_EQUIPMENTS = EXAM + PATH_SEPARATOR + EXAM_ID_PATTERN + EQUIPMENTS_SUBPATH;
+  public static final String EXAM_QUESTIONNAIRES =
+      EXAM + PATH_SEPARATOR + EXAM_ID_PATTERN + QUESTIONNAIRES_SUBPATH;
+  public static final String EXAM_QUESTIONNAIRE_ANSWERS =
+      EXAM_QUESTIONNAIRES + PATH_SEPARATOR + QUESTIONNAIRE_ID_PATTERN + ANSWERS_SUBPATH;
 }

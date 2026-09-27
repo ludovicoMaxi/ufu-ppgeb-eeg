@@ -21,6 +21,9 @@ public class ObjectType {
   public static final ObjectType PATIENT =
       new ObjectType(1L);
 
+  public static final ObjectType EXAM =
+      new ObjectType(2L);
+
   @Id
   @Column(name = "ID", nullable = false)
   private Long id;

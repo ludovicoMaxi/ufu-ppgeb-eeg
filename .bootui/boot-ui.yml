@@ -1,0 +1,7 @@
+# BootUI configuration (developer-local; safe to delete).
+
+dismissedRules:
+  - SPRING-PROFILE-002
+  - SPRING-WIRING-009
+  - SPRING-CONFIG-001
+  - SPRING-WEB-003
