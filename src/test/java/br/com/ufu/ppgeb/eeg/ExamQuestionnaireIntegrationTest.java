@@ -4,6 +4,7 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM_ID_PATTERN;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM_QUESTIONNAIRES;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM_QUESTIONNAIRE_ANSWERS;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.QUESTIONNAIRE_ID_PATTERN;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.dto.QuestionnaireAnswerRequest;
+import br.com.ufu.ppgeb.eeg.dto.QuestionnaireAnswerResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,9 +45,12 @@ class ExamQuestionnaireIntegrationTest {
   private static final Long ANSWER_OPTION_LUCIDO = 1001L;
   private static final Long ANSWER_OPTION_SIM = 1004L;
   private static final int ANSWERS_COUNT = 3;
-  private static final int EXAM_OBJECT_TYPE = 2;
+  private static final Long EXAM_OBJECT_TYPE = 2L;
   private static final String FREE_TEXT = "Paciente adormeceu ao final do registro.";
   private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String FREE_TEXT_FIELD = "freeText";
+  private static final String UPDATED_AT_FIELD = "updatedAt";
+  private static final String UPDATED_BY_FIELD = "updatedBy";
 
   @Autowired
   private WebApplicationContext context;
@@ -108,12 +113,45 @@ class ExamQuestionnaireIntegrationTest {
             .content(body))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get(examQuestionnaireAnswersUrl())
+    List<QuestionnaireAnswerResponse> answers = findExamQuestionnaireAnswers();
+
+    assertThat(answers).hasSize(ANSWERS_COUNT);
+    assertThat(answers).allSatisfy(answer -> assertThat(answer)
+        .hasNoNullFieldsOrPropertiesExcept(FREE_TEXT_FIELD, UPDATED_AT_FIELD, UPDATED_BY_FIELD));
+
+    QuestionnaireAnswerResponse singleSelect = answerFor(answers, QUESTION_SINGLE_SELECT);
+    assertThat(singleSelect.objectType()).isEqualTo(EXAM_OBJECT_TYPE);
+    assertThat(singleSelect.objectId()).isEqualTo(EXAM_ID);
+    assertThat(singleSelect.freeText()).isNull();
+    assertThat(singleSelect.answerOptions()).isNotEmpty();
+    assertThat(singleSelect.createdBy()).isEqualTo(USERNAME);
+    assertThat(singleSelect.createdAt()).isNotNull();
+    assertThat(singleSelect.updatedAt()).isNull();
+    assertThat(singleSelect.updatedBy()).isNull();
+
+    QuestionnaireAnswerResponse freeTextAnswer = answerFor(answers, QUESTION_FREE_TEXT);
+    assertThat(freeTextAnswer.freeText()).isEqualTo(FREE_TEXT);
+    assertThat(freeTextAnswer.answerOptions()).isEmpty();
+    assertThat(freeTextAnswer.createdBy()).isEqualTo(USERNAME);
+  }
+
+  private List<QuestionnaireAnswerResponse> findExamQuestionnaireAnswers() throws Exception {
+    String body = mockMvc.perform(get(examQuestionnaireAnswersUrl())
             .with(httpBasic(USERNAME, PASSWORD)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath(JSON_PATH_LENGTH).value(ANSWERS_COUNT))
-        .andExpect(jsonPath("$.[?(@.questionId == 1001)].objectType").value(EXAM_OBJECT_TYPE))
-        .andExpect(jsonPath("$.[?(@.questionId == 1001)].objectId").value(EXAM_ID.intValue()));
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+    return List.of(objectMapper.readValue(body, QuestionnaireAnswerResponse[].class));
+  }
+
+  private QuestionnaireAnswerResponse answerFor(List<QuestionnaireAnswerResponse> answers,
+      Long questionId) {
+    List<QuestionnaireAnswerResponse> found = answers.stream()
+        .filter(answer -> questionId.equals(answer.questionId()))
+        .toList();
+    assertThat(found).hasSize(1);
+    return found.get(0);
   }
 
   private List<QuestionnaireAnswerRequest> createAnswerRequests() {
