@@ -2,9 +2,11 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static br.com.ufu.ppgeb.eeg.repository.QuestionSpecifications.withFilters;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.AnswerOption;
 import br.com.ufu.ppgeb.eeg.model.Question;
@@ -34,11 +36,9 @@ class QuestionRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long SEEDED_ID = 1001L;
   private static final Long SEEDED_COLLABORATE_ID = 1002L;
-  private static final Long ANSWER_OPTION_ID = 1001L;
   private static final String TEXT_PARTIAL = "CONSCIÊNCIA";
   private static final String TEXT_PARTIAL_COLLABORATE = "colabor";
   private static final String TEXT = "O paciente apresentou convulsão?";
-  private static final String DESCRIPTION = "Pergunta sobre o paciente";
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
@@ -65,10 +65,9 @@ class QuestionRepositoryTest {
   @Test
   @DisplayName("Given valid question when save then generate id and fill auditing fields")
   void givenValidQuestion_whenSave_thenGenerateIdAndFillAuditingFields() {
-    AnswerOption answerOption = AnswerOption.builder()
-        .text("Sim")
-        .active(Boolean.TRUE)
-        .build();
+    AnswerOption answerOption = EntityFactory.audited(AnswerOption.class)
+        .set(field(AnswerOption::getText), "Sim")
+        .create();
     answerOptionRepository.save(answerOption);
     Question question = createQuestion(answerOption.getId());
 
@@ -162,13 +161,10 @@ class QuestionRepositoryTest {
         .answerOption(AnswerOption.builder().id(answerOptionId).build())
         .sortOrder(1L)
         .build();
-    Question question = Question.builder()
-        .text(TEXT)
-        .description(DESCRIPTION)
-        .questionType(QuestionType.SINGLE_SELECT)
-        .active(Boolean.TRUE)
-        .build();
-    question.setQuestionAnswerOptions(List.of(option));
-    return question;
+    return EntityFactory.audited(Question.class)
+        .set(field(Question::getText), TEXT)
+        .set(field(Question::getQuestionType), QuestionType.SINGLE_SELECT)
+        .set(field(Question::getQuestionAnswerOptions), List.of(option))
+        .create();
   }
 }

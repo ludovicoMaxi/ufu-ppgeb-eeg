@@ -1,10 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import jakarta.persistence.EntityManager;
@@ -193,9 +195,8 @@ class EquipmentRepositoryTest {
   }
 
   private Equipment createEquipment(String name) {
-    return Equipment.builder()
-        .name(name)
-        .description("Equipamento para exame")
-        .build();
+    return EntityFactory.audited(Equipment.class)
+        .set(field(Equipment::getName), name)
+        .create();
   }
 }

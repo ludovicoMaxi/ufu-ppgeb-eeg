@@ -1,10 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import jakarta.persistence.EntityManager;
@@ -192,9 +194,8 @@ class MedicamentRepositoryTest {
   }
 
   private Medicament createMedicament(String name) {
-    return Medicament.builder()
-        .name(name)
-        .description("Medicamento para exame")
-        .build();
+    return EntityFactory.audited(Medicament.class)
+        .set(field(Medicament::getName), name)
+        .create();
   }
 }

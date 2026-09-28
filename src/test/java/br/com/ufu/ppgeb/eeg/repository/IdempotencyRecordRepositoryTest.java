@@ -1,11 +1,13 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.IdempotencyRecord;
 import org.junit.jupiter.api.AfterEach;
@@ -92,13 +94,13 @@ class IdempotencyRecordRepositoryTest {
   }
 
   private IdempotencyRecord createRecord(String key, LocalDateTime expiresAt) {
-    return IdempotencyRecord.builder()
-        .idempotencyResourceName(RESOURCE)
-        .idempotencyKey(key)
-        .responseStatus(STATUS_CREATED)
-        .responseBody("{}")
-        .createdAt(LocalDateTime.now())
-        .expiresAt(expiresAt)
-        .build();
+    return EntityFactory.unaudited(IdempotencyRecord.class)
+        .set(field(IdempotencyRecord::getIdempotencyResourceName), RESOURCE)
+        .set(field(IdempotencyRecord::getIdempotencyKey), key)
+        .set(field(IdempotencyRecord::getResponseStatus), STATUS_CREATED)
+        .set(field(IdempotencyRecord::getResponseBody), "{}")
+        .set(field(IdempotencyRecord::getCreatedAt), LocalDateTime.now())
+        .set(field(IdempotencyRecord::getExpiresAt), expiresAt)
+        .create();
   }
 }

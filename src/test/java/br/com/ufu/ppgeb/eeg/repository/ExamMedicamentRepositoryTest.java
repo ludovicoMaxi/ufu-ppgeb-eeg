@@ -1,19 +1,18 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
-import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamMedicament;
 import br.com.ufu.ppgeb.eeg.model.Medicament;
 import br.com.ufu.ppgeb.eeg.model.Patient;
-import br.com.ufu.ppgeb.eeg.model.Sex;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -39,12 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 class ExamMedicamentRepositoryTest {
 
   private static final Long NONEXISTENT_ID = 999L;
-  private static final Long AMOUNT_1 = 10L;
   private static final Long AMOUNT_2 = 20L;
-  private static final String PATIENT_NAME = "Paciente Exame Medicamento";
-  private static final String MEDICAMENT_NAME_1 = "Medicamento Um";
-  private static final String MEDICAMENT_NAME_2 = "Medicamento Dois";
-  private static final String UNIT_NAME = "mililitro";
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
@@ -80,7 +74,7 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given valid examMedicament when save then generate id and fill auditing fields")
   void givenValidExamMedicament_whenSave_thenGenerateIdAndFillAuditingFields() {
     Exam exam = persistExam();
-    Medicament medicament = persistMedicament(MEDICAMENT_NAME_1);
+    Medicament medicament = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament examMedicament = createExamMedicament(exam, medicament, unit);
     assertThat(examMedicament.getId()).isNull();
@@ -102,7 +96,7 @@ class ExamMedicamentRepositoryTest {
       + "creation fields")
   void givenExistingExamMedicament_whenUpdate_thenFillUpdatedAuditingFieldsAndPreserveCreationFields() {
     Exam exam = persistExam();
-    Medicament medicament = persistMedicament(MEDICAMENT_NAME_1);
+    Medicament medicament = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament saved = examMedicamentRepository.save(createExamMedicament(exam, medicament, unit));
 
@@ -125,7 +119,7 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given saved examMedicament when findById then return the examMedicament")
   void givenSavedExamMedicament_whenFindById_thenReturnTheExamMedicament() {
     Exam exam = persistExam();
-    Medicament medicament = persistMedicament(MEDICAMENT_NAME_1);
+    Medicament medicament = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament saved = examMedicamentRepository.save(createExamMedicament(exam, medicament, unit));
 
@@ -139,8 +133,8 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given saved examMedicaments when findAll then return all examMedicaments")
   void givenSavedExamMedicaments_whenFindAll_thenReturnAllExamMedicaments() {
     Exam exam = persistExam();
-    Medicament medicament1 = persistMedicament(MEDICAMENT_NAME_1);
-    Medicament medicament2 = persistMedicament(MEDICAMENT_NAME_2);
+    Medicament medicament1 = persistMedicament();
+    Medicament medicament2 = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament examMedicament1 = examMedicamentRepository.save(createExamMedicament(exam, medicament1, unit));
     ExamMedicament examMedicament2 = examMedicamentRepository.save(
@@ -155,7 +149,7 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given existing id when existsById then return true")
   void givenExistingId_whenExistsById_thenReturnTrue() {
     Exam exam = persistExam();
-    Medicament medicament = persistMedicament(MEDICAMENT_NAME_1);
+    Medicament medicament = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament saved = examMedicamentRepository.save(createExamMedicament(exam, medicament, unit));
 
@@ -176,7 +170,7 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given saved examMedicament when deleteById then examMedicament is removed")
   void givenSavedExamMedicament_whenDeleteById_thenExamMedicamentIsRemoved() {
     Exam exam = persistExam();
-    Medicament medicament = persistMedicament(MEDICAMENT_NAME_1);
+    Medicament medicament = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament saved = examMedicamentRepository.save(createExamMedicament(exam, medicament, unit));
 
@@ -190,8 +184,8 @@ class ExamMedicamentRepositoryTest {
   @DisplayName("Given saved examMedicaments when findByExam then return only matches")
   void givenSavedExamMedicaments_whenFindByExam_thenReturnOnlyMatches() {
     Exam exam = persistExam();
-    Medicament medicament1 = persistMedicament(MEDICAMENT_NAME_1);
-    Medicament medicament2 = persistMedicament(MEDICAMENT_NAME_2);
+    Medicament medicament1 = persistMedicament();
+    Medicament medicament2 = persistMedicament();
     Unit unit = persistUnit();
     ExamMedicament examMedicament1 = examMedicamentRepository.save(createExamMedicament(exam, medicament1, unit));
     ExamMedicament examMedicament2 = examMedicamentRepository.save(
@@ -214,49 +208,39 @@ class ExamMedicamentRepositoryTest {
   }
 
   private Patient persistPatient() {
-    Patient patient = Patient.builder()
-        .name(PATIENT_NAME)
-        .documentNumber("123.456.789-00")
-        .sex(Sex.FEMALE)
-        .nationality("BRASILEIRA")
-        .civilStatus(CivilStatus.SINGLE)
-        .job("ANALISTA")
-        .birthDate(LocalDate.now())
-        .build();
+    Patient patient = EntityFactory.audited(Patient.class)
+        .set(field(Patient::getDocumentNumber), "123.456.789-00")
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam persistExam() {
-    Exam exam = Exam.builder()
-        .patient(persistPatient())
-        .achievementDate(ZonedDateTime.now())
-        .bed("Leito Central")
-        .build();
+    Exam exam = EntityFactory.audited(Exam.class)
+        .ignore(field(Exam::getExamRequest))
+        .set(field(Exam::getPatient), persistPatient())
+        .set(field(Exam::getExamMedicaments), new ArrayList<>())
+        .set(field(Exam::getExamEquipments), new ArrayList<>())
+        .create();
     return testEntityManager.persistAndFlush(exam);
   }
 
-  private Medicament persistMedicament(String name) {
-    Medicament medicament = Medicament.builder()
-        .name(name)
-        .description("Medicamento para exame")
-        .build();
+  private Medicament persistMedicament() {
+    Medicament medicament = EntityFactory.audited(Medicament.class)
+        .create();
     return testEntityManager.persistAndFlush(medicament);
   }
 
   private Unit persistUnit() {
-    Unit unit = Unit.builder()
-        .name(UNIT_NAME)
-        .description("Unidade de medida")
-        .build();
+    Unit unit = EntityFactory.unaudited(Unit.class)
+        .create();
     return testEntityManager.persistAndFlush(unit);
   }
 
   private ExamMedicament createExamMedicament(Exam exam, Medicament medicament, Unit unit) {
-    return ExamMedicament.builder()
-        .exam(exam)
-        .medicament(medicament)
-        .unit(unit)
-        .amount(AMOUNT_1)
-        .build();
+    return EntityFactory.audited(ExamMedicament.class)
+        .set(field(ExamMedicament::getExam), exam)
+        .set(field(ExamMedicament::getMedicament), medicament)
+        .set(field(ExamMedicament::getUnit), unit)
+        .create();
   }
 }

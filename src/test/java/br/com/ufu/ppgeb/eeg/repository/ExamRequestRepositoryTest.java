@@ -2,18 +2,16 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
-import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.model.Patient;
-import br.com.ufu.ppgeb.eeg.model.Sex;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,18 +39,10 @@ class ExamRequestRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long MEDICAL_RECORD_1 = 555L;
   private static final Long MEDICAL_RECORD_2 = 666L;
-  private static final Long MEDICAL_REQUEST_1 = 777L;
-  private static final String PATIENT_NAME = "Paciente Requisicao";
-  private static final String PATIENT_DOC_1 = "123.456.789-00";
   private static final String DOCTOR_1 = "DRA ALICE";
   private static final String DOCTOR_2 = "DR CARLOS";
-  private static final String SECTOR_1 = "NEURO";
   private static final String SECTOR_2 = "PEDIATRIA";
   private static final String USERNAME = "joaol";
-  private static final String AGREEMENT_1 = "SUS";
-  private static final String USER_REQUEST_1 = "USUARIO_TESTE";
-  private static final String CLINIC_ORIGIN_1 = "CLINICA X";
-  private static final String CITY_ORIGIN_1 = "Uberlandia";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
   private static final String MSG_FILTER = "Informe pelo menos um campo para consultar!";
@@ -87,8 +77,8 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given valid examRequest when save then generate id and fill auditing fields")
   void givenValidExamRequest_whenSave_thenGenerateIdAndFillAuditingFields() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
-    ExamRequest examRequest = createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1);
+    Patient patient = persistPatient();
+    ExamRequest examRequest = createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1);
     assertThat(examRequest.getId()).isNull();
 
     ExamRequest saved = examRequestRepository.save(examRequest);
@@ -104,8 +94,8 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given existing examRequest when update then fill updated auditing fields and preserve creation fields")
   void givenExistingExamRequest_whenUpdate_thenFillUpdatedAuditingFieldsAndPreserveCreationFields() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
-    ExamRequest saved = examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+    Patient patient = persistPatient();
+    ExamRequest saved = examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
 
     saved.setSector(SECTOR_2);
     examRequestRepository.save(saved);
@@ -126,8 +116,8 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequest when findById then return the examRequest")
   void givenSavedExamRequest_whenFindById_thenReturnTheExamRequest() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
-    ExamRequest saved = examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+    Patient patient = persistPatient();
+    ExamRequest saved = examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
 
     Optional<ExamRequest> result = examRequestRepository.findById(saved.getId());
 
@@ -138,11 +128,11 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequests when findAll then return all examRequests")
   void givenSavedExamRequests_whenFindAll_thenReturnAllExamRequests() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
+    Patient patient = persistPatient();
     ExamRequest examRequest1 = examRequestRepository.save(
-        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
     ExamRequest examRequest2 = examRequestRepository.save(
-        createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2, SECTOR_2));
+        createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2));
 
     List<ExamRequest> result = examRequestRepository.findAll();
 
@@ -152,9 +142,9 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given existing id when existsById then return true")
   void givenExistingId_whenExistsById_thenReturnTrue() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
+    Patient patient = persistPatient();
     ExamRequest saved = examRequestRepository.save(
-        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
 
     boolean result = examRequestRepository.existsById(saved.getId());
 
@@ -172,9 +162,9 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequest when deleteById then examRequest is removed")
   void givenSavedExamRequest_whenDeleteById_thenExamRequestIsRemoved() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
+    Patient patient = persistPatient();
     ExamRequest saved = examRequestRepository.save(
-        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+        createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
 
     examRequestRepository.deleteById(saved.getId());
 
@@ -185,10 +175,10 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequests when findByFilter medicalRecord then return only matches")
   void givenSavedExamRequests_whenFindByFilterMedicalRecord_thenReturnOnlyMatches() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
-    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+    Patient patient = persistPatient();
+    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
     ExamRequest second = examRequestRepository.save(
-        createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2, SECTOR_2));
+        createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2));
 
     List<ExamRequest> result = examRequestRepository.findByFilter(MEDICAL_RECORD_2, null, null, null);
 
@@ -198,9 +188,9 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequests when findByFilter doctorRequestant then return only matches")
   void givenSavedExamRequests_whenFindByFilterDoctorRequestant_thenReturnOnlyMatches() {
-    Patient patient = persistPatient(PATIENT_DOC_1);
-    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
-    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2, SECTOR_2));
+    Patient patient = persistPatient();
+    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
+    examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2));
 
     List<ExamRequest> result = examRequestRepository.findByFilter(null, null, null, "ALICE");
 
@@ -210,11 +200,11 @@ class ExamRequestRepositoryTest {
   @Test
   @DisplayName("Given saved examRequests when findByFilter patientId then return only matches")
   void givenSavedExamRequests_whenFindByFilterPatientId_thenReturnOnlyMatches() {
-    Patient patient1 = persistPatient(PATIENT_DOC_1);
-    Patient patient2 = persistPatient("987.654.321-00");
-    examRequestRepository.save(createExamRequest(patient1, MEDICAL_RECORD_1, DOCTOR_1, SECTOR_1));
+    Patient patient1 = persistPatient();
+    Patient patient2 = persistPatient();
+    examRequestRepository.save(createExamRequest(patient1, MEDICAL_RECORD_1, DOCTOR_1));
     ExamRequest second = examRequestRepository.save(
-        createExamRequest(patient2, MEDICAL_RECORD_2, DOCTOR_2, SECTOR_2));
+        createExamRequest(patient2, MEDICAL_RECORD_2, DOCTOR_2));
 
     List<ExamRequest> result = examRequestRepository.findByFilter(null, null, patient2.getId(), null);
 
@@ -229,32 +219,17 @@ class ExamRequestRepositoryTest {
         .hasMessage(MSG_FILTER);
   }
 
-  private Patient persistPatient(String documentNumber) {
-    Patient patient = Patient.builder()
-        .name(PATIENT_NAME)
-        .documentNumber(documentNumber)
-        .sex(Sex.FEMALE)
-        .nationality("BRASILEIRA")
-        .civilStatus(CivilStatus.SINGLE)
-        .job("ANALISTA")
-        .birthDate(LocalDate.now())
-        .build();
+  private Patient persistPatient() {
+    Patient patient = EntityFactory.audited(Patient.class)
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
-  private ExamRequest createExamRequest(Patient patient, Long medicalRecord, String doctor, String sector) {
-    return ExamRequest.builder()
-        .patient(patient)
-        .medicalRecord(medicalRecord)
-        .medicalRequest(MEDICAL_REQUEST_1)
-        .doctorRequestant(doctor)
-        .sector(sector)
-        .agreement(AGREEMENT_1)
-        .user(USER_REQUEST_1)
-        .clinicOrigin(CLINIC_ORIGIN_1)
-        .cityOrigin(CITY_ORIGIN_1)
-        .requestDate(ZonedDateTime.now())
-        .achievementDate(ZonedDateTime.now())
-        .build();
+  private ExamRequest createExamRequest(Patient patient, Long medicalRecord, String doctor) {
+    return EntityFactory.audited(ExamRequest.class)
+        .set(field(ExamRequest::getPatient), patient)
+        .set(field(ExamRequest::getMedicalRecord), medicalRecord)
+        .set(field(ExamRequest::getDoctorRequestant), doctor)
+        .create();
   }
 }

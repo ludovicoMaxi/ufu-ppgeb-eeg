@@ -1,9 +1,11 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.AnswerOption;
 import org.junit.jupiter.api.AfterEach;
@@ -54,10 +56,9 @@ class AnswerOptionRepositoryTest {
   @Test
   @DisplayName("Given valid answer option when save then generate id and fill auditing fields")
   void givenValidAnswerOption_whenSave_thenGenerateIdAndFillAuditingFields() {
-    AnswerOption answerOption = AnswerOption.builder()
-        .text(TEXT)
-        .active(Boolean.TRUE)
-        .build();
+    AnswerOption answerOption = EntityFactory.audited(AnswerOption.class)
+        .set(field(AnswerOption::getText), TEXT)
+        .create();
     assertThat(answerOption.getId()).isNull();
 
     AnswerOption saved = answerOptionRepository.save(answerOption);

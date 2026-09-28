@@ -1,10 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.util.List;
 import java.util.Optional;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +27,6 @@ class UnitRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final String NAME_1 = "litro";
   private static final String NAME_2 = "centimetro";
-  private static final String DESCRIPTION_1 = "Descricao da unidade";
 
   @Autowired
   private UnitRepository unitRepository;
@@ -105,9 +106,8 @@ class UnitRepositoryTest {
   }
 
   private Unit createUnit(String name) {
-    return Unit.builder()
-        .name(name)
-        .description(DESCRIPTION_1)
-        .build();
+    return EntityFactory.unaudited(Unit.class)
+        .set(field(Unit::getName), name)
+        .create();
   }
 }

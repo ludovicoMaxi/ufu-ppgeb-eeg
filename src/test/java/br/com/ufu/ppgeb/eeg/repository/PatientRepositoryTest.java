@@ -1,17 +1,8 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
-import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Patient;
-import br.com.ufu.ppgeb.eeg.model.Sex;
-import br.com.ufu.ppgeb.eeg.repository.PatientSpecifications;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +22,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -235,14 +233,9 @@ class PatientRepositoryTest {
   }
 
   private Patient createPatient(String name, String documentNumber) {
-    return Patient.builder()
-        .name(name)
-        .documentNumber(documentNumber)
-        .sex(Sex.MALE)
-        .nationality("BRASILEIRA")
-        .civilStatus(CivilStatus.SINGLE)
-        .job("ANALISTA")
-        .birthDate(LocalDate.now())
-        .build();
+    return EntityFactory.audited(Patient.class)
+        .set(field(Patient::getName), name)
+        .set(field(Patient::getDocumentNumber), documentNumber)
+        .create();
   }
 }
