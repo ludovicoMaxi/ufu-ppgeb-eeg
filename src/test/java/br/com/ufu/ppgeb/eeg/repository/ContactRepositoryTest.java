@@ -1,5 +1,13 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
+
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+
 import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Contact;
@@ -21,14 +29,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.instancio.Select.field;
 
 @DataJpaTest
 @ActiveProfiles("test")
