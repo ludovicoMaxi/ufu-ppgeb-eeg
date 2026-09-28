@@ -1,15 +1,8 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Contact;
-import br.com.ufu.ppgeb.eeg.repository.ContactSpecifications;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +22,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
+
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -43,11 +44,6 @@ class ContactRepositoryTest {
   private static final String NAME_1 = "Contato 1";
   private static final String NAME_2 = "Contato 2";
   private static final String PHONE_1 = "9999-9999";
-  private static final String CELLPHONE_1 = "9888-8888";
-  private static final String WHATSAPP_1 = "9777-7777";
-  private static final String FACEBOOK_1 = "contato.um";
-  private static final String INSTAGRAM_1 = "@contato_um";
-  private static final String EMAIL_1 = "contato@ufu.br";
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
@@ -262,18 +258,11 @@ class ContactRepositoryTest {
   }
 
   private Contact createContact(Long objectType, Long objectId, String name) {
-    return Contact.builder()
-        .name(name)
-        .active(true)
-        .objectId(objectId)
-        .objectType(objectType)
-        .phone(PHONE_1)
-        .cellphone(CELLPHONE_1)
-        .whatsapp(WHATSAPP_1)
-        .facebook(FACEBOOK_1)
-        .instagram(INSTAGRAM_1)
-        .email(EMAIL_1)
-        .main(Boolean.TRUE)
-        .build();
+    return EntityFactory.audited(Contact.class)
+        .set(field(Contact::getName), name)
+        .set(field(Contact::getObjectType), objectType)
+        .set(field(Contact::getObjectId), objectId)
+        .set(field(Contact::getPhone), PHONE_1)
+        .create();
   }
 }

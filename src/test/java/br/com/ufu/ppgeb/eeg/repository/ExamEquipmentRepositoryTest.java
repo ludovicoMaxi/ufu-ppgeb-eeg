@@ -1,19 +1,18 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
-import br.com.ufu.ppgeb.eeg.model.CivilStatus;
 import br.com.ufu.ppgeb.eeg.model.Equipment;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamEquipment;
 import br.com.ufu.ppgeb.eeg.model.Patient;
-import br.com.ufu.ppgeb.eeg.model.Sex;
 import br.com.ufu.ppgeb.eeg.model.Unit;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -39,12 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 class ExamEquipmentRepositoryTest {
 
   private static final Long NONEXISTENT_ID = 999L;
-  private static final Long AMOUNT_1 = 2L;
   private static final Long AMOUNT_2 = 4L;
-  private static final String PATIENT_NAME = "Paciente Exame Equipamento";
-  private static final String EQUIPMENT_NAME_1 = "Equipamento Um";
-  private static final String EQUIPMENT_NAME_2 = "Equipamento Dois";
-  private static final String UNIT_NAME = "unidade";
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
@@ -80,7 +74,7 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given valid examEquipment when save then generate id and fill auditing fields")
   void givenValidExamEquipment_whenSave_thenGenerateIdAndFillAuditingFields() {
     Exam exam = persistExam();
-    Equipment equipment = persistEquipment(EQUIPMENT_NAME_1);
+    Equipment equipment = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment examEquipment = createExamEquipment(exam, equipment, unit);
     assertThat(examEquipment.getId()).isNull();
@@ -102,7 +96,7 @@ class ExamEquipmentRepositoryTest {
       + "creation fields")
   void givenExistingExamEquipment_whenUpdate_thenFillUpdatedAuditingFieldsAndPreserveCreationFields() {
     Exam exam = persistExam();
-    Equipment equipment = persistEquipment(EQUIPMENT_NAME_1);
+    Equipment equipment = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment saved = examEquipmentRepository.save(createExamEquipment(exam, equipment, unit));
 
@@ -125,7 +119,7 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given saved examEquipment when findById then return the examEquipment")
   void givenSavedExamEquipment_whenFindById_thenReturnTheExamEquipment() {
     Exam exam = persistExam();
-    Equipment equipment = persistEquipment(EQUIPMENT_NAME_1);
+    Equipment equipment = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment saved = examEquipmentRepository.save(createExamEquipment(exam, equipment, unit));
 
@@ -139,8 +133,8 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given saved examEquipments when findAll then return all examEquipments")
   void givenSavedExamEquipments_whenFindAll_thenReturnAllExamEquipments() {
     Exam exam = persistExam();
-    Equipment equipment1 = persistEquipment(EQUIPMENT_NAME_1);
-    Equipment equipment2 = persistEquipment(EQUIPMENT_NAME_2);
+    Equipment equipment1 = persistEquipment();
+    Equipment equipment2 = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment examEquipment1 = examEquipmentRepository.save(createExamEquipment(exam, equipment1, unit));
     ExamEquipment examEquipment2 = examEquipmentRepository.save(
@@ -155,7 +149,7 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given existing id when existsById then return true")
   void givenExistingId_whenExistsById_thenReturnTrue() {
     Exam exam = persistExam();
-    Equipment equipment = persistEquipment(EQUIPMENT_NAME_1);
+    Equipment equipment = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment saved = examEquipmentRepository.save(createExamEquipment(exam, equipment, unit));
 
@@ -176,7 +170,7 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given saved examEquipment when deleteById then examEquipment is removed")
   void givenSavedExamEquipment_whenDeleteById_thenExamEquipmentIsRemoved() {
     Exam exam = persistExam();
-    Equipment equipment = persistEquipment(EQUIPMENT_NAME_1);
+    Equipment equipment = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment saved = examEquipmentRepository.save(createExamEquipment(exam, equipment, unit));
 
@@ -190,8 +184,8 @@ class ExamEquipmentRepositoryTest {
   @DisplayName("Given saved examEquipments when findByExam then return only matches")
   void givenSavedExamEquipments_whenFindByExam_thenReturnOnlyMatches() {
     Exam exam = persistExam();
-    Equipment equipment1 = persistEquipment(EQUIPMENT_NAME_1);
-    Equipment equipment2 = persistEquipment(EQUIPMENT_NAME_2);
+    Equipment equipment1 = persistEquipment();
+    Equipment equipment2 = persistEquipment();
     Unit unit = persistUnit();
     ExamEquipment examEquipment1 = examEquipmentRepository.save(createExamEquipment(exam, equipment1, unit));
     ExamEquipment examEquipment2 = examEquipmentRepository.save(
@@ -214,49 +208,39 @@ class ExamEquipmentRepositoryTest {
   }
 
   private Patient persistPatient() {
-    Patient patient = Patient.builder()
-        .name(PATIENT_NAME)
-        .documentNumber("123.456.789-00")
-        .sex(Sex.MALE)
-        .nationality("BRASILEIRA")
-        .civilStatus(CivilStatus.SINGLE)
-        .job("ANALISTA")
-        .birthDate(LocalDate.now())
-        .build();
+    Patient patient = EntityFactory.audited(Patient.class)
+        .set(field(Patient::getDocumentNumber), "123.456.789-00")
+        .create();
     return testEntityManager.persistAndFlush(patient);
   }
 
   private Exam persistExam() {
-    Exam exam = Exam.builder()
-        .patient(persistPatient())
-        .achievementDate(ZonedDateTime.now())
-        .bed("Leito Central")
-        .build();
+    Exam exam = EntityFactory.audited(Exam.class)
+        .ignore(field(Exam::getExamRequest))
+        .set(field(Exam::getPatient), persistPatient())
+        .set(field(Exam::getExamMedicaments), new ArrayList<>())
+        .set(field(Exam::getExamEquipments), new ArrayList<>())
+        .create();
     return testEntityManager.persistAndFlush(exam);
   }
 
-  private Equipment persistEquipment(String name) {
-    Equipment equipment = Equipment.builder()
-        .name(name)
-        .description("Equipamento para exame")
-        .build();
+  private Equipment persistEquipment() {
+    Equipment equipment = EntityFactory.audited(Equipment.class)
+        .create();
     return testEntityManager.persistAndFlush(equipment);
   }
 
   private Unit persistUnit() {
-    Unit unit = Unit.builder()
-        .name(UNIT_NAME)
-        .description("Unidade de medida")
-        .build();
+    Unit unit = EntityFactory.unaudited(Unit.class)
+        .create();
     return testEntityManager.persistAndFlush(unit);
   }
 
   private ExamEquipment createExamEquipment(Exam exam, Equipment equipment, Unit unit) {
-    return ExamEquipment.builder()
-        .exam(exam)
-        .equipment(equipment)
-        .unit(unit)
-        .amount(AMOUNT_1)
-        .build();
+    return EntityFactory.audited(ExamEquipment.class)
+        .set(field(ExamEquipment::getExam), exam)
+        .set(field(ExamEquipment::getEquipment), equipment)
+        .set(field(ExamEquipment::getUnit), unit)
+        .create();
   }
 }

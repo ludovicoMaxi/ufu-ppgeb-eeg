@@ -2,9 +2,12 @@ package br.com.ufu.ppgeb.eeg.repository;
 
 import static br.com.ufu.ppgeb.eeg.repository.QuestionnaireSpecifications.withFilters;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Question;
 import br.com.ufu.ppgeb.eeg.model.Questionnaire;
@@ -61,10 +64,10 @@ class QuestionnaireRepositoryTest {
   @Test
   @DisplayName("Given valid questionnaire when save then generate id and fill auditing fields")
   void givenValidQuestionnaire_whenSave_thenGenerateIdAndFillAuditingFields() {
-    Question question = Question.builder()
-        .text(QUESTION_TEXT)
-        .active(Boolean.TRUE)
-        .build();
+    Question question = EntityFactory.audited(Question.class)
+        .set(field(Question::getText), QUESTION_TEXT)
+        .set(field(Question::getQuestionAnswerOptions), new ArrayList<>())
+        .create();
     questionRepository.save(question);
     Questionnaire questionnaire = createQuestionnaire(question.getId());
 
@@ -130,11 +133,9 @@ class QuestionnaireRepositoryTest {
         .question(Question.builder().id(questionId).build())
         .sortOrder(1L)
         .build();
-    Questionnaire questionnaire = Questionnaire.builder()
-        .title(TITLE)
-        .description("Questionário criado em teste")
-        .build();
-    questionnaire.setQuestionnaireQuestions(List.of(link));
-    return questionnaire;
+    return EntityFactory.audited(Questionnaire.class)
+        .set(field(Questionnaire::getTitle), TITLE)
+        .set(field(Questionnaire::getQuestionnaireQuestions), List.of(link))
+        .create();
   }
 }

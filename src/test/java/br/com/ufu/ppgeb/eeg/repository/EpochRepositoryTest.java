@@ -1,10 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.Epoch;
 import jakarta.persistence.EntityManager;
@@ -33,9 +35,6 @@ class EpochRepositoryTest {
   private static final Long NONEXISTENT_ID = 999L;
   private static final Long EXAM_ID_1 = 5001L;
   private static final Long EXAM_ID_2 = 5002L;
-  private static final Long DURATION_1 = 100L;
-  private static final Long DURATION_2 = 200L;
-  private static final String DESCRIPTION_1 = "Epoch alfa";
   private static final String DESCRIPTION_2 = "Epoch beta";
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
@@ -71,7 +70,7 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given valid epoch when save then generate id and fill auditing fields")
   void givenValidEpoch_whenSave_thenGenerateIdAndFillAuditingFields() {
-    Epoch epoch = createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1);
+    Epoch epoch = createEpoch(EXAM_ID_1);
     assertThat(epoch.getId()).isNull();
 
     Epoch saved = epochRepository.save(epoch);
@@ -88,7 +87,7 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given existing epoch when update then fill updated auditing fields and preserve creation fields")
   void givenExistingEpoch_whenUpdate_thenFillUpdatedAuditingFieldsAndPreserveCreationFields() {
-    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
+    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1));
 
     saved.setDescription(DESCRIPTION_2);
     epochRepository.save(saved);
@@ -108,7 +107,7 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given saved epoch when findById then return the epoch")
   void givenSavedEpoch_whenFindById_thenReturnTheEpoch() {
-    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
+    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1));
 
     var result = epochRepository.findById(saved.getId());
 
@@ -119,8 +118,8 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given saved epochs when findAll then return all epochs")
   void givenSavedEpochs_whenFindAll_thenReturnAllEpochs() {
-    Epoch epoch1 = epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
-    Epoch epoch2 = epochRepository.save(createEpoch(EXAM_ID_2, DURATION_2, DESCRIPTION_2));
+    Epoch epoch1 = epochRepository.save(createEpoch(EXAM_ID_1));
+    Epoch epoch2 = epochRepository.save(createEpoch(EXAM_ID_2));
 
     List<Epoch> result = epochRepository.findAll();
 
@@ -130,7 +129,7 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given existing id when existsById then return true")
   void givenExistingId_whenExistsById_thenReturnTrue() {
-    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
+    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1));
 
     boolean result = epochRepository.existsById(saved.getId());
 
@@ -148,7 +147,7 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given saved epoch when deleteById then epoch is removed")
   void givenSavedEpoch_whenDeleteById_thenEpochIsRemoved() {
-    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
+    Epoch saved = epochRepository.save(createEpoch(EXAM_ID_1));
 
     epochRepository.deleteById(saved.getId());
 
@@ -159,8 +158,8 @@ class EpochRepositoryTest {
   @Test
   @DisplayName("Given saved epochs when findByExamId then return only matches")
   void givenSavedEpochs_whenFindByExamId_thenReturnOnlyMatches() {
-    epochRepository.save(createEpoch(EXAM_ID_1, DURATION_1, DESCRIPTION_1));
-    epochRepository.save(createEpoch(EXAM_ID_2, DURATION_2, DESCRIPTION_2));
+    epochRepository.save(createEpoch(EXAM_ID_1));
+    epochRepository.save(createEpoch(EXAM_ID_2));
 
     List<Epoch> result = epochRepository.findByExamId(EXAM_ID_2);
 
@@ -175,12 +174,9 @@ class EpochRepositoryTest {
     assertThat(result).isEmpty();
   }
 
-  private Epoch createEpoch(Long examId, Long duration, String description) {
-    return Epoch.builder()
-        .examId(examId)
-        .startTime(System.currentTimeMillis())
-        .duration(duration)
-        .description(description)
-        .build();
+  private Epoch createEpoch(Long examId) {
+    return EntityFactory.audited(Epoch.class)
+        .set(field(Epoch::getExamId), examId)
+        .create();
   }
 }

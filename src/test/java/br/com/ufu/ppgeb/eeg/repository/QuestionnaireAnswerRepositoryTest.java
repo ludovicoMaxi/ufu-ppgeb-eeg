@@ -1,9 +1,12 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import br.com.ufu.ppgeb.eeg.EntityFactory;
 import br.com.ufu.ppgeb.eeg.config.AuditingConfig;
 import br.com.ufu.ppgeb.eeg.model.AnswerOption;
 import br.com.ufu.ppgeb.eeg.model.ObjectType;
@@ -178,24 +181,25 @@ class QuestionnaireAnswerRepositoryTest {
   }
 
   private Question persistQuestion() {
-    Question question = Question.builder()
-        .text(QUESTION_TEXT)
-        .questionType(QuestionType.SINGLE_SELECT)
-        .active(Boolean.TRUE)
-        .build();
+    Question question = EntityFactory.audited(Question.class)
+        .set(field(Question::getText), QUESTION_TEXT)
+        .set(field(Question::getQuestionType), QuestionType.SINGLE_SELECT)
+        .set(field(Question::getQuestionAnswerOptions), new ArrayList<>())
+        .create();
     return testEntityManager.persistAndFlush(question);
   }
 
   private QuestionnaireAnswer createAnswer(Questionnaire questionnaire, Question question,
       Long objectId, AnswerOption answerOption) {
 
-    QuestionnaireAnswer answer = QuestionnaireAnswer.builder()
-        .questionnaire(questionnaire)
-        .question(question)
-        .objectType(ObjectType.EXAM.getId())
-        .objectId(objectId)
-        .freeText(FREE_TEXT)
-        .build();
+    QuestionnaireAnswer answer = EntityFactory.audited(QuestionnaireAnswer.class)
+        .ignore(field(QuestionnaireAnswer::getAnswerOptions))
+        .set(field(QuestionnaireAnswer::getQuestionnaire), questionnaire)
+        .set(field(QuestionnaireAnswer::getQuestion), question)
+        .set(field(QuestionnaireAnswer::getObjectType), ObjectType.EXAM.getId())
+        .set(field(QuestionnaireAnswer::getObjectId), objectId)
+        .set(field(QuestionnaireAnswer::getFreeText), FREE_TEXT)
+        .create();
     QuestionnaireAnswerOption option = QuestionnaireAnswerOption.builder()
         .questionnaireAnswer(answer)
         .answerOption(answerOption)
