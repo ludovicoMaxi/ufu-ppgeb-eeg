@@ -14,6 +14,9 @@ const BASE_URL_UNIT = `${BASE_URL}/api/v1/units`
 const BASE_URL_MEDICAMENT = `${BASE_URL}/api/v1/medicaments`
 const BASE_URL_EQUIPMENT = `${BASE_URL}/api/v1/equipments`
 const BASE_URL_NOTES = `${BASE_URL}/api/v1/notes`
+const BASE_URL_QUESTIONNAIRE = `${BASE_URL}/api/v1/questionnaires`
+const BASE_URL_QUESTION = `${BASE_URL}/api/v1/questions`
+const BASE_URL_ANSWER_OPTION = `${BASE_URL}/api/v1/answer-options`
 
 export {
     BASE_URL,
@@ -23,5 +26,8 @@ export {
     BASE_URL_UNIT,
     BASE_URL_MEDICAMENT,
     BASE_URL_EQUIPMENT,
-    BASE_URL_NOTES
+    BASE_URL_NOTES,
+    BASE_URL_QUESTIONNAIRE,
+    BASE_URL_QUESTION,
+    BASE_URL_ANSWER_OPTION
 };

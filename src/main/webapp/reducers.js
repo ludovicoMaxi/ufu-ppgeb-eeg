@@ -8,6 +8,9 @@ import ExamRequestReducer from './exam-request/examRequestReducer'
 import ExamReducer from './exam/examReducer'
 import ExamMedicamentReducer from './examMedicament/examMedicamentReducer'
 import ExamEquipmentReducer from './examEquipment/examEquipmentReducer'
+import QuestionnaireReducer from './questionnaire/questionnaireReducer'
+import QuestionReducer from './question/questionReducer'
+import AnswerOptionReducer from './answerOption/answerOptionReducer'
 
 const rootReducer = combineReducers({
     toastr: toastrReducer,
@@ -17,7 +20,10 @@ const rootReducer = combineReducers({
     examRequest: ExamRequestReducer,
     exam: ExamReducer,
     examMedicament: ExamMedicamentReducer,
-    examEquipment: ExamEquipmentReducer
+    examEquipment: ExamEquipmentReducer,
+    questionnaire: QuestionnaireReducer,
+    question: QuestionReducer,
+    answerOption: AnswerOptionReducer
 })
 
 export default rootReducer

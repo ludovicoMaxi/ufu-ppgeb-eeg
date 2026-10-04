@@ -247,6 +247,40 @@ class QuestionnaireServiceImplTest {
   }
 
   @Test
+  @DisplayName("Given existing question link when update with new sort order then keep single link")
+  void givenExistingQuestionLink_whenUpdateWithNewSortOrder_thenKeepSingleLink() {
+    final Long newSortOrder = 3L;
+    Questionnaire questionnaire = createQuestionnaire(QUESTIONNAIRE_ID,
+        List.of(QUESTION_ID));
+    questionnaire.getQuestionnaireQuestions().get(0).setSortOrder(newSortOrder);
+    Questionnaire old = createQuestionnaire(QUESTIONNAIRE_ID, List.of(QUESTION_ID));
+    when(questionRepository.findAllById(List.of(QUESTION_ID)))
+        .thenReturn(existingQuestions(List.of(QUESTION_ID)));
+    when(questionnaireRepository.findById(QUESTIONNAIRE_ID)).thenReturn(Optional.of(old));
+    when(questionnaireRepository.save(any(Questionnaire.class))).thenReturn(old);
+
+    questionnaireService.update(questionnaire);
+
+    List<QuestionnaireQuestion> links = old.getQuestionnaireQuestions();
+    assertThat(links).hasSize(1);
+    assertThat(links.get(0).getQuestion().getId()).isEqualTo(QUESTION_ID);
+    assertThat(links.get(0).getSortOrder()).isEqualTo(newSortOrder);
+  }
+
+  @Test
+  @DisplayName("Given existing question link when update without it then remove link")
+  void givenExistingQuestionLink_whenUpdateWithoutIt_thenRemoveLink() {
+    final Questionnaire questionnaire = createQuestionnaire(QUESTIONNAIRE_ID, List.of());
+    Questionnaire old = createQuestionnaire(QUESTIONNAIRE_ID, List.of(QUESTION_ID));
+    when(questionnaireRepository.findById(QUESTIONNAIRE_ID)).thenReturn(Optional.of(old));
+    when(questionnaireRepository.save(any(Questionnaire.class))).thenReturn(old);
+
+    questionnaireService.update(questionnaire);
+
+    assertThat(old.getQuestionnaireQuestions()).isEmpty();
+  }
+
+  @Test
   @DisplayName("Given nonexistent questionnaire when update then throw exception")
   void givenNonexistentQuestionnaire_whenUpdate_thenThrowException() {
     Questionnaire questionnaire = createQuestionnaire(NONEXISTENT_ID, List.of());
