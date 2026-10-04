@@ -94,7 +94,7 @@ mesmo `(questionnaire_id, object_type, object_id)`.
 | `QUESTION_ID`     | Long (FK → QUESTION) | not null |
 | `OBJECT_TYPE`     | Long  | not null; `ObjectType.EXAM = 2L` |
 | `OBJECT_ID`       | Long  | not null; id do exame |
-| `FREE_TEXT`       | VARCHAR(2048) | opcional; obrigatório para `FREE_TEXT` |
+| `FREE_TEXT`       | VARCHAR(2048) | opcional; obrigatório para `FREE_TEXT`; descrição/observação para `SINGLE_SELECT`/`MULTI_SELECT` |
 | auditoria         | —     | padrão |
 
 - `UNIQUE (QUESTIONNAIRE_ID, QUESTION_ID, OBJECT_TYPE, OBJECT_ID)`.
@@ -120,8 +120,10 @@ tem uma ou mais).
 
 - Referência **viva**: respostas apontam para `QUESTION`/`ANSWER_OPTION` atuais,
   sem congelar texto (sem snapshot).
-- `SINGLE_SELECT`: exatamente uma alternativa selecionada; `FREE_TEXT` vazio.
-- `MULTI_SELECT`: uma ou mais alternativas selecionadas; `FREE_TEXT` vazio.
+- `SINGLE_SELECT`: exatamente uma alternativa selecionada; `FREE_TEXT` opcional
+  (descrição/observação da resposta).
+- `MULTI_SELECT`: uma ou mais alternativas selecionadas; `FREE_TEXT` opcional
+  (descrição/observação da resposta).
 - `FREE_TEXT`: texto obrigatório; nenhuma alternativa selecionada.
 - As alternativas selecionadas devem estar vinculadas à questão
   (`QUESTION_ANSWER_OPTION`).

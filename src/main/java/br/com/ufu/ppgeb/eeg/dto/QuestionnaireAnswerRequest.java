@@ -11,7 +11,8 @@ import jakarta.validation.constraints.Size;
  *
  * @param id the answer id (present on update)
  * @param questionId the questioned question id
- * @param freeText the free text answer (used by FREE_TEXT questions)
+ * @param freeText the free text answer (required by FREE_TEXT questions and used as the
+ *     description/observation of a SINGLE_SELECT or MULTI_SELECT answer)
  * @param answerOptionIds the selected catalog answer options
  */
 public record QuestionnaireAnswerRequest(
