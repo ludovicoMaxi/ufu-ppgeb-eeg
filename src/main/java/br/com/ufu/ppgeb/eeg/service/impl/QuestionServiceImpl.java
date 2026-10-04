@@ -178,9 +178,12 @@ public class QuestionServiceImpl implements QuestionService {
     oldQuestion.getQuestionAnswerOptions().addAll(toKeep);
 
     for (QuestionAnswerOption incomingLink : incoming) {
-      boolean kept = toKeep.stream().anyMatch(keptLink ->
-          sameOption(keptLink, incomingLink));
-      if (!kept) {
+      Optional<QuestionAnswerOption> kept = toKeep.stream()
+          .filter(keptLink -> sameOption(keptLink, incomingLink))
+          .findFirst();
+      if (kept.isPresent()) {
+        kept.get().setSortOrder(incomingLink.getSortOrder());
+      } else {
         oldQuestion.getQuestionAnswerOptions().add(
             QuestionAnswerOption.builder()
                 .question(oldQuestion)
@@ -194,7 +197,6 @@ public class QuestionServiceImpl implements QuestionService {
   private boolean sameOption(QuestionAnswerOption first, QuestionAnswerOption second) {
 
     return nonNull(second.getAnswerOption())
-        && Objects.equals(first.getAnswerOption().getId(), second.getAnswerOption().getId())
-        && Objects.equals(first.getSortOrder(), second.getSortOrder());
+        && Objects.equals(first.getAnswerOption().getId(), second.getAnswerOption().getId());
   }
 }

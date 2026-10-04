@@ -166,9 +166,12 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     old.getQuestionnaireQuestions().addAll(toKeep);
 
     for (QuestionnaireQuestion incomingLink : incoming) {
-      boolean kept = toKeep.stream().anyMatch(keptLink ->
-          sameQuestion(keptLink, incomingLink));
-      if (!kept) {
+      Optional<QuestionnaireQuestion> kept = toKeep.stream()
+          .filter(keptLink -> sameQuestion(keptLink, incomingLink))
+          .findFirst();
+      if (kept.isPresent()) {
+        kept.get().setSortOrder(incomingLink.getSortOrder());
+      } else {
         old.getQuestionnaireQuestions().add(
             QuestionnaireQuestion.builder()
                 .questionnaire(old)
@@ -183,7 +186,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
       QuestionnaireQuestion second) {
 
     return nonNull(second.getQuestion())
-        && Objects.equals(first.getQuestion().getId(), second.getQuestion().getId())
-        && Objects.equals(first.getSortOrder(), second.getSortOrder());
+        && Objects.equals(first.getQuestion().getId(), second.getQuestion().getId());
   }
 }

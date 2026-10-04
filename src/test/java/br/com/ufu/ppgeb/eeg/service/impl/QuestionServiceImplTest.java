@@ -289,6 +289,42 @@ class QuestionServiceImplTest {
   }
 
   @Test
+  @DisplayName("Given existing option link when update with new sort order then keep single link")
+  void givenExistingOptionLink_whenUpdateWithNewSortOrder_thenKeepSingleLink() {
+    final Long newSortOrder = 3L;
+    Question question = createQuestion(QUESTION_ID, QuestionType.SINGLE_SELECT,
+        List.of(ANSWER_OPTION_ID));
+    question.getQuestionAnswerOptions().get(0).setSortOrder(newSortOrder);
+    Question old = createQuestion(QUESTION_ID, QuestionType.SINGLE_SELECT,
+        List.of(ANSWER_OPTION_ID));
+    when(answerOptionRepository.findAllById(List.of(ANSWER_OPTION_ID)))
+        .thenReturn(existingAnswerOptions(List.of(ANSWER_OPTION_ID)));
+    when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(old));
+    when(questionRepository.save(any(Question.class))).thenReturn(old);
+
+    questionService.update(question);
+
+    List<QuestionAnswerOption> links = old.getQuestionAnswerOptions();
+    assertThat(links).hasSize(1);
+    assertThat(links.get(0).getAnswerOption().getId()).isEqualTo(ANSWER_OPTION_ID);
+    assertThat(links.get(0).getSortOrder()).isEqualTo(newSortOrder);
+  }
+
+  @Test
+  @DisplayName("Given existing option link when update without it then remove link")
+  void givenExistingOptionLink_whenUpdateWithoutIt_thenRemoveLink() {
+    final Question question = createQuestion(QUESTION_ID, QuestionType.FREE_TEXT, List.of());
+    Question old = createQuestion(QUESTION_ID, QuestionType.SINGLE_SELECT,
+        List.of(ANSWER_OPTION_ID));
+    when(questionRepository.findById(QUESTION_ID)).thenReturn(Optional.of(old));
+    when(questionRepository.save(any(Question.class))).thenReturn(old);
+
+    questionService.update(question);
+
+    assertThat(old.getQuestionAnswerOptions()).isEmpty();
+  }
+
+  @Test
   @DisplayName("Given question with nonexistent option when update then throw exception")
   void givenQuestionWithNonexistentOption_whenUpdate_thenThrowException() {
     final Question question = createQuestion(QUESTION_ID, QuestionType.SINGLE_SELECT,

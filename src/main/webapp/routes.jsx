@@ -15,6 +15,15 @@ import ExamRequestRegister from './exam-request/examRequestRegister'
 import ExamEdit from './exam/examEdit'
 import ExamSearch from './exam/examSearch'
 import ExamRegister from './exam/examRegister'
+import QuestionnaireEdit from './questionnaire/questionnaireEdit'
+import QuestionnaireSearch from './questionnaire/questionnaireSearch'
+import QuestionnaireRegister from './questionnaire/questionnaireRegister'
+import QuestionEdit from './question/questionEdit'
+import QuestionSearch from './question/questionSearch'
+import QuestionRegister from './question/questionRegister'
+import AnswerOptionEdit from './answerOption/answerOptionEdit'
+import AnswerOptionSearch from './answerOption/answerOptionSearch'
+import AnswerOptionRegister from './answerOption/answerOptionRegister'
 import { submitPatient, initRegisterPatient } from './patient/patientActions'
 
 const Page = ({ title, small, children }) => (
@@ -55,6 +64,21 @@ const AppRoutes = () => (
                 <Page title='Exames' small='Busca'><ExamSearch /></Page>
             } />
             <Route path='/exam/:examId' element={<ExamEdit />} />
+            <Route path='/questionnaire/add' element={<QuestionnaireRegister />} />
+            <Route path='/questionnaire/search' element={
+                <Page title='Questionários' small='Busca'><QuestionnaireSearch /></Page>
+            } />
+            <Route path='/questionnaire/:questionnaireId' element={<QuestionnaireEdit />} />
+            <Route path='/question/add' element={<QuestionRegister />} />
+            <Route path='/question/search' element={
+                <Page title='Questões' small='Busca'><QuestionSearch /></Page>
+            } />
+            <Route path='/question/:questionId' element={<QuestionEdit />} />
+            <Route path='/answer-option/add' element={<AnswerOptionRegister />} />
+            <Route path='/answer-option/search' element={
+                <Page title='Alternativas' small='Busca'><AnswerOptionSearch /></Page>
+            } />
+            <Route path='/answer-option/:answerOptionId' element={<AnswerOptionEdit />} />
             <Route path='/patient/:patientId' element={<PatientEdit />} />
             <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>

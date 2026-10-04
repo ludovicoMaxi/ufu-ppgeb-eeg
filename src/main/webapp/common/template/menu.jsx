@@ -20,5 +20,23 @@ export default props => (
             <MenuItem path='/exam/search'
                 label='Busca' icon='search' />
         </MenuTree>
+        <MenuTree label='Questionários' icon='clipboard-list'>
+            <MenuItem path='/questionnaire/add'
+                label='Cadastro' icon='plus' />
+            <MenuItem path='/questionnaire/search'
+                label='Busca' icon='search' />
+        </MenuTree>
+        <MenuTree label='Questões' icon='question'>
+            <MenuItem path='/question/add'
+                label='Cadastro' icon='plus' />
+            <MenuItem path='/question/search'
+                label='Busca' icon='search' />
+        </MenuTree>
+        <MenuTree label='Alternativas' icon='list-ul'>
+            <MenuItem path='/answer-option/add'
+                label='Cadastro' icon='plus' />
+            <MenuItem path='/answer-option/search'
+                label='Busca' icon='search' />
+        </MenuTree>
     </ul>
 )
