@@ -90,11 +90,12 @@ class PatientSearch extends Component {
 }
 
 PatientSearch = reduxForm({ form: 'patientSearch' })(PatientSearch)
+const SEARCH_FIELDS = ['name', 'documentNumber'];
 const selector = formValueSelector('patientSearch')
 const mapStateToProps = state => ({
     list: state.patient.resultSearch,
     pagination: state.patient.pagination,
-    formValues: selector(state)
+    formValues: selector(state, ...SEARCH_FIELDS)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchPatients }, dispatch)

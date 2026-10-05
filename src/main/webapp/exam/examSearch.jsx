@@ -90,11 +90,12 @@ class ExamSearch extends Component {
 }
 
 ExamSearch = reduxForm({ form: 'examSearch' })(ExamSearch)
+const SEARCH_FIELDS = ['id', 'bed'];
 const selector = formValueSelector('examSearch')
 const mapStateToProps = state => ({
     list: state.exam.resultSearch,
     pagination: state.exam.pagination,
-    formValues: selector(state)
+    formValues: selector(state, ...SEARCH_FIELDS)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchExam }, dispatch)

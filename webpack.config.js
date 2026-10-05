@@ -7,6 +7,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: './src/main/webapp/index.jsx',
+        devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
         output: {
             path: resolve(__dirname, 'src', 'main', 'webapp', 'public'),
             filename: 'app.js',

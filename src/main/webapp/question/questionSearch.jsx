@@ -102,11 +102,12 @@ class QuestionSearch extends Component {
 }
 
 QuestionSearch = reduxForm({ form: 'questionSearch' })(QuestionSearch)
+const SEARCH_FIELDS = ['id', 'text', 'questionType', 'active'];
 const selector = formValueSelector('questionSearch')
 const mapStateToProps = state => ({
     list: state.question.resultSearch,
     pagination: state.question.pagination,
-    formValues: selector(state)
+    formValues: selector(state, ...SEARCH_FIELDS)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchQuestions }, dispatch)
