@@ -42,6 +42,22 @@ class QuestionnaireForm extends Component {
         }
     }
 
+    renderQuestionLink(item) {
+
+        if (!item || !item.question || !item.question.id) {
+            return false;
+        }
+
+        return (
+            <Link to={`/question/${item.question.id}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                title='Abrir a questão em nova aba'>
+                {questionTypeLabel(item.question.questionType)}
+            </Link>
+        );
+    }
+
     renderQuestionRows() {
         const { readOnly, optionsQuestion } = this.props;
         const list = this.props.questions || [{}];
@@ -54,16 +70,12 @@ class QuestionnaireForm extends Component {
                             label='Questão' cols='12 6' placeholder='Questão' options={optionsQuestion} />
                         <Field name={`questions[${index}].sortOrder`} component={LabelAndInput} readOnly={readOnly}
                             label='Ordem' cols='6 2' placeholder='Ordem' normalize={onlyNumbers} />
-                        <div className='col-6 col-sm-2'>
+<div className='col-6 col-sm-2'>
                             <label className='form-label'>Tipo</label>
-                            <div className='form-control-plaintext'>
-                                <If test={!!item.question && !!item.question.id}>
-                                    <Link to={`/question/${item.question.id}`}>
-                                        {questionTypeLabel(item.question.questionType)}
-                                    </Link>
-                                </If>
+                                <div className='form-control-plaintext'>
+                                    {this.renderQuestionLink(item)}
+                                </div>
                             </div>
-                        </div>
                         <If test={!readOnly}>
                             <div className='col-6 col-sm-2 actions-contacts'>
                                 <button type='button' className='btn btn-success'

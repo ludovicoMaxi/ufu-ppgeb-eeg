@@ -36,6 +36,7 @@ export default class LabelAndInputSelect extends Component {
 
     render() {
         const { cols, label, input, options, placeholder, readOnly, meta: { error } } = this.props;
+        const isDisabled = !!readOnly;
 
         return (
             <Grid cols={cols}>
@@ -43,7 +44,7 @@ export default class LabelAndInputSelect extends Component {
                     <label htmlFor={input.name} className='form-label'>{label}</label>
                     <Select {...input}
                         id={input.name}
-                        isDisabled={readOnly}
+                        isDisabled={isDisabled}
                         placeholder={placeholder}
                         onBlur={() => input.onBlur(input.value)}
                         onChange={this.onChange.bind(this)}
@@ -52,20 +53,69 @@ export default class LabelAndInputSelect extends Component {
                         styles={{
                             control: base => ({
                                 ...base,
-                                borderRadius: 0,
-                                backgroundColor: 'transparent',
-                                borderColor: error ? 'var(--bs-danger)' : 'var(--bs-border-color)',
+                                minHeight: 'var(--app-select-min-height)',
+                                height: 'var(--app-select-min-height)',
+                                alignItems: 'center',
+                                padding: 'var(--app-select-padding)',
+                                borderRadius: 'var(--app-select-radius)',
+                                backgroundColor: isDisabled ? 'var(--app-select-disabled-bg)' : 'var(--app-select-bg)',
+                                color: 'var(--app-select-color)',
+                                borderColor: error ? 'var(--app-select-danger)' : 'var(--app-select-border)',
+                                boxShadow: 'none',
+                                '&:hover, &:focus': {
+                                    borderColor: error ? 'var(--app-select-danger)' : 'var(--app-select-focus-border)'
+                                }
+                            }),
+                            valueContainer: base => ({
+                                ...base,
+                                padding: '0',
+                                color: 'var(--app-select-color)'
+                            }),
+                            input: base => ({
+                                ...base,
+                                color: 'var(--app-select-color)'
+                            }),
+                            singleValue: base => ({
+                                ...base,
+                                color: 'var(--app-select-color)'
+                            }),
+                            placeholder: base => ({
+                                ...base,
+                                color: 'var(--app-select-placeholder)'
+                            }),
+                            indicatorSeparator: base => ({
+                                ...base,
+                                backgroundColor: 'transparent'
+                            }),
+                            dropdownIndicator: base => ({
+                                ...base,
+                                padding: '0 4px',
+                                color: 'var(--app-select-placeholder)',
+                                ':hover': {
+                                    color: 'var(--app-select-color)'
+                                }
                             }),
                             menu: base => ({
                                 ...base,
-                                backgroundColor: 'var(--bs-body-bg)',
+                                borderRadius: 'var(--app-select-radius)',
+                                backgroundColor: 'var(--app-select-bg)',
+                                boxShadow: 'var(--app-select-shadow)'
+                            }),
+                            menuList: base => ({
+                                ...base,
+                                padding: '0.25rem 0'
                             }),
                             option: base => ({
                                 ...base,
-                                backgroundColor: 'var(--bs-body-bg)',
-                                color: 'var(--bs-body-color)',
-                                ':hover': { backgroundColor: 'var(--bs-secondary-bg)' },
-                            }),
+                                backgroundColor: 'var(--app-select-bg)',
+                                color: 'var(--app-select-color)',
+                                '&:hover, &:focus': {
+                                    backgroundColor: 'var(--app-select-option-hover-bg)'
+                                },
+                                '&:active': {
+                                    backgroundColor: 'var(--app-select-option-hover-bg)'
+                                }
+                            })
                         }}
                     />
                     {error && <span className="invalid-feedback d-block">{error}</span>}

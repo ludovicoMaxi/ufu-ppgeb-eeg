@@ -97,11 +97,12 @@ class QuestionnaireSearch extends Component {
 }
 
 QuestionnaireSearch = reduxForm({ form: 'questionnaireSearch' })(QuestionnaireSearch)
+const SEARCH_FIELDS = ['id', 'title'];
 const selector = formValueSelector('questionnaireSearch')
 const mapStateToProps = state => ({
     list: state.questionnaire.resultSearch,
     pagination: state.questionnaire.pagination,
-    formValues: selector(state)
+    formValues: selector(state, ...SEARCH_FIELDS)
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchQuestionnaires }, dispatch)

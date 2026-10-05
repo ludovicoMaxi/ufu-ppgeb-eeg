@@ -22,21 +22,17 @@ export default props => (
         </MenuTree>
         <MenuTree label='Questionários' icon='clipboard-list'>
             <MenuItem path='/questionnaire/add'
-                label='Cadastro' icon='plus' />
+                label='Cadastro de questionário' icon='plus' />
             <MenuItem path='/questionnaire/search'
-                label='Busca' icon='search' />
-        </MenuTree>
-        <MenuTree label='Questões' icon='question'>
+                label='Busca de questionários' icon='search' />
             <MenuItem path='/question/add'
-                label='Cadastro' icon='plus' />
+                label='Cadastro de questão' icon='plus' />
             <MenuItem path='/question/search'
-                label='Busca' icon='search' />
-        </MenuTree>
-        <MenuTree label='Alternativas' icon='list-ul'>
+                label='Busca de questões' icon='search' />
             <MenuItem path='/answer-option/add'
-                label='Cadastro' icon='plus' />
+                label='Cadastro de alternativa' icon='plus' />
             <MenuItem path='/answer-option/search'
-                label='Busca' icon='search' />
+                label='Busca de alternativas' icon='search' />
         </MenuTree>
     </ul>
 )
