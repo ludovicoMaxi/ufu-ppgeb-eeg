@@ -11,6 +11,7 @@ import ExamEquipmentReducer from './examEquipment/examEquipmentReducer'
 import QuestionnaireReducer from './questionnaire/questionnaireReducer'
 import QuestionReducer from './question/questionReducer'
 import AnswerOptionReducer from './answerOption/answerOptionReducer'
+import QuestionnaireAnswerReducer from './questionnaireAnswer/questionnaireAnswerReducer'
 
 const rootReducer = combineReducers({
     toastr: toastrReducer,
@@ -23,7 +24,8 @@ const rootReducer = combineReducers({
     examEquipment: ExamEquipmentReducer,
     questionnaire: QuestionnaireReducer,
     question: QuestionReducer,
-    answerOption: AnswerOptionReducer
+    answerOption: AnswerOptionReducer,
+    questionnaireAnswer: QuestionnaireAnswerReducer
 })
 
 export default rootReducer

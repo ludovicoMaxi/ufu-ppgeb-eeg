@@ -19,6 +19,7 @@ import ExamMedicamentListForm from '../examMedicament/examMedicamentListForm'
 import ExamEquipmentListForm from '../examEquipment/examEquipmentListForm'
 import EpochListForm from '../epoch/epochListForm'
 import ActivityListForm from '../activity/activityListForm'
+import QuestionnaireAnswerListForm from '../questionnaireAnswer/questionnaireAnswerListForm'
 
 class ExamForm extends Component {
 
@@ -101,6 +102,7 @@ class ExamForm extends Component {
                             <TabHeader label='Equipamentos' icon='cogs' target='tabEquipments' />
                             <TabHeader label='Épocas' icon='stopwatch' target='tabEpochs' />
                             <TabHeader label='Atividades' icon='clipboard-list' target='tabActivitys' />
+                            <TabHeader label='Questionário' icon='clipboard-check' target='tabQuestionnaire' />
                             <If test={examRequest != undefined} >
                                 <TabHeader label='Requerimentos' icon='box' target='tabRequests' />
                             </If>
@@ -117,6 +119,9 @@ class ExamForm extends Component {
                             </TabContent>
                             <TabContent id='tabActivitys'>
                                 <ActivityListForm examId={examId} />
+                            </TabContent>
+                            <TabContent id='tabQuestionnaire'>
+                                <QuestionnaireAnswerListForm examId={examId} />
                             </TabContent>
                             <If test={examRequest != undefined} >
                                 <TabContent id='tabRequests'>
