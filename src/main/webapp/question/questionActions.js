@@ -11,11 +11,13 @@ const INITIAL_VALUES = { active: true, options: [{}] };
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_OPTIONS_PAGE_SIZE = 200;
 
+export const SINGLE_SELECT = 'SINGLE_SELECT';
+export const MULTI_SELECT = 'MULTI_SELECT';
 export const FREE_TEXT = 'FREE_TEXT';
 
 export const QUESTION_TYPE_OPTIONS = [
-    { 'value': 'SINGLE_SELECT', 'label': 'Seleção única' },
-    { 'value': 'MULTI_SELECT', 'label': 'Seleção múltipla' },
+    { 'value': SINGLE_SELECT, 'label': 'Seleção única' },
+    { 'value': MULTI_SELECT, 'label': 'Seleção múltipla' },
     { 'value': FREE_TEXT, 'label': 'Texto livre' }
 ];
 

@@ -251,6 +251,34 @@ class QuestionnaireAnswerServiceImplTest {
   }
 
   @Test
+  @DisplayName("Given an existing answer when updateList then merge the options in the stored "
+      + "collection instance instead of replacing it")
+  void givenAnExistingAnswer_whenUpdateList_thenMergeTheOptionsInTheStoredCollectionInstance() {
+    Questionnaire questionnaire = createQuestionnaire(createQuestion(QUESTION_ID,
+        QuestionType.MULTI_SELECT, List.of(ANSWER_OPTION_ID, OTHER_ANSWER_OPTION_ID)));
+    QuestionnaireAnswer old = createAnswer(ANSWER_ID, QUESTION_ID,
+        List.of(ANSWER_OPTION_ID, OTHER_ANSWER_OPTION_ID));
+    when(questionnaireRepository.findById(QUESTIONNAIRE_ID))
+        .thenReturn(Optional.of(questionnaire));
+    when(questionnaireAnswerRepository
+        .findByQuestionnaireAndObjectTypeAndObjectId(questionnaire, OBJECT_TYPE, OBJECT_ID))
+        .thenReturn(List.of(old));
+    when(questionnaireAnswerRepository.save(old)).thenReturn(old);
+    List<QuestionnaireAnswerOption> storedOptions = old.getAnswerOptions();
+    QuestionnaireAnswer incoming = createAnswer(ANSWER_ID, QUESTION_ID,
+        List.of(OTHER_ANSWER_OPTION_ID));
+
+    questionnaireAnswerService
+        .updateList(QUESTIONNAIRE_ID, OBJECT_TYPE, OBJECT_ID, List.of(incoming));
+
+    assertThat(old.getAnswerOptions()).isSameAs(storedOptions);
+    assertThat(storedOptions).hasSize(ONE_OPTION);
+    assertThat(storedOptions.get(0).getAnswerOption().getId())
+        .isEqualTo(OTHER_ANSWER_OPTION_ID);
+    verify(questionnaireAnswerRepository).save(old);
+  }
+
+  @Test
   @DisplayName("Given existing single select answer with a new observation when updateList then "
       + "update the observation")
   void givenExistingSingleSelectAnswerWithObservation_whenUpdateList_thenUpdateTheObservation() {

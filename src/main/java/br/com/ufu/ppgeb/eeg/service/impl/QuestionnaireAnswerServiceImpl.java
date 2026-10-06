@@ -208,19 +208,20 @@ public class QuestionnaireAnswerServiceImpl implements QuestionnaireAnswerServic
             sameOptionId(oldOption, in)))
         .toList();
 
-    List<QuestionnaireAnswerOption> merged = new ArrayList<>(toKeep);
+    old.getAnswerOptions().clear();
+    old.getAnswerOptions().addAll(toKeep);
+
     for (QuestionnaireAnswerOption incomingOption : incoming) {
       boolean kept = toKeep.stream().anyMatch(keptOption ->
           sameOptionId(keptOption, incomingOption));
       if (!kept) {
-        merged.add(
+        old.getAnswerOptions().add(
             QuestionnaireAnswerOption.builder()
                 .questionnaireAnswer(old)
                 .answerOption(incomingOption.getAnswerOption())
                 .build());
       }
     }
-    old.setAnswerOptions(merged);
   }
 
   private boolean sameOptionId(QuestionnaireAnswerOption first,

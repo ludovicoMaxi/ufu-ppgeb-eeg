@@ -18,6 +18,10 @@ class AnswerOptionSearch extends Component {
         this.props.clearSearchAnswerOptions();
     }
 
+    submit = values => {
+        this.props.onSubmit(values, 0);
+    }
+
     onPageChange = (page) => {
         this.props.onSubmit({}, page);
     }
@@ -38,7 +42,7 @@ class AnswerOptionSearch extends Component {
 
         return (
             <div>
-                <Form role='form' onSubmit={handleSubmit} className='card'>
+                <Form role='form' onSubmit={handleSubmit(this.submit)} className='card'>
                     <div>
                         <div className='card-body'>
                             <fieldset>
