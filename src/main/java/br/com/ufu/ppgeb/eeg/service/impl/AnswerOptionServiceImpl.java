@@ -68,7 +68,8 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
     validate(answerOption);
 
     Long answerOptionId = answerOption.getId();
-    AnswerOption old = findById(answerOptionId);
+    AnswerOption old = answerOptionRepository.findById(answerOptionId)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, answerOptionId));
 
     old.setText(answerOption.getText());
     old.setActive(answerOption.getActive());
@@ -83,7 +84,8 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
   public void delete(Long id) {
 
     Assert.notNull(id, MSG_ID_NULL);
-    AnswerOption answerOption = findById(id);
+    AnswerOption answerOption = answerOptionRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     Assert.isTrue(!questionAnswerOptionRepository.existsByAnswerOption(answerOption),
         "Answer option is referenced by questions and cannot be removed.");
     answerOptionRepository.delete(answerOption);
