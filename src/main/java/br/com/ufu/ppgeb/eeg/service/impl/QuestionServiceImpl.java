@@ -86,7 +86,8 @@ public class QuestionServiceImpl implements QuestionService {
     validateOptions(question);
 
     Long questionId = question.getId();
-    Question oldQuestion = findById(questionId);
+    Question oldQuestion = questionRepository.findById(questionId)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, questionId));
 
     oldQuestion.setText(question.getText());
     oldQuestion.setDescription(question.getDescription());
@@ -104,7 +105,8 @@ public class QuestionServiceImpl implements QuestionService {
   public void delete(Long id) {
 
     Assert.notNull(id, MSG_ID_NULL);
-    Question question = findById(id);
+    Question question = questionRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     Assert.isTrue(!questionnaireQuestionRepository.existsByQuestion(question),
         "Question is referenced by questionnaires and cannot be removed.");
     questionRepository.delete(question);

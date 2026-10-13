@@ -84,7 +84,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     validateQuestionLinks(questionnaire);
 
     Long questionnaireId = questionnaire.getId();
-    Questionnaire old = findById(questionnaireId);
+    Questionnaire old = questionnaireRepository.findById(questionnaireId)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, questionnaireId));
 
     old.setTitle(questionnaire.getTitle());
     old.setDescription(questionnaire.getDescription());
@@ -100,7 +101,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
   public void delete(Long id) {
 
     Assert.notNull(id, MSG_ID_NULL);
-    Questionnaire questionnaire = findById(id);
+    Questionnaire questionnaire = questionnaireRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     Assert.isTrue(!questionnaireAnswerRepository.existsByQuestionnaire(questionnaire),
         "Questionnaire has answers and cannot be removed.");
     questionnaireRepository.delete(questionnaire);
