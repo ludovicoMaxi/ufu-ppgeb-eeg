@@ -10,7 +10,7 @@ import withRouter from '../common/router/withRouter'
 
 class PatientEdit extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.init();
         const { patientId } = this.props.match.params;
         this.props.getPatientById(patientId);

@@ -22,7 +22,7 @@ import {
 
 class ExamMedicamentListForm extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.init(this.props.examId, this.props.examMedicamentList);
         this.props.getOptionsUnit();
         this.props.getOptionsMedicament();

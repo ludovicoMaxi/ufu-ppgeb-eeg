@@ -13,7 +13,7 @@ import withRouter from '../common/router/withRouter'
 
 class ExamRegister extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         const queryParams = qs.parse(this.props.location.search);
         this.props.init(queryParams.examRequestId);
         this.props.initPatient();

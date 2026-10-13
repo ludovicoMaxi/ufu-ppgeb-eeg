@@ -165,7 +165,7 @@ export function init(examRequestId) {
         initialvalues.examRequest.id = examRequestId;
     }
     return [
-        showTabs('tabMedicine', 'tabEquipments', 'tabEpochs', 'tabActivitys', 'tabRequests'),
+        showTabs('tabMedicine', 'tabEquipments', 'tabEpochs', 'tabActivitys', 'tabQuestionnaire', 'tabRequests'),
         selectTab('tabMedicine'),
         initialize('examForm', initialvalues)
     ]

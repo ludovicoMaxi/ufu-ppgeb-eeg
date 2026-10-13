@@ -17,7 +17,7 @@ export default props => {
                         value={option.value}
                         checked={`${input.value}` === `${option.value}`}
                         disabled={readOnly}
-                        onChange={() => input.onChange(option.value)} />
+                        onChange={() => input.onChange([option.value])} />
                     <label className='form-check-label'
                         htmlFor={`${input.name}_${option.value}`}>{option.label}</label>
                 </div>
