@@ -58,6 +58,19 @@ export function toOptionItems(question) {
         .map(link => ({ value: link.answerOption.id, label: answerOptionLabel(link.answerOption) })));
 }
 
+export function toAnswerOptionIds(answerOptionIds) {
+
+    if (Array.isArray(answerOptionIds)) {
+        return answerOptionIds;
+    }
+
+    if (answerOptionIds === undefined || answerOptionIds === null || answerOptionIds === '') {
+        return [];
+    }
+
+    return [answerOptionIds];
+}
+
 export function toAnswerPayload(values) {
 
     return ((values.answers || []).filter(answer => isAnswered(answer)))
@@ -65,7 +78,7 @@ export function toAnswerPayload(values) {
             id: answer.id,
             questionId: answer.questionId,
             freeText: !!answer.freeText ? answer.freeText : null,
-            answerOptionIds: (answer.answerOptionIds || []).map(optionId => Number(optionId))
+            answerOptionIds: toAnswerOptionIds(answer.answerOptionIds).map(optionId => Number(optionId))
         }));
 }
 
@@ -79,7 +92,7 @@ export function isAnswered(answer) {
         return !!answer.freeText;
     }
 
-    return (answer.answerOptionIds || []).length > 0;
+    return toAnswerOptionIds(answer.answerOptionIds).length > 0;
 }
 
 export function loadQuestionnaire(examId, questionnaireId) {

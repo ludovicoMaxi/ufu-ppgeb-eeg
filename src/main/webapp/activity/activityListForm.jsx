@@ -19,7 +19,7 @@ import {
 
 class ActivityListForm extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.init(this.props.examId);
     }
 

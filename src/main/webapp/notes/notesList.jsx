@@ -15,7 +15,7 @@ import Grid from '../common/layout/grid'
 
 class NotesList extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.find(this.props.objectId, this.props.objectType);
     }
 

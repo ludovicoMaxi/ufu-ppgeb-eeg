@@ -12,7 +12,7 @@ import withRouter from '../common/router/withRouter'
 
 class ExamRequestRegister extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.init();
         this.props.initPatient();
         const { patientId } = this.props.match.params;
