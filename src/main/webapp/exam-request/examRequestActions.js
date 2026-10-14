@@ -4,6 +4,7 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 import { BASE_URL_EXAM_REQUEST, BASE_URL_EXAM } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const INITIAL_VALUES = {};
 
@@ -23,7 +24,7 @@ export function getExamRequestById(id) {
                     toastr.error('Erro', `Requerimento de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar o Requerimento (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar o Requerimento (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -37,7 +38,7 @@ export function getExamByExamRequestId(id) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do requerimento (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do requerimento (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -106,7 +107,7 @@ export function searchExamRequest(values) {
                     toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -130,7 +131,7 @@ function update(values) {
                 dispatch(initialize('examRequestForm', resp.data));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar o Requerimento (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar o Requerimento (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -144,7 +145,7 @@ function create(values) {
                 window.location = `/#/exam-request/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Requerimento: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Requerimento: \n` + errorMessage(e))
             })
     }
 }

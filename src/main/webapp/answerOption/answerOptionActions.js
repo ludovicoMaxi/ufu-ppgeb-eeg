@@ -3,6 +3,7 @@ import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError } from 'redux-form'
 
 import { BASE_URL_ANSWER_OPTION } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const INITIAL_VALUES = { active: true };
 
@@ -28,7 +29,7 @@ export function getAnswerOptionById(id) {
                     toastr.error('Erro', `Alternativa de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar a Alternativa (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar a Alternativa (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -44,7 +45,7 @@ export function getOptionsAnswerOption() {
                     toastr.error('Erro', `Não existem alternativas de resposta!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar as alternativas: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar as alternativas: \n` + errorMessage(e))
             })
     }
 }
@@ -84,7 +85,7 @@ export function searchAnswerOptions(values, page) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -105,7 +106,7 @@ export function removeAnswerOption(values) {
                 window.location = `/#/answer-option/search`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao remover a Alternativa (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao remover a Alternativa (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -118,7 +119,7 @@ function update(values) {
                 dispatch(initialize('answerOptionForm', resp.data));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar a Alternativa (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar a Alternativa (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -132,7 +133,7 @@ function create(values) {
                 window.location = `/#/answer-option/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar a Alternativa: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar a Alternativa: \n` + errorMessage(e))
             })
     }
 }

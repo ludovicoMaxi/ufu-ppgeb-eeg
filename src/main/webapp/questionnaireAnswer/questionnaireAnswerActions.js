@@ -3,6 +3,7 @@ import { toastr } from 'react-redux-toastr'
 import { initialize, SubmissionError } from 'redux-form'
 
 import { BASE_URL_EXAM, BASE_URL_QUESTIONNAIRE } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 import { FREE_TEXT } from '../question/questionActions'
 
 const FORM_NAME = 'questionnaireAnswerForm';
@@ -181,19 +182,4 @@ export function init(examId) {
 
 function linkOrder(link) {
     return !!link.sortOrder ? Number(link.sortOrder) : 0;
-}
-
-function errorMessage(e) {
-
-    const data = !!e && !!e.response ? e.response.data : null;
-
-    if (!!data && !!data.message) {
-        return data.message;
-    }
-
-    if (!!data && !!data.detail) {
-        return data.detail;
-    }
-
-    return 'Tente novamente mais tarde.';
 }

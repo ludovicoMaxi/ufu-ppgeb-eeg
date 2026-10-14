@@ -3,6 +3,7 @@ import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError, arrayInsert, arrayRemove } from 'redux-form'
 
 import { BASE_URL_QUESTION } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const FORM_NAME = 'questionForm';
 
@@ -74,7 +75,7 @@ export function getQuestionById(id) {
                     toastr.error('Erro', `Questão de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar a Questão (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar a Questão (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -90,7 +91,7 @@ export function getOptionsQuestion() {
                     toastr.error('Erro', `Não existem questões!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar as questões: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar as questões: \n` + errorMessage(e))
             })
     }
 }
@@ -126,7 +127,7 @@ export function searchQuestions(values, page) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -155,7 +156,7 @@ export function removeQuestion(values) {
                 window.location = `/#/question/search`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao remover a Questão (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao remover a Questão (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -209,7 +210,7 @@ function update(values) {
                 dispatch(initialize(FORM_NAME, toQuestionFormValues(resp.data)));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar a Questão (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar a Questão (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -223,7 +224,7 @@ function create(values) {
                 window.location = `/#/question/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar a Questão: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar a Questão: \n` + errorMessage(e))
             })
     }
 }

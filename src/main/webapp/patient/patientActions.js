@@ -2,6 +2,8 @@ import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError } from 'redux-form'
 import { BASE_URL_PATIENT, BASE_URL_EXAM, BASE_URL_EXAM_REQUEST } from '../constants'
+import { onlyNumbers, documentNumber as documentNumberMask } from '../common/form/formatValues'
+import { errorMessage } from '../common/msg/errorMessage'
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 
@@ -14,13 +16,14 @@ export function getPatientById(id) {
         axios.get(`${BASE_URL_PATIENT}/${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch([initialize('patientForm', resp.data), { type: 'PATIENT_FETCHED', payload: resp.data }]);
+                    const patient = { ...resp.data, documentNumber: documentNumberMask(resp.data.documentNumber) };
+                    dispatch([initialize('patientForm', patient), { type: 'PATIENT_FETCHED', payload: resp.data }]);
                 }
                 else
                     toastr.error('Erro', `Paciente de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar o paciente (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar o paciente (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -34,7 +37,7 @@ export function getExamByPatientId(id) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do paciente (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar os exames do paciente (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -48,7 +51,7 @@ export function getExamRequestByPatientId(id) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar os requerimentos do paciente (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar os requerimentos do paciente (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -80,10 +83,12 @@ export function submitPatient(values) {
         throw new SubmissionError(errors);
     }
 
-    if (!!values.id) {
-        return update(values)
+    const payload = { ...values, documentNumber: onlyNumbers(values.documentNumber) };
+
+    if (!!payload.id) {
+        return update(payload)
     } else {
-        return create(values)
+        return create(payload)
     }
 }
 
@@ -101,7 +106,7 @@ export function searchPatients(values, page) {
     return dispatch => {
         var params = `page=${page || 0}&size=${DEFAULT_PAGE_SIZE}`
             + (!!values.name ? `&name=${values.name}` : '')
-            + (!!values.documentNumber ? `&documentNumber=${values.documentNumber}` : '');
+            + (!!values.documentNumber ? `&documentNumber=${onlyNumbers(values.documentNumber)}` : '');
         axios.get(`${BASE_URL_PATIENT}?${params}`)
             .then(resp => {
                 if (!!resp.data) {
@@ -113,7 +118,7 @@ export function searchPatients(values, page) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -134,10 +139,11 @@ function update(values) {
         axios.put(`${BASE_URL_PATIENT}/${values.id}`, values)
             .then(resp => {
                 toastr.success('Sucesso', `Paciente atualizado com sucesso.`);
-                dispatch(initialize('patientForm', resp.data));
+                dispatch(initialize('patientForm',
+                    { ...resp.data, documentNumber: documentNumberMask(resp.data.documentNumber) }));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar o associado (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar o associado (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -151,7 +157,7 @@ function create(values) {
                 window.location = `/#/patient/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar o paciente: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar o paciente: \n` + errorMessage(e))
             })
     }
 }
@@ -166,7 +172,7 @@ function submit(values, method, action, idCustomer) {
                 dispatch(init())
             })
             .catch(e => {
-                toastr.error('Erro', 'Ocorreu um erro ao realizar o(a) ${action}: \n' + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao realizar o(a) ${action}: \n` + errorMessage(e))
             })
     }
 }
