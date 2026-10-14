@@ -3,6 +3,7 @@ import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError, arrayInsert, arrayRemove } from 'redux-form'
 
 import { BASE_URL_QUESTIONNAIRE } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const FORM_NAME = 'questionnaireForm';
 
@@ -51,7 +52,7 @@ export function getQuestionnaireById(id) {
                     toastr.error('Erro', `Questionário de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar o Questionário (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar o Questionário (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -85,7 +86,7 @@ export function searchQuestionnaires(values, page) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -114,7 +115,7 @@ export function removeQuestionnaire(values) {
                 window.location = `/#/questionnaire/search`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao remover o Questionário (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao remover o Questionário (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -156,7 +157,7 @@ function update(values) {
                 dispatch(initialize(FORM_NAME, toQuestionnaireFormValues(resp.data)));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar o Questionário (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar o Questionário (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -170,7 +171,7 @@ function create(values) {
                 window.location = `/#/questionnaire/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Questionário: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Questionário: \n` + errorMessage(e))
             })
     }
 }

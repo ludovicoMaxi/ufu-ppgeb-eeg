@@ -3,6 +3,7 @@ import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
 
 import { BASE_URL_NOTES } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 export function init(notesList) {
     return dispatch => {
@@ -36,7 +37,7 @@ export function create(note) {
                 ]);
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar a nota: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar a nota: \n` + errorMessage(e))
             })
     }
 }

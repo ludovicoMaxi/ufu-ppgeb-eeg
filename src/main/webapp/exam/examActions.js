@@ -4,6 +4,7 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 
 import { showTabs, selectTab } from '../common/tab/tabActions'
 import { BASE_URL_EXAM } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 import { updateExamMedicamentList } from '../examMedicament/examMedicamentActions'
 import { updateExamEquipmentList } from '../examEquipment/examEquipmentActions'
 
@@ -26,7 +27,7 @@ export function getExamById(id) {
                     toastr.error('Erro', `Exame de ID ${id} não existe!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar o Exame (${id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar o Exame (${id}): \n` + errorMessage(e))
             })
     }
 }
@@ -115,7 +116,7 @@ export function searchExam(values, page) {
                 }
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
             })
     }
 }
@@ -139,7 +140,7 @@ function update(values) {
                 dispatch(initialize('examForm', resp.data));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar o Exame (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar o Exame (${values.id}): \n` + errorMessage(e))
             })
     }
 }
@@ -153,7 +154,7 @@ function create(values) {
                 window.location = `/#/exam/${resp.data.id}`;
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Exame: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao cadastrar o Exame: \n` + errorMessage(e))
             })
     }
 }

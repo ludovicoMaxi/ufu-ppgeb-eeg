@@ -8,6 +8,7 @@ import {
     change as changeFieldValue,
 } from 'redux-form'
 import { BASE_URL_EXAM } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const INITIAL_VALUES = { 'epochs': [{}] };
 
@@ -26,7 +27,7 @@ export function getEpochsByExamId(examId) {
                 dispatch(initialize('epochListForm', epochList));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar as epocas: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar as epocas: \n` + errorMessage(e))
             })
     }
 }
@@ -67,7 +68,7 @@ export function submitUpdateEpochList(values) {
                 dispatch(changeFieldValue('epochListForm', 'epochs', epochs));
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar a(s) Época(s) do Exame (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar a(s) Época(s) do Exame (${values.id}): \n` + errorMessage(e))
             })
     }
 }

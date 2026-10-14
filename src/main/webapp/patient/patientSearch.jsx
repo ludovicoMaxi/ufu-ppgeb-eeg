@@ -8,7 +8,7 @@ import { searchPatients as onSubmit, clearSearchPatients } from './patientAction
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
 import Pagination from '../common/pagination/pagination'
-import { upper } from '../common/form/formatValues'
+import { upper, documentNumber as documentNumberMask } from '../common/form/formatValues'
 
 class PatientSearch extends Component {
 
@@ -29,7 +29,7 @@ class PatientSearch extends Component {
         return list.map(patient => (
             <tr key={patient.id}>
                 <td><Link to={`/patient/${patient.id}`}>{patient.name}</Link></td>
-                <td><Link to={`/patient/${patient.id}`}>{patient.documentNumber}</Link></td>
+                <td><Link to={`/patient/${patient.id}`}>{documentNumberMask(patient.documentNumber)}</Link></td>
             </tr>
         ))
     }
@@ -47,7 +47,7 @@ class PatientSearch extends Component {
                                     <Field name='name' component={LabelAndInput} readOnly={false}
                                         label='Nome' cols='12 8' placeholder='Informe o nome' normalize={upper} />
                                     <Field name='documentNumber' component={LabelAndInput} readOnly={false}
-                                        label='CPF' cols='12 4' placeholder='Informe o CPF' />
+                                        label='CPF' cols='12 4' placeholder='Informe o CPF' normalize={documentNumberMask} />
                                 </div>
                                 <hr style={{ 'marginTop': '0px', 'marginBottom': '0px' }} />
                             </fieldset>

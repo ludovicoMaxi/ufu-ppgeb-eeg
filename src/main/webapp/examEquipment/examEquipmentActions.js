@@ -2,6 +2,7 @@ import axios from 'axios'
 import { toastr } from 'react-redux-toastr'
 import { reset as resetForm, initialize, SubmissionError, arrayInsert, arrayRemove, change as changeFieldValue } from 'redux-form'
 import { BASE_URL_UNIT, BASE_URL_EQUIPMENT, BASE_URL_EXAM } from '../constants'
+import { errorMessage } from '../common/msg/errorMessage'
 
 const INITIAL_VALUES = { 'examEquipments': [{}] };
 
@@ -16,7 +17,7 @@ export function getOptionsUnit() {
                     toastr.error('Erro', `Não existe unidades!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar as unidades: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar as unidades: \n` + errorMessage(e))
             })
     }
 }
@@ -32,7 +33,7 @@ export function getOptionsEquipment() {
                     toastr.error('Erro', `Não existe Equipamentos!!!`)
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao buscar os equipamentos: \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao buscar os equipamentos: \n` + errorMessage(e))
             })
     }
 }
@@ -62,7 +63,7 @@ export function submitUpdateExamEquipmentList(values) {
                 dispatch([changeFieldValue('examEquipmentListForm', 'examEquipments', resp.data), getOptionsEquipment()]);
             })
             .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao atualizar os Equipamentos do Exame (${values.id}): \n` + e.response.data.message)
+                toastr.error('Erro', `Ocorreu um erro ao atualizar os Equipamentos do Exame (${values.id}): \n` + errorMessage(e))
             })
     }
 }
