@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Grid from '../layout/grid'
 import moment from 'moment'
-import { dateMask } from './formatValues'
+import { dateMask, dateTimeMask } from './formatValues'
 
 const ISO_DATE = 'YYYY-MM-DD'
 const ISO_DATE_TIME = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+const PICKER_DATE_TIME = 'YYYY-MM-DDTHH:mm:ss'
+const PICKER_DATE_TIME_NO_SECONDS = 'YYYY-MM-DDTHH:mm'
 const DISPLAY_DATE = 'DD/MM/YYYY'
 const DISPLAY_DATE_TIME = 'DD/MM/YYYY HH:mm:ss'
+const DISPLAY_DATE_TIME_LENGTH = DISPLAY_DATE_TIME.length
 
 function formatDisplay(value, hasTime) {
     if (!value) {
@@ -20,13 +23,17 @@ function formatDisplay(value, hasTime) {
 }
 
 function toBackend(text, hasTime) {
-    const parsed = moment(text, DISPLAY_DATE, true);
+    const formats = hasTime ? [DISPLAY_DATE_TIME, DISPLAY_DATE] : [DISPLAY_DATE];
+    const parsed = moment(text, formats, true);
     return parsed.isValid() ? parsed.format(hasTime ? ISO_DATE_TIME : ISO_DATE) : null;
 }
 
-function toPickerValue(text) {
-    const parsed = moment(text, DISPLAY_DATE, true);
-    return parsed.isValid() ? parsed.format(ISO_DATE) : '';
+function toPickerValue(text, hasTime) {
+    const parsed = moment(text, [DISPLAY_DATE_TIME, DISPLAY_DATE], true);
+    if (!parsed.isValid()) {
+        return '';
+    }
+    return parsed.format(hasTime ? PICKER_DATE_TIME : ISO_DATE);
 }
 
 export default props => {
@@ -54,6 +61,9 @@ export default props => {
         );
     }
 
+    const mask = hasTime ? dateTimeMask : dateMask;
+    const maxLength = hasTime ? DISPLAY_DATE_TIME_LENGTH : DISPLAY_DATE.length;
+
     const openPicker = () => {
         const picker = pickerRef.current;
         if (!picker) {
@@ -70,6 +80,25 @@ export default props => {
         }
     };
 
+    const onPickerChange = event => {
+        const isoValue = event.target.value;
+        if (!isoValue) {
+            return;
+        }
+        const picked = hasTime
+            ? moment(isoValue, [PICKER_DATE_TIME, PICKER_DATE_TIME_NO_SECONDS], true)
+            : moment(isoValue, ISO_DATE, true);
+        if (!picked.isValid()) {
+            return;
+        }
+        let display = picked.format(DISPLAY_DATE);
+        if (hasTime) {
+            display = picked.format(DISPLAY_DATE_TIME);
+        }
+        setText(display);
+        input.onChange(toBackend(display, hasTime));
+    };
+
     return (
         <Grid cols={cols}>
             <div className={`mb-3 ${!!error ? 'has-error' : ''}`}>
@@ -81,9 +110,9 @@ export default props => {
                         name={input.name}
                         value={text}
                         placeholder={placeholder}
-                        maxLength={10}
+                        maxLength={maxLength}
                         onChange={event => {
-                            const masked = dateMask(event.target.value);
+                            const masked = mask(event.target.value);
                             setText(masked);
                             input.onChange(toBackend(masked, hasTime));
                         }}
@@ -96,17 +125,13 @@ export default props => {
                         onClick={openPicker}>
                         <i className='fa fa-calendar' />
                     </button>
-                    <input ref={pickerRef} type='date' tabIndex={-1} aria-hidden='true'
+                    <input ref={pickerRef}
+                        type={hasTime ? 'datetime-local' : 'date'}
+                        step={hasTime ? 1 : undefined}
+                        tabIndex={-1} aria-hidden='true'
                         className='date-picker-hidden'
-                        value={toPickerValue(text)}
-                        onChange={event => {
-                            const isoValue = event.target.value;
-                            if (isoValue) {
-                                const display = moment(isoValue, ISO_DATE, true).format(DISPLAY_DATE);
-                                setText(display);
-                                input.onChange(toBackend(display, hasTime));
-                            }
-                        }} />
+                        value={toPickerValue(text, hasTime)}
+                        onChange={onPickerChange} />
                 </div>
                 {error && <span className="invalid-feedback d-block">{error}</span>}
             </div>

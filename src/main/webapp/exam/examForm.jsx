@@ -64,7 +64,7 @@ class ExamForm extends Component {
                                         label='Leito' cols='12 3' placeholder='Informe o Leito' />
                                     <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
                                         label='Altura (cm)' cols='12 3' placeholder='Altura em CM' />
-                                    <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
                                         label='Peso (Kg)' cols='12 3' placeholder='Peso em Kg' />
                                     <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
                                         label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
