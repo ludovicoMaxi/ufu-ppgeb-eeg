@@ -113,52 +113,58 @@ class EpochListForm extends Component {
 
         return list.map((item, index) => (
             <div className='card mb-3' key={index} style={{ 'width': '100%' }} >
-                <legend>{this.props.legend}</legend>
-                <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
-                    label='Minutos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
-                    onChange={handleChangeMinute} />
-                <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
-                    label='Segundos' cols='4 1' placeholder='XX' normalize={onlyNumbers}
-                    onChange={handleChangeSecond} />
-                <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
-                    label='Duração (Segundos)' cols='4 2' placeholder='XXX' normalize={onlyNumbers}
-                    onChange={handleChangeDuration} />
-                <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
-                    label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
-                <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
-                    label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                <div className='card-body'>
+                    {!!this.props.legend && <legend>{this.props.legend}</legend>}
+                    <div className='row'>
+                        <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
+                            label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers}
+                            onChange={handleChangeMinute} />
+                        <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
+                            label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers}
+                            onChange={handleChangeSecond} />
+                        <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
+                            label='Duração (Segundos)' cols='6 2' placeholder='XXX' normalize={onlyNumbers}
+                            onChange={handleChangeDuration} />
+                        <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
+                            label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                        <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
+                            label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
+                        <div className='col-12 col-sm-2 d-flex align-items-end ms-auto'>
+                            <div className='actions-contacts'>
+                                <button type='button' className='btn btn-success'
+                                    onClick={() => this.add(index + 1)}>
+                                    <i className="fa fa-plus"></i>
+                                </button>
+                                <button type='button' className='btn btn-warning'
+                                    onClick={() => {
+                                        var itemAdd = { ...item };
+                                        itemAdd.id = undefined;
+                                        itemAdd.createdAt = undefined;
+                                        itemAdd.createdBy = undefined;
+                                        itemAdd.updatedAt = undefined;
+                                        itemAdd.updatedBy = undefined;
+                                        this.add(index + 1, itemAdd)
+                                    }
+                                    }>
+                                    <i className="fa fa-copy"></i>
+                                </button>
+                                <button type='button' className='btn btn-danger'
+                                    onClick={() => this.remove(index)}>
+                                    <i className="fa fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                <If test={this.props.showSystemInfo}>
-                    <SystemInfo field={`${this.props.field}[${index}]`} />
-                </If>
+                    <If test={this.props.showSystemInfo}>
+                        <SystemInfo field={`${this.props.field}[${index}]`} />
+                    </If>
 
-                <div className='actions-contacts'>
-                    <button type='button' className='btn btn-success'
-                        onClick={() => this.add(index + 1)}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                    <button type='button' className='btn btn-warning'
-                        onClick={() => {
-                            var itemAdd = { ...item };
-                            itemAdd.id = undefined;
-                            itemAdd.createdAt = undefined;
-                            itemAdd.createdBy = undefined;
-                            itemAdd.updatedAt = undefined;
-                            itemAdd.updatedBy = undefined;
-                            this.add(index + 1, itemAdd)
-                        }
-                        }>
-                        <i className="fa fa-copy"></i>
-                    </button>
-                    <button type='button' className='btn btn-danger'
-                        onClick={() => this.remove(index)}>
-                        <i className="fa fa-trash-alt"></i>
-                    </button>
+                    <div className='row'>
+                        <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                            label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
+                    </div>
                 </div>
-
-                <Field name={`epochs[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
-                    label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
-
             </ div>
         ))
     }
