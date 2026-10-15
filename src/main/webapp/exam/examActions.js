@@ -7,6 +7,7 @@ import { BASE_URL_EXAM } from '../constants'
 import { errorMessage } from '../common/msg/errorMessage'
 import { updateExamMedicamentList } from '../examMedicament/examMedicamentActions'
 import { updateExamEquipmentList } from '../examEquipment/examEquipmentActions'
+import { getPatientById } from '../patient/patientActions'
 
 const INITIAL_VALUES = {};
 
@@ -19,9 +20,11 @@ export function getExamById(id) {
                 if (!!resp.data) {
                     dispatch([
                         initialize('examForm', resp.data),
-                        initialize('patientForm', resp.data.patient),
                         updateExamMedicamentList(resp.data.examMedicaments),
                         updateExamEquipmentList(resp.data.examEquipments)]);
+                    if (!!resp.data.patientId) {
+                        dispatch(getPatientById(resp.data.patientId));
+                    }
                 }
                 else
                     toastr.error('Erro', `Exame de ID ${id} não existe!!!`)

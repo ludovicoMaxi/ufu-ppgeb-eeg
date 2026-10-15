@@ -5,6 +5,7 @@ import { reset as resetForm, initialize, SubmissionError, change as changeFieldV
 import { showTabs, selectTab } from '../common/tab/tabActions'
 import { BASE_URL_EXAM_REQUEST, BASE_URL_EXAM } from '../constants'
 import { errorMessage } from '../common/msg/errorMessage'
+import { getPatientById } from '../patient/patientActions'
 
 const INITIAL_VALUES = {};
 
@@ -15,10 +16,12 @@ export function getExamRequestById(id) {
                 if (!!resp.data) {
                     dispatch([
                         initialize('examRequestForm', resp.data),
-                        initialize('patientForm', resp.data.patient),
                         showTabs('tabExams'),
                         selectTab('tabExams')
                     ]);
+                    if (!!resp.data.patientId) {
+                        dispatch(getPatientById(resp.data.patientId));
+                    }
                 }
                 else
                     toastr.error('Erro', `Requerimento de ID ${id} não existe!!!`)
