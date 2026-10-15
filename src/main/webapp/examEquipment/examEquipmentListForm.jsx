@@ -62,49 +62,54 @@ class ExamEquipmentListForm extends Component {
 
         return list.map((item, index) => (
             <div className='card mb-3' key={index} style={{ 'width': '100%' }} >
-                <legend>{this.props.legend}</legend>
-                <Field name={`examEquipments[${index}].equipment`} component={LabelAndInputSelect} readOnly={readOnly}
-                    label='Equipamento' cols='12 4' placeholder='Equipamento' options={optionsEquipment} />
-                <Field name={`examEquipments[${index}].amount`} component={LabelAndInput} readOnly={readOnly}
-                    label='Quantidade' cols='6 2' placeholder='Quantidade' normalize={onlyNumbers} />
-                <Field name={`examEquipments[${index}].unit`} component={LabelAndInputSelect} readOnly={readOnly}
-                    label='Unidade' cols='6 2' placeholder='Unidade' options={optionsUnit} />
-
-                <If test={this.props.showSystemInfo}>
-                    <SystemInfo field={`${this.props.field}[${index}]`} />
-                </If>
-
-                <If test={!!item.equipment && item.equipment.name == 'outro'}>
-                    <div>
-                        <Field name={`examEquipments[${index}].name`} component={LabelAndInput} readOnly={readOnly}
-                            label='Nome Equipamento' cols='12 4' placeholder='Informe o Equipamento' normalize={upper} />
-                        <Field name={`examEquipments[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
-                            label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
+                <div className='card-body'>
+                    {!!this.props.legend && <legend>{this.props.legend}</legend>}
+                    <div className='row'>
+                        <Field name={`examEquipments[${index}].equipment`} component={LabelAndInputSelect} readOnly={readOnly}
+                            label='Equipamento' cols='12 5' placeholder='Equipamento' options={optionsEquipment} />
+                        <Field name={`examEquipments[${index}].amount`} component={LabelAndInput} readOnly={readOnly}
+                            label='Quantidade' cols='6 2' placeholder='Quantidade' normalize={onlyNumbers} />
+                        <Field name={`examEquipments[${index}].unit`} component={LabelAndInputSelect} readOnly={readOnly}
+                            label='Unidade' cols='6 3' placeholder='Unidade' options={optionsUnit} />
+                        <div className='col-12 col-sm-2 d-flex align-items-end'>
+                            <div className='actions-contacts'>
+                                <button type='button' className='btn btn-success'
+                                    onClick={() => this.add(index + 1)}>
+                                    <i className="fa fa-plus"></i>
+                                </button>
+                                <button type='button' className='btn btn-warning'
+                                    onClick={() => {
+                                        var itemAdd = { ...item };
+                                        itemAdd.id = undefined;
+                                        itemAdd.createdAt = undefined;
+                                        itemAdd.createdBy = undefined;
+                                        itemAdd.updatedAt = undefined;
+                                        itemAdd.updatedBy = undefined;
+                                        this.add(index + 1, itemAdd)
+                                    }
+                                    }>
+                                    <i className="fa fa-copy"></i>
+                                </button>
+                                <button type='button' className='btn btn-danger'
+                                    onClick={() => this.remove(index)}>
+                                    <i className="fa fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </If>
 
-                <div className='actions-contacts'>
-                    <button type='button' className='btn btn-success'
-                        onClick={() => this.add(index + 1)}>
-                        <i className="fa fa-plus"></i>
-                    </button>
-                    <button type='button' className='btn btn-warning'
-                        onClick={() => {
-                            var itemAdd = { ...item };
-                            itemAdd.id = undefined;
-                            itemAdd.createdAt = undefined;
-                            itemAdd.createdBy = undefined;
-                            itemAdd.updatedAt = undefined;
-                            itemAdd.updatedBy = undefined;
-                            this.add(index + 1, itemAdd)
-                        }
-                        }>
-                        <i className="fa fa-copy"></i>
-                    </button>
-                    <button type='button' className='btn btn-danger'
-                        onClick={() => this.remove(index)}>
-                        <i className="fa fa-trash-alt"></i>
-                    </button>
+                    <If test={this.props.showSystemInfo}>
+                        <SystemInfo field={`${this.props.field}[${index}]`} />
+                    </If>
+
+                    <If test={!!item.equipment && item.equipment.name == 'outro'}>
+                        <div className='row'>
+                            <Field name={`examEquipments[${index}].name`} component={LabelAndInput} readOnly={readOnly}
+                                label='Nome Equipamento' cols='12 4' placeholder='Informe o Equipamento' normalize={upper} />
+                            <Field name={`examEquipments[${index}].description`} component={LabelAndInputTextarea} readOnly={readOnly}
+                                label='Descrição' cols='12 12' placeholder='Informe a Descrição' />
+                        </div>
+                    </If>
                 </div>
             </ div>
         ))
