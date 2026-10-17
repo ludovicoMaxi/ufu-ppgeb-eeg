@@ -49,6 +49,8 @@ O build gera um jar executável com o frontend embutido:
     * Versão inicial (Spring Boot 1.5.6 / Java 8)
     * Migração para Spring Boot 4.1.0 / Java 25 (Jakarta EE 11, Hibernate 7, Spring Security 7)
 
+Expor localhost para WEB
+ 
 
 ## Meta
  João Ludovico Maximiano Barbosa - joaolmbarbosa@gmail.com

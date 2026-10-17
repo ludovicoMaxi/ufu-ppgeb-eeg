@@ -17,6 +17,7 @@ public class ApiPaths {
   public static final String LOGIN = "/login";
   public static final String LOGOUT = "/logout";
   public static final String LOGIN_LOGOUT = LOGIN + "?logout";
+  public static final String FAVICON = "/favicon.ico";
   public static final String ANY = "/**";
   public static final String API_ROOT = API + ANY;
 

@@ -66,7 +66,9 @@ public class SecurityConfig {
                 PathPatternRequestMatcher.pathPattern(ApiPaths.API_ROOT))
             .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint(ApiPaths.LOGIN),
                 PathPatternRequestMatcher.pathPattern(ApiPaths.ANY)))
-        .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PathPatternRequestMatcher.pathPattern(ApiPaths.FAVICON)).permitAll()
+            .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .formLogin(form -> form
             .loginPage(ApiPaths.LOGIN)
