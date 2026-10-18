@@ -4,6 +4,8 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.ANSWER_OPTION;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +48,8 @@ class AnswerOptionControllerTest {
   private static final Long ID = 1001L;
   private static final String TEXT = "Lúcido";
   private static final String JSON_PATH_TEXT = "$.text";
+  private static final String JSON_PATH_CONTENT_LENGTH = "$.content.length()";
+  private static final String FILTER_TEXT = "DOR";
   private static final String MESSAGE = "text must not be blank";
   private static final int OPERATION_ARGUMENT_INDEX = 3;
   private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
@@ -101,14 +105,33 @@ class AnswerOptionControllerTest {
   @DisplayName("Given answer options when listing answer options then return answer options")
   void givenAnswerOptions_whenListingAnswerOptions_thenReturnAnswerOptions() throws Exception {
     AnswerOption answerOption = createAnswerOption();
-    when(answerOptionService.findAll(any(Pageable.class)))
+    when(answerOptionService.findByFilter(isNull(), isNull(), isNull(), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(answerOption), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(ANSWER_OPTION))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content.length()").value(1));
+        .andExpect(jsonPath(JSON_PATH_CONTENT_LENGTH).value(1));
 
-    verify(answerOptionService).findAll(any(Pageable.class));
+    verify(answerOptionService).findByFilter(isNull(), isNull(), isNull(), any(Pageable.class));
+  }
+
+  @Test
+  @DisplayName("Given filters when listing answer options then pass filters to service")
+  void givenFilters_whenListingAnswerOptions_thenPassFiltersToService() throws Exception {
+    AnswerOption answerOption = createAnswerOption();
+    when(answerOptionService.findByFilter(eq(ID), eq(FILTER_TEXT), eq(true),
+        any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(answerOption), PAGE_REQUEST, 1));
+
+    mockMvc.perform(get(ANSWER_OPTION)
+        .param("id", ID.toString())
+        .param("text", FILTER_TEXT)
+        .param("active", "true"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath(JSON_PATH_CONTENT_LENGTH).value(1));
+
+    verify(answerOptionService).findByFilter(eq(ID), eq(FILTER_TEXT), eq(true),
+        any(Pageable.class));
   }
 
   @Test

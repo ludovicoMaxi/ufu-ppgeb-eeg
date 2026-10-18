@@ -18,6 +18,7 @@ import lombok.Builder;
  * @param medicalReport the medical report
  * @param conclusion the conclusion
  * @param bed the bed
+ * @param job the patient job at the time of the exam
  * @param height the height
  * @param weight the weight
  * @param clinicalData the clinical data
@@ -45,6 +46,8 @@ public record ExamResponse(
     String conclusion,
     @JsonProperty("bed")
     String bed,
+    @JsonProperty("job")
+    String job,
     @JsonProperty("height")
     Long height,
     @JsonProperty("weight")

@@ -124,7 +124,6 @@ public class PatientServiceImpl implements PatientService {
       oldPatient.setBirthDate(patient.getBirthDate());
       oldPatient.setNationality(patient.getNationality());
       oldPatient.setCivilStatus(patient.getCivilStatus());
-      oldPatient.setJob(patient.getJob());
 
       patient = patientRepository.save(oldPatient);
       log.info("Paciente atualizado com id={}", patientId);

@@ -78,6 +78,9 @@ public class Exam extends AuditableEntity {
   @Column(name = "BED", length = 256)
   private String bed;
 
+  @Column(name = "JOB", length = 256)
+  private String job;
+
   @Column(name = "HEIGHT")
   private Long height;
 

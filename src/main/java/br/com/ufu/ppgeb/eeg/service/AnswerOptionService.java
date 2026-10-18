@@ -10,12 +10,15 @@ import org.springframework.data.domain.Pageable;
 public interface AnswerOptionService {
 
   /**
-   * Lists answer options paginated.
+   * Lists answer options paginated, applying the given filters.
    *
+   * @param id the id filter
+   * @param text the text filter
+   * @param active the active flag filter
    * @param pageable the pagination information
    * @return the page of answer options
    */
-  Page<AnswerOption> findAll(Pageable pageable);
+  Page<AnswerOption> findByFilter(Long id, String text, Boolean active, Pageable pageable);
 
   /**
    * Finds an answer option by id.

@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class AnswerOptionServiceImplTest {
@@ -48,18 +49,18 @@ class AnswerOptionServiceImplTest {
   private AnswerOptionServiceImpl answerOptionService;
 
   @Test
-  @DisplayName("Given two answer options in database when findAll then return all answer options")
-  void givenTwoAnswerOptionsInDatabase_whenFindAll_thenReturnAllAnswerOptions() {
+  @DisplayName("Given two answer options in database when findByFilter then return all answer options")
+  void givenTwoAnswerOptionsInDatabase_whenFindByFilter_thenReturnAllAnswerOptions() {
     AnswerOption answerOption1 = Instancio.create(AnswerOption.class);
     AnswerOption answerOption2 = Instancio.create(AnswerOption.class);
 
-    when(answerOptionRepository.findAll(PAGEABLE))
+    when(answerOptionRepository.findAll(any(Specification.class), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(answerOption1, answerOption2), PAGEABLE, TWO_OPTIONS));
 
-    Page<AnswerOption> result = answerOptionService.findAll(PAGEABLE);
+    Page<AnswerOption> result = answerOptionService.findByFilter(null, null, null, PAGEABLE);
 
     assertThat(result.getContent()).hasSize(TWO_OPTIONS);
-    verify(answerOptionRepository).findAll(PAGEABLE);
+    verify(answerOptionRepository).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test
@@ -194,7 +195,7 @@ class AnswerOptionServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Answer option is referenced by questions and cannot be removed.");
 
-    verify(answerOptionRepository, never()).delete(any());
+    verify(answerOptionRepository, never()).delete(any(AnswerOption.class));
   }
 
   private AnswerOption createAnswerOption(Long id) {

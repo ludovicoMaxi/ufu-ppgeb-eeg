@@ -10,6 +10,7 @@ import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
 import br.com.ufu.ppgeb.eeg.repository.ExamSpecifications;
 import br.com.ufu.ppgeb.eeg.service.ExamService;
+import br.com.ufu.ppgeb.eeg.service.ProfessionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +34,7 @@ public class ExamServiceImpl implements ExamService {
   private static final String RESOURCE_NAME = "Exam";
 
   private final ExamRepository examRepository;
+  private final ProfessionService professionService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)
@@ -42,6 +44,7 @@ public class ExamServiceImpl implements ExamService {
 
     validateExam(exam);
 
+    professionService.registerIfAbsent(exam.getJob());
     Exam saved = examRepository.save(exam);
     log.info("Exame criado com id={}", saved.getId());
     return saved;
@@ -130,6 +133,8 @@ public class ExamServiceImpl implements ExamService {
       oldExam.setMedicalReport(exam.getMedicalReport());
       oldExam.setConclusion(exam.getConclusion());
       oldExam.setBed(exam.getBed());
+      oldExam.setJob(exam.getJob());
+      professionService.registerIfAbsent(exam.getJob());
       oldExam.setHeight(exam.getHeight());
       oldExam.setWeight(exam.getWeight());
       oldExam.setClinicalData(exam.getClinicalData());

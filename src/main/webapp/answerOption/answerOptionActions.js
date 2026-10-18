@@ -69,11 +69,19 @@ export function submitAnswerOption(values) {
     }
 }
 
+export const ACTIVE_OPTIONS = [
+    { 'value': true, 'label': 'Ativa' },
+    { 'value': false, 'label': 'Inativa' }
+];
+
 export function searchAnswerOptions(values, page) {
 
     const pageNumber = typeof page === 'number' ? page : 0;
     return dispatch => {
-        var params = `page=${pageNumber}&size=${DEFAULT_PAGE_SIZE}`;
+        var params = `page=${pageNumber}&size=${DEFAULT_PAGE_SIZE}`
+            + (!!values.id ? `&id=${values.id}` : '')
+            + (!!values.text ? `&text=${encodeURIComponent(values.text)}` : '')
+            + (values.active === true || values.active === false ? `&active=${values.active}` : '');
         axios.get(`${BASE_URL_ANSWER_OPTION}?${params}`)
             .then(resp => {
                 if (!!resp.data) {

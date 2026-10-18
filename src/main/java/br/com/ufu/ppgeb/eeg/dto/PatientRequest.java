@@ -20,7 +20,6 @@ import jakarta.validation.constraints.Size;
  * @param birthDate the patient birth date
  * @param nationality the patient nationality
  * @param civilStatus the patient civil status
- * @param job the patient job
  */
 public record PatientRequest(
     @NotBlank
@@ -42,8 +41,5 @@ public record PatientRequest(
     @JsonProperty("nationality")
     String nationality,
     @JsonProperty("civilStatus")
-    CivilStatus civilStatus,
-    @Size(max = 256)
-    @JsonProperty("job")
-    String job) {
+    CivilStatus civilStatus) {
 }
