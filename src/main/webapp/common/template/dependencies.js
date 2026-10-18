@@ -1,4 +1,5 @@
 import 'modules/bootstrap/dist/css/bootstrap.min.css'
+import 'modules/tabulator-tables/dist/css/tabulator_bootstrap5.min.css'
 import 'modules/admin-lte/dist/css/adminlte.min.css'
 import 'modules/@fortawesome/fontawesome-free/css/all.min.css'
 

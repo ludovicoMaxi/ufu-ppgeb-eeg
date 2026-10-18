@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
 
 import LabelAndInput from '../common/form/labelAndInput'
-import LabelAndInputCheckbox from '../common/form/labelAndInputCheckbox'
+import LabelAndInputSwitch from '../common/form/labelAndInputSwitch'
 import LabelAndInputSelect from '../common/form/labelAndInputSelect'
 import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
@@ -110,7 +110,7 @@ class QuestionForm extends Component {
                                     label='Texto' cols='12 8' placeholder='Informe o texto da questão' />
                                 <Field name='questionType' component={LabelAndInputNativeSelect} readOnly={readOnly}
                                     label='Tipo' cols='6 2' placeholder='Tipo' options={QUESTION_TYPE_OPTIONS} />
-                                <Field name='active' component={LabelAndInputCheckbox} readOnly={readOnly}
+                                <Field name='active' component={LabelAndInputSwitch} readOnly={readOnly}
                                     label='Ativa' cols='6 2' />
                                 <Field name='description' component={LabelAndInputTextarea} readOnly={readOnly}
                                     label='Descrição' cols='12 12' placeholder='Informe a descrição' />
