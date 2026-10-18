@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { searchAnswerOptions as onSubmit, clearSearchAnswerOptions, ACTIVE_OPTIONS } from './answerOptionActions'
 import LabelAndInput from '../common/form/labelAndInput'
-import LabelAndInputSelect from '../common/form/labelAndInputSelect'
+import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
 import If from '../common/operator/if'
 import Pagination from '../common/pagination/pagination'
 import { onlyNumbers } from '../common/form/formatValues'
@@ -58,7 +58,7 @@ class AnswerOptionSearch extends Component {
                                         label='Alternativa id' cols='4 2' placeholder='Identificador' normalize={onlyNumbers} />
                                     <Field name='text' component={LabelAndInput} readOnly={false}
                                         label='Texto' cols='8 7' placeholder='Informe o texto' />
-                                    <Field name='active' component={LabelAndInputSelect} readOnly={false}
+                                    <Field name='active' component={LabelAndInputNativeSelect} readOnly={false}
                                         label='Situação' cols='6 3' placeholder='Situação' options={ACTIVE_OPTIONS} />
                                 </div>
                                 <hr style={{ 'marginTop': '10px', 'marginBottom': '0px' }} />
