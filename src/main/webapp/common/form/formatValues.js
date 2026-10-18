@@ -1,4 +1,14 @@
+import moment from 'moment';
+
 export const upper = value => value && value.toUpperCase();
+
+export const formatDateTime = value => {
+    if (!value) {
+        return '';
+    }
+    const parsed = moment(value, moment.ISO_8601, true);
+    return parsed.isValid() ? parsed.format('DD/MM/YYYY HH:mm:ss') : value;
+}
 
 export function onlyNumbers(value) {
 

@@ -13,7 +13,7 @@ import TabsContent from '../common/tab/tabsContent'
 import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
 import SystemInfo from '../common/form/systemInfo'
-import { onlyNumbers, upper } from '../common/form/formatValues'
+import { onlyNumbers, upper, formatDateTime } from '../common/form/formatValues'
 
 class ExamRequestForm extends Component {
 
@@ -22,8 +22,8 @@ class ExamRequestForm extends Component {
         return list.map(exam => (
             <tr key={exam.id}>
                 <td><Link to={`/exam/${exam.id}`}>{exam.id}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.achievementDate}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.createdAt}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{formatDateTime(exam.achievementDate)}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{formatDateTime(exam.createdAt)}</Link></td>
                 <td><Link to={`/exam/${exam.id}`}>{exam.createdBy}</Link></td>
             </tr>
         ))
