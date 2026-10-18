@@ -2,7 +2,7 @@ import React from 'react'
 import Grid from '../layout/grid'
 
 export default props => {
-    const { cols, name, label, input, placeholder, readOnly, type, meta: { error } } = props;
+    const { cols, name, label, input, placeholder, readOnly, type, helpText, meta: { error } } = props;
 
     return (
         <Grid cols={cols}>
@@ -13,6 +13,7 @@ export default props => {
                     placeholder={placeholder}
                     readOnly={readOnly} type={type} />
                 {error && <span className="invalid-feedback d-block">{error}</span>}
+                {helpText && <div className='form-text'>{helpText}</div>}
             </div>
         </Grid>
     );
