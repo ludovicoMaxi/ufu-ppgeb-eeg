@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import { initRegisterPatient } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
-import LabelAndInputSelect from '../common/form/labelAndInputSelect'
+import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
 import DateTimeInput from '../common/form/dateTimeInput'
 import If from '../common/operator/if'
 import Tabs from '../common/tab/tabs';
@@ -73,7 +73,7 @@ class PatientForm extends Component {
                                         label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
                                     <Field name='nationality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Nacionalidade' cols='12 4' placeholder='Informe a Nacionalidade' />
-                                    <Field name='sex' component={LabelAndInputSelect}
+                                    <Field name='sex' component={LabelAndInputNativeSelect}
                                         label='Sexo' cols='12 2'
                                         readOnly={readOnly}
                                         placeholder='Sexo'
@@ -81,7 +81,7 @@ class PatientForm extends Component {
                                         { 'value': 'FEMALE', 'label': 'FEMININO' }]}>
                                     </Field>
 
-                                    <Field name='civilStatus' component={LabelAndInputSelect} readOnly={readOnly}
+                                    <Field name='civilStatus' component={LabelAndInputNativeSelect} readOnly={readOnly}
                                         label='Estado Civil' cols='12 3' placeholder='Estado Civil'
                                         options={[{ 'value': 'SINGLE', 'label': 'SOLTEIRO' },
                                         { 'value': 'MARRIED', 'label': 'CASADO' },

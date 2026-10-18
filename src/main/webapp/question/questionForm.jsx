@@ -6,6 +6,7 @@ import { reduxForm, Field, formValueSelector } from 'redux-form'
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputCheckbox from '../common/form/labelAndInputCheckbox'
 import LabelAndInputSelect from '../common/form/labelAndInputSelect'
+import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
 import If from '../common/operator/if'
 import SystemInfo from '../common/form/systemInfo'
@@ -107,7 +108,7 @@ class QuestionForm extends Component {
                             <div className='row'>
                                 <Field name='text' component={LabelAndInput} readOnly={readOnly}
                                     label='Texto' cols='12 8' placeholder='Informe o texto da questão' />
-                                <Field name='questionType' component={LabelAndInputSelect} readOnly={readOnly}
+                                <Field name='questionType' component={LabelAndInputNativeSelect} readOnly={readOnly}
                                     label='Tipo' cols='6 2' placeholder='Tipo' options={QUESTION_TYPE_OPTIONS} />
                                 <Field name='active' component={LabelAndInputCheckbox} readOnly={readOnly}
                                     label='Ativa' cols='6 2' />
