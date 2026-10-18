@@ -15,7 +15,7 @@ import TabsContent from '../common/tab/tabsContent'
 import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
 import SystemInfo from '../common/form/systemInfo'
-import { upper, documentNumber as documentNumberMask } from '../common/form/formatValues'
+import { upper, documentNumber as documentNumberMask, formatDateTime } from '../common/form/formatValues'
 
 class PatientForm extends Component {
 
@@ -24,8 +24,8 @@ class PatientForm extends Component {
         return list.map(exam => (
             <tr key={exam.id}>
                 <td><Link to={`/exam/${exam.id}`}>{exam.id}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.achievementDate}</Link></td>
-                <td><Link to={`/exam/${exam.id}`}>{exam.createdAt}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{formatDateTime(exam.achievementDate)}</Link></td>
+                <td><Link to={`/exam/${exam.id}`}>{formatDateTime(exam.createdAt)}</Link></td>
                 <td><Link to={`/exam/${exam.id}`}>{exam.createdBy}</Link></td>
             </tr>
         ))
@@ -36,7 +36,7 @@ class PatientForm extends Component {
         return list.map(examRequest => (
             <tr key={examRequest.id}>
                 <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.id}</Link></td>
-                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdAt}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{formatDateTime(examRequest.createdAt)}</Link></td>
                 <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdBy}</Link></td>
             </tr>
         ))
