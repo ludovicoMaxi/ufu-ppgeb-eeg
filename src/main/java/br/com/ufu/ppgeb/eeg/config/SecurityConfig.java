@@ -68,6 +68,8 @@ public class SecurityConfig {
                 PathPatternRequestMatcher.pathPattern(ApiPaths.ANY)))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PathPatternRequestMatcher.pathPattern(ApiPaths.FAVICON)).permitAll()
+            .requestMatchers(PathPatternRequestMatcher.pathPattern(ApiPaths.PUBLIC_CSS),
+                PathPatternRequestMatcher.pathPattern(ApiPaths.PUBLIC_FONTS)).permitAll()
             .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .formLogin(form -> form

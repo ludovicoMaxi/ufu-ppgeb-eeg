@@ -18,6 +18,8 @@ public class ApiPaths {
   public static final String LOGOUT = "/logout";
   public static final String LOGIN_LOGOUT = LOGIN + "?logout";
   public static final String FAVICON = "/favicon.ico";
+  public static final String PUBLIC_CSS = "/public/app.css";
+  public static final String PUBLIC_FONTS = "/public/*.woff2";
   public static final String ANY = "/**";
   public static final String API_ROOT = API + ANY;
 

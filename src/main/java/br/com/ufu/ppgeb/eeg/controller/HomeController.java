@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+  private static final String CACHE_VERSION_ATTRIBUTE = "cacheVersion";
+
   private final String cacheVersion = Long.toString(System.currentTimeMillis());
 
   /**
@@ -22,18 +24,20 @@ public class HomeController {
   @GetMapping(value = { ApiPaths.HOME, ApiPaths.CUSTOMERS })
   public String index(Model model) {
 
-    model.addAttribute("cacheVersion", cacheVersion);
+    model.addAttribute(CACHE_VERSION_ATTRIBUTE, cacheVersion);
     return "index";
   }
 
   /**
    * Renders the login page.
    *
+   * @param model the model
    * @return the view name
    */
   @GetMapping(ApiPaths.LOGIN)
-  public String login() {
+  public String login(Model model) {
 
+    model.addAttribute(CACHE_VERSION_ATTRIBUTE, cacheVersion);
     return "login";
   }
 }

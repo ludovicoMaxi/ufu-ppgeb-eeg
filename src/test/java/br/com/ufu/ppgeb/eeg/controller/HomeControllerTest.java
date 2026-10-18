@@ -27,11 +27,13 @@ class HomeControllerTest {
   }
 
   @Test
-  @DisplayName("Given login request when rendering login then return login view")
+  @DisplayName("Given login request when rendering login then return login view with cache version")
   void givenLoginRequest_whenRenderingLogin_thenReturnLoginView() {
+    Model model = new ExtendedModelMap();
 
-    String view = homeController.login();
+    String view = homeController.login(model);
 
     assertThat(view).isEqualTo(LOGIN_VIEW);
+    assertThat(model.asMap()).containsKey(CACHE_VERSION_ATTRIBUTE);
   }
 }
