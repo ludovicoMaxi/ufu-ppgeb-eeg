@@ -11,13 +11,15 @@ class TabHeader extends Component {
         const visible = this.props.tab.visible[this.props.target]
         return (
             <If test={visible}>
-                <li className='nav-item'>
-                    <a href='javascript:;'
+                <li className='nav-item' role='presentation'>
+                    <button type='button'
                         className={`nav-link ${selected ? 'active' : ''}`}
                         onClick={() => this.props.selectTab(this.props.target)}
-                        data-target={this.props.target}>
+                        data-target={this.props.target}
+                        role='tab'
+                        aria-selected={selected}>
                         <i className={`fa fa-${this.props.icon}`}></i> {this.props.label}
-                    </a>
+                    </button>
                 </li>
             </If>
         )

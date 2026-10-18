@@ -11,7 +11,8 @@ class TabContent extends Component {
             <If test={visible}>
                 <div id={this.props.id}
                     className={`tab-pane fade ${selected ? 'show active' : ''}`}
-                    role='tabpanel'>
+                    role='tabpanel'
+                    tabindex='0'>
                     {this.props.children}
                 </div>
             </If>
