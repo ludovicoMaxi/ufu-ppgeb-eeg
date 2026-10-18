@@ -6,6 +6,10 @@ button {
     margin-left: 5px;
 }
 
+.nav-tabs button.nav-link {
+    margin-left: 0;
+}
+
 .overflow-auto{
     overflow: auto;
 }
