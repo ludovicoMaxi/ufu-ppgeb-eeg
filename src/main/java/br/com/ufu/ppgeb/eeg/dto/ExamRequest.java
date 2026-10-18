@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Size;
  * @param medicalReport the medical report
  * @param conclusion the conclusion
  * @param bed the bed
+ * @param job the patient job at the time of the exam
  * @param height the height
  * @param weight the weight
  * @param clinicalData the clinical data
@@ -46,6 +47,9 @@ public record ExamRequest(
     @Size(max = 256)
     @JsonProperty("bed")
     String bed,
+    @Size(max = 256)
+    @JsonProperty("job")
+    String job,
     @JsonProperty("height")
     Long height,
     @JsonProperty("weight")

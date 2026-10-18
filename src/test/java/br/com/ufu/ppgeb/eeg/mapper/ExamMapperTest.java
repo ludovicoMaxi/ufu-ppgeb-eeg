@@ -38,6 +38,7 @@ class ExamMapperTest {
     assertThat(exam.getMedicalReport()).isEqualTo(request.medicalReport());
     assertThat(exam.getConclusion()).isEqualTo(request.conclusion());
     assertThat(exam.getBed()).isEqualTo(request.bed());
+    assertThat(exam.getJob()).isEqualTo(request.job());
     assertThat(exam.getHeight()).isEqualTo(request.height());
     assertThat(exam.getWeight()).isEqualTo(request.weight());
     assertThat(exam.getClinicalData()).isEqualTo(request.clinicalData());
@@ -61,6 +62,7 @@ class ExamMapperTest {
     assertThat(exam.getMedicalReport()).isEqualTo(request.medicalReport());
     assertThat(exam.getConclusion()).isEqualTo(request.conclusion());
     assertThat(exam.getBed()).isEqualTo(request.bed());
+    assertThat(exam.getJob()).isEqualTo(request.job());
     assertThat(exam.getHeight()).isEqualTo(request.height());
     assertThat(exam.getWeight()).isEqualTo(request.weight());
     assertThat(exam.getClinicalData()).isEqualTo(request.clinicalData());
@@ -90,6 +92,7 @@ class ExamMapperTest {
     assertThat(response.medicalReport()).isEqualTo(exam.getMedicalReport());
     assertThat(response.conclusion()).isEqualTo(exam.getConclusion());
     assertThat(response.bed()).isEqualTo(exam.getBed());
+    assertThat(response.job()).isEqualTo(exam.getJob());
     assertThat(response.height()).isEqualTo(exam.getHeight());
     assertThat(response.weight()).isEqualTo(exam.getWeight());
     assertThat(response.clinicalData()).isEqualTo(exam.getClinicalData());

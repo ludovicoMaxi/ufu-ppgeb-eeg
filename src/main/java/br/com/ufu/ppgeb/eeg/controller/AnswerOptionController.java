@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,16 +42,25 @@ public class AnswerOptionController {
   private final IdempotencyService idempotencyService;
 
   /**
-   * Lists answer options.
+   * Lists answer options, applying the optional filters.
    *
+   * @param id the id filter
+   * @param text the text filter
+   * @param active the active flag filter
    * @param pageable the pagination information
    * @return the page of answer options
    */
   @GetMapping
-  public Page<AnswerOptionResponse> list(Pageable pageable) {
+  public Page<AnswerOptionResponse> list(
+      @RequestParam(value = "id", required = false) Long id,
+      @RequestParam(value = "text", required = false) String text,
+      @RequestParam(value = "active", required = false) Boolean active,
+      Pageable pageable) {
 
-    logger.info("Consultando alternativas de resposta");
-    return answerOptionService.findAll(pageable).map(AnswerOptionMapper::toResponse);
+    logger.info("Consultando alternativas de resposta; id={}, text={}, active={}",
+        id, text, active);
+    return answerOptionService.findByFilter(id, text, active, pageable)
+        .map(AnswerOptionMapper::toResponse);
   }
 
   /**

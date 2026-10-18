@@ -72,7 +72,7 @@ class PatientForm extends Component {
                                     <Field name='birthDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                         label='Data de Nascimento' cols='12 3' placeholder='Data Nascimento' formatDate='DD/MM/YYYY' />
                                     <Field name='nationality' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                        label='Nacionalidade' cols='12 3' placeholder='Informe a Nacionalidade' />
+                                        label='Nacionalidade' cols='12 4' placeholder='Informe a Nacionalidade' />
                                     <Field name='sex' component={LabelAndInputSelect}
                                         label='Sexo' cols='12 2'
                                         readOnly={readOnly}
@@ -82,15 +82,13 @@ class PatientForm extends Component {
                                     </Field>
 
                                     <Field name='civilStatus' component={LabelAndInputSelect} readOnly={readOnly}
-                                        label='Estado Civil' cols='12 2' placeholder='Estado Civil'
+                                        label='Estado Civil' cols='12 3' placeholder='Estado Civil'
                                         options={[{ 'value': 'SINGLE', 'label': 'SOLTEIRO' },
                                         { 'value': 'MARRIED', 'label': 'CASADO' },
                                         { 'value': 'DIVORCED', 'label': 'DIVORCIADO' },
                                         { 'value': 'WIDOWED', 'label': 'VIÚVO' },
                                         { 'value': 'COMMON_LAW_MARRIAGE', 'label': 'UNIÃO ESTÁVEL' }]}>
                                     </Field>
-                                    <Field name='job' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                        label='Profissão' cols='12 2' placeholder='Informe a Profissão' />
                                 </div>
                             </fieldset>
                         </div>

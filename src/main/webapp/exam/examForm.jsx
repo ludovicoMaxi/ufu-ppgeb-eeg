@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
+import LabelAndInputDatalist from '../common/form/labelAndInputDatalist'
 import DateTimeInput from '../common/form/dateTimeInput'
 import If from '../common/operator/if'
 import Tabs from '../common/tab/tabs';
@@ -14,21 +15,26 @@ import TabsContent from '../common/tab/tabsContent'
 import TabHeader from '../common/tab/tabHeader'
 import TabContent from '../common/tab/tabContent'
 import SystemInfo from '../common/form/systemInfo'
-import { upper, onlyNumbers } from '../common/form/formatValues'
+import { upper, onlyNumbers, formatDateTime } from '../common/form/formatValues'
 import ExamMedicamentListForm from '../examMedicament/examMedicamentListForm'
 import ExamEquipmentListForm from '../examEquipment/examEquipmentListForm'
 import EpochListForm from '../epoch/epochListForm'
 import ActivityListForm from '../activity/activityListForm'
 import QuestionnaireAnswerListForm from '../questionnaireAnswer/questionnaireAnswerListForm'
+import { getOptionsProfession } from '../profession/professionActions'
 
 class ExamForm extends Component {
+
+    componentDidMount() {
+        this.props.getOptionsProfession();
+    }
 
     renderExamRequestRows() {
         const examRequest = this.props.examRequest || {}
         return (
             <tr key={examRequest.id}>
                 <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.id}</Link></td>
-                <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdAt}</Link></td>
+                <td><Link to={`/exam-request/${examRequest.id}`}>{formatDateTime(examRequest.createdAt)}</Link></td>
                 <td><Link to={`/exam-request/${examRequest.id}`}>{examRequest.createdBy}</Link></td>
             </tr>
         )
@@ -47,7 +53,8 @@ class ExamForm extends Component {
             examId,
             examMedicaments,
             examEquipments,
-            examRequest
+            examRequest,
+            optionsProfession
         } = this.props;
 
         return (
@@ -61,11 +68,13 @@ class ExamForm extends Component {
                                     <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                         label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
                                     <Field name='bed' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                        label='Leito' cols='12 3' placeholder='Informe o Leito' />
+                                        label='Leito' cols='12 2' placeholder='Informe o Leito' />
+                                    <Field name='job' component={LabelAndInputDatalist} readOnly={readOnly} normalize={upper}
+                                        label='Profissão' cols='12 3' placeholder='Informe a Profissão' options={optionsProfession} />
                                     <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
-                                        label='Altura (cm)' cols='12 3' placeholder='Altura em CM' />
+                                        label='Altura (cm)' cols='12 2' placeholder='Altura em CM' />
                                     <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
-                                        label='Peso (Kg)' cols='12 3' placeholder='Peso em Kg' />
+                                        label='Peso (Kg)' cols='12 2' placeholder='Peso em Kg' />
                                     <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
                                         label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
                                     <Field name='medicalReport' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
@@ -152,6 +161,7 @@ class ExamForm extends Component {
 ExamForm = reduxForm({ form: 'examForm', destroyOnUnmount: false })(ExamForm)
 const selector = formValueSelector('examForm')
 const mapStateToProps = state => ({
+    optionsProfession: state.profession.optionsProfession,
     createdAt: selector(state, 'createdAt'),
     updateAt: selector(state, 'updateAt'),
     examMedicaments: selector(state, 'examMedicaments'),
@@ -160,5 +170,5 @@ const mapStateToProps = state => ({
     patientId: selector(state, 'patient.id')
 })
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch)
+const mapDispatchToProps = dispatch => bindActionCreators({ getOptionsProfession }, dispatch)
 export default connect(mapStateToProps, mapDispatchToProps)(ExamForm)

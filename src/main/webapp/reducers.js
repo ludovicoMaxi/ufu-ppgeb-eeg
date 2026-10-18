@@ -12,6 +12,7 @@ import QuestionnaireReducer from './questionnaire/questionnaireReducer'
 import QuestionReducer from './question/questionReducer'
 import AnswerOptionReducer from './answerOption/answerOptionReducer'
 import QuestionnaireAnswerReducer from './questionnaireAnswer/questionnaireAnswerReducer'
+import ProfessionReducer from './profession/professionReducer'
 
 const rootReducer = combineReducers({
     toastr: toastrReducer,
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
     questionnaire: QuestionnaireReducer,
     question: QuestionReducer,
     answerOption: AnswerOptionReducer,
-    questionnaireAnswer: QuestionnaireAnswerReducer
+    questionnaireAnswer: QuestionnaireAnswerReducer,
+    profession: ProfessionReducer
 })
 
 export default rootReducer

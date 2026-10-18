@@ -72,7 +72,4 @@ public class Patient extends AuditableEntity {
   @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(name = "CIVIL_STATUS", length = 25)
   private CivilStatus civilStatus;
-
-  @Column(name = "JOB", length = 256)
-  private String job;
 }

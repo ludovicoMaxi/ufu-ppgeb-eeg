@@ -33,7 +33,6 @@ class PatientMapperTest {
     assertThat(patient.getBirthDate()).isEqualTo(request.birthDate());
     assertThat(patient.getNationality()).isEqualTo(request.nationality());
     assertThat(patient.getCivilStatus()).isEqualTo(request.civilStatus());
-    assertThat(patient.getJob()).isEqualTo(request.job());
   }
 
   @Test
@@ -53,7 +52,6 @@ class PatientMapperTest {
     assertThat(patient.getBirthDate()).isEqualTo(request.birthDate());
     assertThat(patient.getNationality()).isEqualTo(request.nationality());
     assertThat(patient.getCivilStatus()).isEqualTo(request.civilStatus());
-    assertThat(patient.getJob()).isEqualTo(request.job());
   }
 
   @Test
@@ -80,7 +78,6 @@ class PatientMapperTest {
     assertThat(response.birthDate()).isEqualTo(patient.getBirthDate());
     assertThat(response.nationality()).isEqualTo(patient.getNationality());
     assertThat(response.civilStatus()).isEqualTo(patient.getCivilStatus());
-    assertThat(response.job()).isEqualTo(patient.getJob());
     assertThat(response.createdAt()).isEqualTo(patient.getCreatedAt());
     assertThat(response.createdBy()).isEqualTo(patient.getCreatedBy());
     assertThat(response.updatedAt()).isEqualTo(patient.getUpdatedAt());

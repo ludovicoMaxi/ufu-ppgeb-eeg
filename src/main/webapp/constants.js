@@ -17,6 +17,7 @@ const BASE_URL_NOTES = `${BASE_URL}/api/v1/notes`
 const BASE_URL_QUESTIONNAIRE = `${BASE_URL}/api/v1/questionnaires`
 const BASE_URL_QUESTION = `${BASE_URL}/api/v1/questions`
 const BASE_URL_ANSWER_OPTION = `${BASE_URL}/api/v1/answer-options`
+const BASE_URL_PROFESSION = `${BASE_URL}/api/v1/professions`
 
 export {
     BASE_URL,
@@ -29,5 +30,6 @@ export {
     BASE_URL_NOTES,
     BASE_URL_QUESTIONNAIRE,
     BASE_URL_QUESTION,
-    BASE_URL_ANSWER_OPTION
+    BASE_URL_ANSWER_OPTION,
+    BASE_URL_PROFESSION
 };

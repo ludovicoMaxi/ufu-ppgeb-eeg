@@ -82,7 +82,6 @@ class ApiIntegrationTest {
     patient.setBirthDate(createDate("20/05/1985"));
     patient.setNationality(NATIONALITY);
     patient.setCivilStatus(CivilStatus.SINGLE);
-    patient.setJob("ENGENHEIRA");
     return patient;
   }
 
@@ -120,7 +119,6 @@ class ApiIntegrationTest {
         Sex.MALE,
         createDate("01/01/1991"),
         NATIONALITY,
-        CivilStatus.SINGLE,
-        "PESQUISADOR");
+        CivilStatus.SINGLE);
   }
 }

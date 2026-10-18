@@ -58,7 +58,6 @@ public class PatientMapper {
         .birthDate(request.birthDate())
         .nationality(request.nationality())
         .civilStatus(request.civilStatus())
-        .job(request.job())
         .build();
   }
 
@@ -81,7 +80,6 @@ public class PatientMapper {
         .birthDate(patient.getBirthDate())
         .nationality(patient.getNationality())
         .civilStatus(patient.getCivilStatus())
-        .job(patient.getJob())
         .createdAt(patient.getCreatedAt())
         .createdBy(patient.getCreatedBy())
         .updatedAt(patient.getUpdatedAt())

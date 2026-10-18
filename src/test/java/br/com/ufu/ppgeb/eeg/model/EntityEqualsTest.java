@@ -17,9 +17,9 @@ class EntityEqualsTest {
   @DisplayName("Given patients with the same business fields and different ids when comparing "
       + "then be equal and share the hash code")
   void givenPatientsWithSameBusinessFieldsAndDifferentIds_whenComparing_thenBeEqualAndShare() {
-    Patient first = Patient.builder().id(ID).name(TEXT).documentNumber(TEXT).job(TEXT).build();
+    Patient first = Patient.builder().id(ID).name(TEXT).documentNumber(TEXT).build();
     Patient second =
-        Patient.builder().id(OTHER_ID).name(TEXT).documentNumber(TEXT).job(TEXT).build();
+        Patient.builder().id(OTHER_ID).name(TEXT).documentNumber(TEXT).build();
 
     assertThat(first).isEqualTo(second);
     assertThat(first).hasSameHashCodeAs(second);

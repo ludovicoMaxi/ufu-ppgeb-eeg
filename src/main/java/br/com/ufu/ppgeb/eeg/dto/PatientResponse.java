@@ -20,7 +20,6 @@ import lombok.Builder;
  * @param birthDate the patient birth date
  * @param nationality the patient nationality
  * @param civilStatus the patient civil status
- * @param job the patient job
  * @param createdAt the creation auditing timestamp
  * @param createdBy the creation auditing user
  * @param updatedAt the last update auditing timestamp
@@ -43,8 +42,6 @@ public record PatientResponse(
     String nationality,
     @JsonProperty("civilStatus")
     CivilStatus civilStatus,
-    @JsonProperty("job")
-    String job,
     @JsonFormat(pattern = DateFormats.ISO_DATE_TIME)
     @JsonProperty("createdAt")
     ZonedDateTime createdAt,

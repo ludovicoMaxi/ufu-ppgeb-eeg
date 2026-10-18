@@ -116,20 +116,35 @@ class EpochListForm extends Component {
                 <div className='card-body'>
                     {!!this.props.legend && <legend>{this.props.legend}</legend>}
                     <div className='row'>
-                        <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
-                            label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers}
-                            onChange={handleChangeMinute} />
-                        <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
-                            label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers}
-                            onChange={handleChangeSecond} />
-                        <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
-                            label='Duração (Segundos)' cols='6 2' placeholder='XXX' normalize={onlyNumbers}
-                            onChange={handleChangeDuration} />
-                        <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
-                            label='Minutos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
-                        <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
-                            label='Segundos' cols='6 1' placeholder='XX' normalize={onlyNumbers} />
-                        <div className='col-12 col-sm-2 d-flex align-items-end ms-auto'>
+                        <div className='col-12 col-sm-3'>
+                            <label className='form-label fw-bold'>Início</label>
+                            <div className='row g-2'>
+                                <Field name={`epochs[${index}].startTime.minute`} component={LabelAndInput} readOnly={readOnly}
+                                    label='Minutos' cols='6 6' placeholder='XX' normalize={onlyNumbers}
+                                    onChange={handleChangeMinute} />
+                                <Field name={`epochs[${index}].startTime.second`} component={LabelAndInput} readOnly={readOnly}
+                                    label='Segundos' cols='6 6' placeholder='XX' normalize={onlyNumbers}
+                                    onChange={handleChangeSecond} />
+                            </div>
+                        </div>
+                        <div className='col-12 col-sm-3'>
+                            <label className='form-label fw-bold'>Duração</label>
+                            <div className='row g-2'>
+                                <Field name={`epochs[${index}].duration`} component={LabelAndInput} readOnly={readOnly}
+                                    label='Segundos' cols='12 12' placeholder='XXX' normalize={onlyNumbers}
+                                    onChange={handleChangeDuration} />
+                            </div>
+                        </div>
+                        <div className='col-12 col-sm-3'>
+                            <label className='form-label fw-bold'>Fim (calculado)</label>
+                            <div className='row g-2'>
+                                <Field name={`epochs[${index}].finalTime.minute`} component={LabelAndInput} readOnly={true}
+                                    label='Minutos' cols='6 6' placeholder='XX' normalize={onlyNumbers} />
+                                <Field name={`epochs[${index}].finalTime.second`} component={LabelAndInput} readOnly={true}
+                                    label='Segundos' cols='6 6' placeholder='XX' normalize={onlyNumbers} />
+                            </div>
+                        </div>
+                        <div className='col-12 col-sm-3 d-flex align-items-end'>
                             <div className='actions-contacts'>
                                 <button type='button' className='btn btn-success'
                                     onClick={() => this.add(index + 1)}>

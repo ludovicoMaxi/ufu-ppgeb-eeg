@@ -3,6 +3,7 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.AnswerOption;
 import br.com.ufu.ppgeb.eeg.repository.AnswerOptionRepository;
+import br.com.ufu.ppgeb.eeg.repository.AnswerOptionSpecifications;
 import br.com.ufu.ppgeb.eeg.repository.QuestionAnswerOptionRepository;
 import br.com.ufu.ppgeb.eeg.service.AnswerOptionService;
 import lombok.AllArgsConstructor;
@@ -30,9 +31,11 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<AnswerOption> findAll(Pageable pageable) {
+  public Page<AnswerOption> findByFilter(Long id, String text, Boolean active,
+      Pageable pageable) {
 
-    return answerOptionRepository.findAll(pageable);
+    return answerOptionRepository.findAll(
+        AnswerOptionSpecifications.withFilters(id, text, active), pageable);
   }
 
   @Override

@@ -65,7 +65,7 @@ class ExamRequestForm extends Component {
                                         label='Convênio' cols='12 6' placeholder='Informe o convenio' />
                                     <Field name='clinicOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Clinica de Origem' cols='12 6' placeholder='Informe a Clinica Origem' />
-                                    <Field name='CityOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
+                                    <Field name='cityOrigin' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Cidade de Origem' cols='12 6' placeholder='Informe a cidade de origem' />
                                     <Field name='doctorRequestant' component={LabelAndInput} readOnly={readOnly} normalize={upper}
                                         label='Medico Solicitante' cols='12 8' placeholder='Informe o Médico' />

@@ -36,6 +36,7 @@ public class ApiPaths {
   public static final String PATIENT = API + "/patients";
   public static final String CONTACT = API + "/contacts";
   public static final String UNIT = API + "/units";
+  public static final String PROFESSION = API + "/professions";
   public static final String MEDICAMENT = API + MEDICAMENTS_SUBPATH;
   public static final String EQUIPMENT = API + EQUIPMENTS_SUBPATH;
   public static final String QUESTION = API + "/questions";

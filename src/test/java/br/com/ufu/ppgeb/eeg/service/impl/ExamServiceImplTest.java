@@ -17,6 +17,7 @@ import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.Exam;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.repository.ExamRepository;
+import br.com.ufu.ppgeb.eeg.service.ProfessionService;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,9 @@ class ExamServiceImplTest {
 
   @Mock
   private ExamRepository examRepository;
+
+  @Mock
+  private ProfessionService professionService;
 
   @InjectMocks
   private ExamServiceImpl examService;
@@ -94,6 +98,7 @@ class ExamServiceImplTest {
 
     examService.save(exam);
 
+    verify(professionService).registerIfAbsent(exam.getJob());
     verify(examRepository).save(exam);
   }
 
@@ -238,6 +243,7 @@ class ExamServiceImplTest {
 
     assertThat(result.getBed()).isEqualTo(UPDATED_BED);
     verify(examRepository).findById(EXAM_ID);
+    verify(professionService).registerIfAbsent(newExam.getJob());
     verify(examRepository).save(oldExam);
   }
 

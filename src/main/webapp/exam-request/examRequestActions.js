@@ -126,9 +126,25 @@ export function remove(values) {
     return submit(values, 'delete', values.id, 'Exclusão')
 }
 
+export function toExamRequestPayload(values) {
+    return {
+        medicalRecord: values.medicalRecord,
+        medicalRequest: values.medicalRequest,
+        sector: values.sector,
+        agreement: values.agreement,
+        doctorRequestant: values.doctorRequestant,
+        user: values.user,
+        clinicOrigin: values.clinicOrigin,
+        cityOrigin: values.cityOrigin,
+        patientId: values.patient ? values.patient.id : values.patientId,
+        requestDate: values.requestDate,
+        achievementDate: values.achievementDate
+    }
+}
+
 function update(values) {
     return dispatch => {
-        axios.put(`${BASE_URL_EXAM_REQUEST}/${values.id}`, values)
+        axios.put(`${BASE_URL_EXAM_REQUEST}/${values.id}`, toExamRequestPayload(values))
             .then(resp => {
                 toastr.success('Sucesso', `Requerimento atualizado com sucesso.`);
                 dispatch(initialize('examRequestForm', resp.data));
@@ -141,7 +157,7 @@ function update(values) {
 
 function create(values) {
     return dispatch => {
-        axios.post(`${BASE_URL_EXAM_REQUEST}`, values)
+        axios.post(`${BASE_URL_EXAM_REQUEST}`, toExamRequestPayload(values))
             .then(resp => {
                 toastr.success('Sucesso', `Requerimento cadastrado com sucesso.`)
                 dispatch(resetForm('examRequestForm'));
