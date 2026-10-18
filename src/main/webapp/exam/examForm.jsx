@@ -5,6 +5,7 @@ import { reduxForm, Field, formValueSelector } from 'redux-form'
 import { Link } from 'react-router-dom'
 
 import LabelAndInput from '../common/form/labelAndInput'
+import LabelAndInputInputGroup from '../common/form/labelAndInputInputGroup'
 import LabelAndInputTextarea from '../common/form/labelAndInputTextarea'
 import LabelAndInputDatalist from '../common/form/labelAndInputDatalist'
 import DateTimeInput from '../common/form/dateTimeInput'
@@ -68,13 +69,13 @@ class ExamForm extends Component {
                                     <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                         label='Data de Realização' cols='12 3' placeholder='Data Realização' formatDate='DD/MM/YYYY HH:mm:ss' />
                                     <Field name='bed' component={LabelAndInput} readOnly={readOnly} normalize={upper}
-                                        label='Leito' cols='12 2' placeholder='Informe o Leito' />
+                                        label='Leito' cols='12 2' placeholder='Informe o Leito' helpText='Identificação do leito hospitalar' />
                                     <Field name='job' component={LabelAndInputDatalist} readOnly={readOnly} normalize={upper}
                                         label='Profissão' cols='12 3' placeholder='Informe a Profissão' options={optionsProfession} />
-                                    <Field name='height' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
-                                        label='Altura (cm)' cols='12 2' placeholder='Altura em CM' />
-                                    <Field name='weight' component={LabelAndInput} readOnly={readOnly} normalize={onlyNumbers}
-                                        label='Peso (Kg)' cols='12 2' placeholder='Peso em Kg' />
+                                    <Field name='height' component={LabelAndInputInputGroup} readOnly={readOnly} normalize={onlyNumbers}
+                                        label='Altura' cols='12 2' placeholder='0' addon='cm' />
+                                    <Field name='weight' component={LabelAndInputInputGroup} readOnly={readOnly} normalize={onlyNumbers}
+                                        label='Peso' cols='12 2' placeholder='0' addon='Kg' />
                                     <Field name='clinicalData' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}
                                         label='Dados Clinicos' cols='12 12' placeholder='Informe os dados Clinicos' />
                                     <Field name='medicalReport' component={LabelAndInputTextarea} readOnly={readOnly} normalize={upper}

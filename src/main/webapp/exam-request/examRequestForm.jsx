@@ -52,9 +52,9 @@ class ExamRequestForm extends Component {
                                 <legend>Requerimento</legend>
                                 <div className='row'>
                                     <Field name='medicalRecord' component={LabelAndInput} readOnly={readOnly}
-                                        label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} />
+                                        label='Prontuário ID' cols='6 3' placeholder='Prontuário ID' normalize={onlyNumbers} helpText='Número do prontuário médico' />
                                     <Field name='medicalRequest' component={LabelAndInput} readOnly={readOnly}
-                                        label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} />
+                                        label='Requisição ID' cols='6 3' placeholder='Requisição ID' normalize={onlyNumbers} helpText='Número da requisição médica' />
                                     <Field name='requestDate' component={DateTimeInput} readOnly={readOnly} mode='date'
                                         label='Data do Pedido' cols='12 3' placeholder='Data Pedido' formatDate='DD/MM/YYYY HH:mm:ss' />
                                     <Field name='achievementDate' component={DateTimeInput} readOnly={readOnly} mode='date'
