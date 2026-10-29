@@ -8,6 +8,7 @@ import { errorMessage } from '../common/msg/errorMessage'
 import { getPatientById } from '../patient/patientActions'
 
 const INITIAL_VALUES = {};
+const DEFAULT_PAGE_SIZE = 10;
 
 export function getExamRequestById(id) {
     return dispatch => {
@@ -85,7 +86,7 @@ export function submitExamRequest(values) {
     }
 }
 
-export function searchExamRequest(values) {
+export function searchExamRequest(values, page, size) {
 
     var errors = {}
 
@@ -98,12 +99,16 @@ export function searchExamRequest(values) {
     }
 
     return dispatch => {
-        var params = (!!values.medicalRecord ? `medicalRecord=${values.medicalRecord}` : '')
-            + (!!values.medicalRequest ? `medicalRequest=${values.medicalRequest}` : '')
-            + (!!values.doctorRequestant ? `doctorRequestant=${values.doctorRequestant}` : '');
+        const params = [
+            `page=${page || 0}`,
+            `size=${size || DEFAULT_PAGE_SIZE}`,
+            !!values.medicalRecord ? `medicalRecord=${values.medicalRecord}` : null,
+            !!values.medicalRequest ? `medicalRequest=${values.medicalRequest}` : null,
+            !!values.doctorRequestant ? `doctorRequestant=${encodeURIComponent(values.doctorRequestant)}` : null
+        ].filter(Boolean).join('&');
         axios.get(`${BASE_URL_EXAM_REQUEST}?${params}`)
             .then(resp => {
-                if (!!resp.data && resp.data.length > 0) {
+                if (!!resp.data && resp.data.content.length > 0) {
                     dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: resp.data });
                 }
                 else
@@ -118,7 +123,7 @@ export function searchExamRequest(values) {
 export function clearSearchExamRequest() {
 
     return dispatch => {
-        dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: [] });
+        dispatch({ type: 'EXAM_REQUEST_SEARCH_RESULT', payload: { content: [] } });
     }
 }
 

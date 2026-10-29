@@ -3,6 +3,8 @@ package br.com.ufu.ppgeb.eeg.service;
 import java.util.List;
 
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for ExamRequest operations.
@@ -32,11 +34,12 @@ public interface ExamRequestService {
    * @param medicalRequest the medical request
    * @param patientId the patient id
    * @param doctorRequestant the doctor requestant
-   * @return the list of exam requests
+   * @param pageable the pagination information
+   * @return the page of exam requests
    */
-  List<ExamRequest> findByFilter(Long medicalRecord,
+  Page<ExamRequest> findByFilter(Long medicalRecord,
       Long medicalRequest, Long patientId,
-      String doctorRequestant);
+      String doctorRequestant, Pageable pageable);
 
   /**
    * Finds all exam requests.

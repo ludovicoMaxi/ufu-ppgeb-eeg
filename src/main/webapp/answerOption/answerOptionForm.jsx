@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { reduxForm, Field, formValueSelector } from 'redux-form'
 
 import LabelAndInput from '../common/form/labelAndInput'
-import LabelAndInputCheckbox from '../common/form/labelAndInputCheckbox'
+import LabelAndInputSwitch from '../common/form/labelAndInputSwitch'
 import If from '../common/operator/if'
 import SystemInfo from '../common/form/systemInfo'
 
@@ -45,7 +45,7 @@ class AnswerOptionForm extends Component {
                             <div className='row'>
                                 <Field name='text' component={LabelAndInput} readOnly={readOnly}
                                     label='Texto' cols='12 8' placeholder='Informe o texto da alternativa' />
-                                <Field name='active' component={LabelAndInputCheckbox} readOnly={readOnly}
+                                <Field name='active' component={LabelAndInputSwitch} readOnly={readOnly}
                                     label='Ativa' cols='12 4' />
                             </div>
                             <If test={showSystemInfo}>

@@ -1,8 +1,6 @@
 package br.com.ufu.ppgeb.eeg.controller;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
 
 import br.com.ufu.ppgeb.eeg.constant.ApiPaths;
 import br.com.ufu.ppgeb.eeg.dto.ExamRequestRequest;
@@ -15,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,23 +47,22 @@ public class ExamRequestController {
    * @param medicalRequest the medical request filter
    * @param patientId the patient id filter
    * @param doctorRequestant the doctor requestant filter
-   * @return the list of exam requests
+   * @param pageable the pagination information
+   * @return the page of exam requests
    */
   @GetMapping
-  public List<ExamRequestResponse> list(
+  public Page<ExamRequestResponse> list(
           @RequestParam(value = "medicalRecord", required = false) Long medicalRecord,
           @RequestParam(value = "medicalRequest", required = false) Long medicalRequest,
           @RequestParam(value = "patientId", required = false) Long patientId,
-          @RequestParam(value = "doctorRequestant", required = false) String doctorRequestant) {
+          @RequestParam(value = "doctorRequestant", required = false) String doctorRequestant,
+          Pageable pageable) {
 
     logger.info("Consultando solicitações; medicalRecord={}, medicalRequest={}, patientId={}, doctorRequestant={}",
             medicalRecord, medicalRequest, patientId, doctorRequestant);
-    return Optional.ofNullable(examRequestService.findByFilter(
-            medicalRecord, medicalRequest, patientId, doctorRequestant))
-        .orElse(List.of())
-        .stream()
-        .map(ExamRequestMapper::toResponse)
-        .toList();
+    return examRequestService.findByFilter(medicalRecord, medicalRequest, patientId,
+            doctorRequestant, pageable)
+        .map(ExamRequestMapper::toResponse);
   }
 
   /**

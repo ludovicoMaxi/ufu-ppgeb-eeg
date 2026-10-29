@@ -1,47 +1,35 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { reduxForm, Field, Form, formValueSelector } from 'redux-form'
+import { reduxForm, Field, Form } from 'redux-form'
 import { Link } from 'react-router-dom'
 
-import { searchAnswerOptions as onSubmit, clearSearchAnswerOptions, ACTIVE_OPTIONS } from './answerOptionActions'
+import { ACTIVE_OPTIONS } from './answerOptionActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
-import If from '../common/operator/if'
-import Pagination from '../common/pagination/pagination'
+import RemoteTable from '../common/table/remoteTable'
 import { onlyNumbers } from '../common/form/formatValues'
+import { BASE_URL_ANSWER_OPTION } from '../constants'
+
+const ANSWER_OPTION_PATH = '#/answer-option/'
+
+const COLUMNS = [
+    { title: 'Alternativa ID', field: 'id', width: 160,
+        formatter: 'link', formatterParams: { urlPrefix: ANSWER_OPTION_PATH } },
+    { title: 'Texto', field: 'text',
+        formatter: 'link', formatterParams: { urlPrefix: ANSWER_OPTION_PATH, urlField: 'id', labelField: 'text' } },
+    { title: 'Ativa', field: 'active', width: 120,
+        formatter: cell => (cell.getValue() ? 'Sim' : 'Não') }
+]
 
 class AnswerOptionSearch extends Component {
 
-    componentDidMount() {
-        this.props.onSubmit({}, 0);
-    }
-
-    componentWillUnmount() {
-        this.props.clearSearchAnswerOptions();
-    }
+    state = { filters: {} }
 
     submit = values => {
-        this.props.onSubmit(values, 0);
-    }
-
-    onPageChange = (page) => {
-        this.props.onSubmit(this.props.formValues, page);
-    }
-
-    renderRows() {
-        const list = this.props.list || []
-        return list.map(answerOption => (
-            <tr key={answerOption.id}>
-                <td><Link to={`/answer-option/${answerOption.id}`}>{answerOption.id}</Link></td>
-                <td><Link to={`/answer-option/${answerOption.id}`}>{answerOption.text}</Link></td>
-                <td>{answerOption.active ? 'Sim' : 'Não'}</td>
-            </tr>
-        ))
+        this.setState({ filters: values });
     }
 
     render() {
-        const { handleSubmit, pristine, submitting, reset, list } = this.props;
+        const { handleSubmit, pristine, submitting, reset } = this.props;
 
         return (
             <div>
@@ -80,45 +68,18 @@ class AnswerOptionSearch extends Component {
                             </Link>
                         </div>
                     </div>
-
-                    <If test={!!list && list.length > 0}>
-                        <div>
-                            <h3>Resultado da Busca</h3>
-                            <table className='table'>
-                                <thead>
-                                    <tr>
-                                        <th>Alternativa ID</th>
-                                        <th>Texto</th>
-                                        <th>Ativa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.renderRows()}
-                                </tbody>
-                            </table>
-                            <Pagination page={this.props.pagination.number}
-                                totalPages={this.props.pagination.totalPages}
-                                totalElements={this.props.pagination.totalElements}
-                                onPageChange={this.onPageChange} />
-                        </div>
-                    </If>
                 </Form>
+
+                <div className='card mt-3'>
+                    <div className='card-body'>
+                        <h3>Resultado da Busca</h3>
+                        <RemoteTable url={BASE_URL_ANSWER_OPTION} columns={COLUMNS} filters={this.state.filters}
+                            exportName='alternativas' />
+                    </div>
+                </div>
             </div>
         )
     }
 }
 
-AnswerOptionSearch = reduxForm({ form: 'answerOptionSearch' })(AnswerOptionSearch)
-const selector = formValueSelector('answerOptionSearch')
-const mapStateToProps = state => ({
-    list: state.answerOption.resultSearch,
-    pagination: state.answerOption.pagination,
-    formValues: {
-        id: selector(state, 'id'),
-        text: selector(state, 'text'),
-        active: selector(state, 'active')
-    }
-})
-
-const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchAnswerOptions }, dispatch)
-export default connect(mapStateToProps, mapDispatchToProps)(AnswerOptionSearch)
+export default reduxForm({ form: 'answerOptionSearch' })(AnswerOptionSearch)

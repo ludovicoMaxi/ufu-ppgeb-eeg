@@ -28,14 +28,36 @@ function getPageItems(page, totalPages) {
     return items
 }
 
-export default function Pagination({ page, totalPages, totalElements, onPageChange }) {
+export const PAGE_SIZE_OPTIONS = [10, 25, 50]
+
+export default function Pagination({ page, totalPages, totalElements, onPageChange, pageSize, onPageSizeChange, onExport }) {
     if (totalElements == null) {
         return null
     }
     return (
         <div className='row align-items-center mt-2'>
             <div className='col-md-6'>
-                <span className='text-secondary'>Total de {totalElements} registro(s)</span>
+                <div className='d-flex flex-wrap align-items-center gap-2'>
+                    <span className='text-secondary'>Total de {totalElements} registro(s)</span>
+                    {!!onPageSizeChange && (
+                        <label className='d-flex align-items-center gap-2 mb-0 text-secondary'>
+                            Por página
+                            <select className='form-select form-select-sm w-auto'
+                                value={pageSize}
+                                onChange={event => onPageSizeChange(Number(event.target.value))}>
+                                {PAGE_SIZE_OPTIONS.map(size => (
+                                    <option key={size} value={size}>{size}</option>
+                                ))}
+                            </select>
+                        </label>
+                    )}
+                    {!!onExport && (
+                        <button type='button' className='btn btn-outline-secondary btn-sm'
+                            onClick={onExport}>
+                            <i className='fa fa-file-csv'></i> Exportar página (CSV)
+                        </button>
+                    )}
+                </div>
             </div>
             {totalPages > 1 && (
                 <div className='col-md-6'>

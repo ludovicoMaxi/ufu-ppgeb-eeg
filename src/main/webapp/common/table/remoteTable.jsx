@@ -52,6 +52,13 @@ export default class RemoteTable extends Component {
         }
     }
 
+    // range 'active' = linhas da pagina atual (o backend nao e consultado de novo).
+    downloadCurrentPage() {
+        if (this.table) {
+            this.table.download('csv', `${this.props.exportName || 'tabela'}.csv`, { range: 'active', delimiter: ';' });
+        }
+    }
+
     reloadFromFirstPage() {
         if (this.table.getPage() !== 1) {
             this.table.setPage(1);
@@ -79,6 +86,16 @@ export default class RemoteTable extends Component {
     }
 
     render() {
-        return <div ref={element => { this.container = element }} />;
+        return (
+            <div>
+                <div className='d-flex justify-content-end mb-2'>
+                    <button type='button' className='btn btn-outline-secondary btn-sm'
+                        onClick={() => this.downloadCurrentPage()}>
+                        <i className='fa fa-file-csv'></i> Exportar página (CSV)
+                    </button>
+                </div>
+                <div ref={element => { this.container = element }} />
+            </div>
+        );
     }
 }

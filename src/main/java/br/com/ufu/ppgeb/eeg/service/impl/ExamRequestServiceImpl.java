@@ -7,10 +7,13 @@ import java.util.List;
 import br.com.ufu.ppgeb.eeg.exception.ResourceNotFoundException;
 import br.com.ufu.ppgeb.eeg.model.ExamRequest;
 import br.com.ufu.ppgeb.eeg.repository.ExamRequestRepository;
+import br.com.ufu.ppgeb.eeg.repository.ExamRequestSpecifications;
 import br.com.ufu.ppgeb.eeg.service.ExamRequestService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -73,8 +76,8 @@ public class ExamRequestServiceImpl implements ExamRequestService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<ExamRequest> findByFilter(Long medicalRecord, Long medicalRequest,
-      Long patientId, String doctorRequestant) {
+  public Page<ExamRequest> findByFilter(Long medicalRecord, Long medicalRequest,
+      Long patientId, String doctorRequestant, Pageable pageable) {
 
     if (StringUtils.isBlank(doctorRequestant)
         && isNull(medicalRequest)
@@ -83,8 +86,10 @@ public class ExamRequestServiceImpl implements ExamRequestService {
       throw new IllegalArgumentException("Informe pelo menos um campo para consultar!");
     }
 
-    return examRequestRepository.findByFilter(medicalRecord, medicalRequest, patientId,
-        doctorRequestant);
+    return examRequestRepository.findAll(
+        ExamRequestSpecifications.withFilters(medicalRecord, medicalRequest, patientId,
+            doctorRequestant),
+        pageable);
   }
 
   @Override

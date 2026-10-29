@@ -7,21 +7,33 @@ import { Link } from 'react-router-dom'
 import { searchPatients as onSubmit, clearSearchPatients } from './patientActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
-import Pagination from '../common/pagination/pagination'
+import Pagination, { PAGE_SIZE_OPTIONS } from '../common/pagination/pagination'
+import exportCsv from '../common/table/exportCsv'
 import { upper, documentNumber as documentNumberMask } from '../common/form/formatValues'
 
 class PatientSearch extends Component {
+
+    state = { pageSize: PAGE_SIZE_OPTIONS[0] }
 
     componentWillUnmount() {
         this.props.clearSearchPatients();
     }
 
     submit = values => {
-        this.props.onSubmit(values, 0);
+        this.props.onSubmit(values, 0, this.state.pageSize);
     }
 
     onPageChange = (page) => {
-        this.props.onSubmit(this.props.formValues, page);
+        this.props.onSubmit(this.props.formValues, page, this.state.pageSize);
+    }
+
+    onPageSizeChange = (pageSize) => {
+        this.setState({ pageSize });
+        this.props.onSubmit(this.props.formValues, 0, pageSize);
+    }
+
+    onExport = () => {
+        exportCsv('pacientes.csv', EXPORT_COLUMNS, this.props.list);
     }
 
     renderRows() {
@@ -70,7 +82,7 @@ class PatientSearch extends Component {
                     <If test={!!list && list.length > 0}>
                         <div>
                             <h3>Resultado da Busca</h3>
-                            <table className='table'>
+                            <div className='table-responsive'><table className='table table-hover align-middle'>
                                 <thead>
                                     <tr>
                                         <th>Nome</th>
@@ -80,11 +92,14 @@ class PatientSearch extends Component {
                                 <tbody>
                                     {this.renderRows()}
                                 </tbody>
-                            </table>
+                            </table></div>
                             <Pagination page={this.props.pagination.number}
                                 totalPages={this.props.pagination.totalPages}
                                 totalElements={this.props.pagination.totalElements}
-                                onPageChange={this.onPageChange} />
+                                onPageChange={this.onPageChange}
+                                pageSize={this.state.pageSize}
+                                onPageSizeChange={this.onPageSizeChange}
+                                onExport={this.onExport} />
                         </div>
                     </If>
                 </Form>
@@ -95,6 +110,10 @@ class PatientSearch extends Component {
 
 PatientSearch = reduxForm({ form: 'patientSearch' })(PatientSearch)
 const SEARCH_FIELDS = ['name', 'documentNumber'];
+const EXPORT_COLUMNS = [
+    { label: 'Nome', value: patient => patient.name },
+    { label: 'CPF', value: patient => documentNumberMask(patient.documentNumber) }
+];
 const selector = formValueSelector('patientSearch')
 const mapStateToProps = state => ({
     list: state.patient.resultSearch,

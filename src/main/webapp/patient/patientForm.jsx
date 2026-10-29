@@ -110,66 +110,64 @@ class PatientForm extends Component {
                 </form >
 
                 <If test={showTabs === true}>
-                    <div>
-                        <div className='card-body'>
-                            <Tabs>
-                                <TabsHeader>
-                                    <TabHeader label='Exames' icon='notes-medical' target='tabExams' />
-                                    <TabHeader label='Requerimentos' icon='box' target='tabRequests' />
-                                </TabsHeader>
-                                <TabsContent>
-                                    <TabContent id='tabExams'>
-                                        <div>
-                                            <table className='table'>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Exame Id</th>
-                                                        <th>Data Realização</th>
-                                                        <th>Criado Em</th>
-                                                        <th>Criado Por</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {this.renderExamRows()}
-                                                </tbody>
-                                            </table>
-                                            <div className='card-footer'>
-                                                <Link to={`/patient/${patientId}/exam/add`}>
-                                                    <button type='submit'
-                                                        className={`btn btn-success`}>
-                                                        <i className="fa fa-plus"></i> Adicionar
-                                                </button>
-                                                </Link>
-                                            </div>
-                                        </div >
-                                    </TabContent>
-                                    <TabContent id='tabRequests'>
-                                        <div>
-                                            <table className='table'>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Requerimento Id</th>
-                                                        <th>Criado Em</th>
-                                                        <th>Criado Por</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {this.renderExamRequestRows()}
-                                                </tbody>
-                                            </table>
-                                            <div className='card-footer'>
-                                                <Link to={`/patient/${patientId}/exam-request/add`}>
-                                                    <button type='submit'
-                                                        className={`btn btn-success`}>
-                                                        <i className="fa fa-plus"></i> Adicionar
-                                                </button>
-                                                </Link>
-                                            </div>
-                                        </div >
-                                    </TabContent>
-                                </TabsContent>
-                            </Tabs>
-                        </div>
+                    <div className='card-body'>
+                    <Tabs>
+                        <TabsHeader>
+                            <TabHeader label='Exames' icon='notes-medical' target='tabExams' />
+                            <TabHeader label='Requerimentos' icon='box' target='tabRequests' />
+                        </TabsHeader>
+                        <TabsContent>
+                            <TabContent id='tabExams'>
+                                <div>
+                                    <div className='table-responsive'><table className='table table-hover align-middle'>
+                                        <thead>
+                                            <tr>
+                                                <th>Exame Id</th>
+                                                <th>Data Realização</th>
+                                                <th>Criado Em</th>
+                                                <th>Criado Por</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.renderExamRows()}
+                                        </tbody>
+                                    </table></div>
+                                    <div className='card-footer'>
+                                        <Link to={`/patient/${patientId}/exam/add`}>
+                                            <button type='submit'
+                                                className={`btn btn-success`}>
+                                                <i className="fa fa-plus"></i> Adicionar
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </div >
+                            </TabContent>
+                            <TabContent id='tabRequests'>
+                                <div>
+                                    <div className='table-responsive'><table className='table table-hover align-middle'>
+                                        <thead>
+                                            <tr>
+                                                <th>Requerimento Id</th>
+                                                <th>Criado Em</th>
+                                                <th>Criado Por</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.renderExamRequestRows()}
+                                        </tbody>
+                                    </table></div>
+                                    <div className='card-footer'>
+                                        <Link to={`/patient/${patientId}/exam-request/add`}>
+                                            <button type='submit'
+                                                className={`btn btn-success`}>
+                                                <i className="fa fa-plus"></i> Adicionar
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </div >
+                            </TabContent>
+                        </TabsContent>
+                    </Tabs>
                     </div>
                 </If>
             </div>

@@ -1,6 +1,4 @@
-import { pageMetadata } from '../common/pagination/pageMetadata'
-
-const INITIAL_STATE = { resultSearch: [], optionsAnswerOption: [], pagination: {} }
+const INITIAL_STATE = { optionsAnswerOption: [] }
 
 function toOptions(payload) {
     var options = [];
@@ -19,12 +17,6 @@ function optionLabel(item) {
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case 'ANSWER_OPTION_SEARCH_RESULT':
-            return {
-                ...state,
-                resultSearch: action.payload.content,
-                pagination: pageMetadata(action.payload)
-            }
         case 'OPTIONS_ANSWER_OPTION':
             return { ...state, optionsAnswerOption: toOptions(action.payload) }
         default:

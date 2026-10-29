@@ -93,7 +93,7 @@ export function toExamRequestPayload(values) {
     }
 }
 
-export function searchExam(values, page) {
+export function searchExam(values, page, size) {
 
     var errors = {}
 
@@ -105,7 +105,7 @@ export function searchExam(values, page) {
     }
 
     return dispatch => {
-        var params = `page=${page || 0}&size=${DEFAULT_PAGE_SIZE}`
+        var params = `page=${page || 0}&size=${size || DEFAULT_PAGE_SIZE}`
             + (!!values.id ? `&id=${values.id}` : '')
             + (!!values.bed ? `&bed=${values.bed}` : '');
         axios.get(`${BASE_URL_EXAM}?${params}`)

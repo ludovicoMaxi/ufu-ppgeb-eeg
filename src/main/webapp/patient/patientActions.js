@@ -47,7 +47,7 @@ export function getExamRequestByPatientId(id) {
         axios.get(`${BASE_URL_EXAM_REQUEST}?patientId=${id}`)
             .then(resp => {
                 if (!!resp.data) {
-                    dispatch({ type: 'PATIENT_EXAM_REQUEST_FETCHED', payload: resp.data });
+                    dispatch({ type: 'PATIENT_EXAM_REQUEST_FETCHED', payload: resp.data.content });
                 }
             })
             .catch(e => {
@@ -92,7 +92,7 @@ export function submitPatient(values) {
     }
 }
 
-export function searchPatients(values, page) {
+export function searchPatients(values, page, size) {
 
     var errors = {}
 
@@ -104,7 +104,7 @@ export function searchPatients(values, page) {
     }
 
     return dispatch => {
-        var params = `page=${page || 0}&size=${DEFAULT_PAGE_SIZE}`
+        var params = `page=${page || 0}&size=${size || DEFAULT_PAGE_SIZE}`
             + (!!values.name ? `&name=${values.name}` : '')
             + (!!values.documentNumber ? `&documentNumber=${onlyNumbers(values.documentNumber)}` : '');
         axios.get(`${BASE_URL_PATIENT}?${params}`)

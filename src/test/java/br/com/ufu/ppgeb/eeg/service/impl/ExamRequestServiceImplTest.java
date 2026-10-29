@@ -3,6 +3,7 @@ package br.com.ufu.ppgeb.eeg.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class ExamRequestServiceImplTest {
@@ -50,6 +56,7 @@ class ExamRequestServiceImplTest {
   private static final Long MEDICAL_RECORD_VALUE = 1000L;
   private static final String OLD_SECTOR = "OLD SECTOR";
   private static final int TWO_EXAM_REQUESTS = 2;
+  private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
   @Mock
   private ExamRequestRepository examRequestRepository;
@@ -245,26 +252,28 @@ class ExamRequestServiceImplTest {
   }
 
   @Test
-  @DisplayName("Given valid medical record when findByFilter then return matching exam requests")
-  void givenValidMedicalRecord_whenFindByFilter_thenReturnMatchingExamRequests() {
+  @DisplayName("Given valid medical record when findByFilter then return page of matching exam requests")
+  void givenValidMedicalRecord_whenFindByFilter_thenReturnPageOfMatchingExamRequests() {
     ExamRequest examRequest = Instancio.create(ExamRequest.class);
 
-    when(examRequestRepository.findByFilter(MEDICAL_RECORD_VALUE, null, null, null)).thenReturn(List.of(examRequest));
+    when(examRequestRepository.findAll(any(Specification.class), eq(PAGEABLE)))
+        .thenReturn(new PageImpl<>(List.of(examRequest), PAGEABLE, 1));
 
-    List<ExamRequest> result = examRequestService.findByFilter(MEDICAL_RECORD_VALUE, null, null, null);
+    Page<ExamRequest> result = examRequestService.findByFilter(MEDICAL_RECORD_VALUE, null, null, null, PAGEABLE);
 
-    assertThat(result).hasSize(1);
-    verify(examRequestRepository).findByFilter(MEDICAL_RECORD_VALUE, null, null, null);
+    assertThat(result.getContent()).hasSize(1);
+    assertThat(result.getTotalElements()).isEqualTo(1);
+    verify(examRequestRepository).findAll(any(Specification.class), eq(PAGEABLE));
   }
 
   @Test
   @DisplayName("Given all filter fields blank when findByFilter then throw exception")
   void givenAllFilterFieldsBlank_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> examRequestService.findByFilter(null, null, null, ""))
+    assertThatThrownBy(() -> examRequestService.findByFilter(null, null, null, "", PAGEABLE))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(MSG_FILTER_EMPTY);
 
-    verify(examRequestRepository, never()).findByFilter(any(), any(), any(), any());
+    verify(examRequestRepository, never()).findAll(any(Specification.class), any(Pageable.class));
   }
 
   @Test

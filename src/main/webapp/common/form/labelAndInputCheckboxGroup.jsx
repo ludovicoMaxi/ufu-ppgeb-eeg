@@ -3,9 +3,19 @@ import Grid from '../layout/grid'
 
 const MULTI_COLUMN_MIN_OPTIONS = 10;
 
+const toSelectedArray = value => {
+    if (Array.isArray(value)) {
+        return value;
+    }
+    if (value === undefined || value === null || value === '') {
+        return [];
+    }
+    return [value];
+};
+
 export default props => {
     const { cols, label, input, options, readOnly, meta: { error } } = props;
-    const selected = (input.value || []).map(optionId => `${optionId}`);
+    const selected = toSelectedArray(input.value).map(optionId => `${optionId}`);
     const multiColumn = (options || []).length > MULTI_COLUMN_MIN_OPTIONS;
 
     const toggle = option => {
