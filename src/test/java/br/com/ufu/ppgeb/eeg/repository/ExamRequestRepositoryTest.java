@@ -1,7 +1,6 @@
 package br.com.ufu.ppgeb.eeg.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.instancio.Select.field;
 
 import java.time.temporal.ChronoUnit;
@@ -23,7 +22,6 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -45,7 +43,6 @@ class ExamRequestRepositoryTest {
   private static final String USERNAME = "joaol";
   private static final String UPDATED_AT_FIELD = "updatedAt";
   private static final String UPDATED_BY_FIELD = "updatedBy";
-  private static final String MSG_FILTER = "Informe pelo menos um campo para consultar!";
 
   @Autowired
   private ExamRequestRepository examRequestRepository;
@@ -180,7 +177,8 @@ class ExamRequestRepositoryTest {
     ExamRequest second = examRequestRepository.save(
         createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2));
 
-    List<ExamRequest> result = examRequestRepository.findByFilter(MEDICAL_RECORD_2, null, null, null);
+    List<ExamRequest> result = examRequestRepository.findAll(
+        ExamRequestSpecifications.withFilters(MEDICAL_RECORD_2, null, null, null));
 
     assertThat(result).extracting(ExamRequest::getId).containsExactly(second.getId());
   }
@@ -192,7 +190,8 @@ class ExamRequestRepositoryTest {
     examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_1, DOCTOR_1));
     examRequestRepository.save(createExamRequest(patient, MEDICAL_RECORD_2, DOCTOR_2));
 
-    List<ExamRequest> result = examRequestRepository.findByFilter(null, null, null, "ALICE");
+    List<ExamRequest> result = examRequestRepository.findAll(
+        ExamRequestSpecifications.withFilters(null, null, null, "ALICE"));
 
     assertThat(result).extracting(ExamRequest::getDoctorRequestant).containsExactly(DOCTOR_1);
   }
@@ -206,17 +205,10 @@ class ExamRequestRepositoryTest {
     ExamRequest second = examRequestRepository.save(
         createExamRequest(patient2, MEDICAL_RECORD_2, DOCTOR_2));
 
-    List<ExamRequest> result = examRequestRepository.findByFilter(null, null, patient2.getId(), null);
+    List<ExamRequest> result = examRequestRepository.findAll(
+        ExamRequestSpecifications.withFilters(null, null, patient2.getId(), null));
 
     assertThat(result).extracting(ExamRequest::getId).containsExactly(second.getId());
-  }
-
-  @Test
-  @DisplayName("Given blank filters when findByFilter then throw exception")
-  void givenBlankFilters_whenFindByFilter_thenThrowException() {
-    assertThatThrownBy(() -> examRequestRepository.findByFilter(null, null, null, "  "))
-        .isInstanceOf(InvalidDataAccessApiUsageException.class)
-        .hasMessage(MSG_FILTER);
   }
 
   private Patient persistPatient() {

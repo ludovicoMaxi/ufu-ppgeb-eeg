@@ -107,11 +107,11 @@ export function submitQuestion(values) {
     }
 }
 
-export function searchQuestions(values, page) {
+export function searchQuestions(values, page, size) {
 
     const pageNumber = typeof page === 'number' ? page : 0;
     return dispatch => {
-        var params = `page=${pageNumber}&size=${DEFAULT_PAGE_SIZE}`
+        var params = `page=${pageNumber}&size=${size || DEFAULT_PAGE_SIZE}`
             + (!!values.id ? `&id=${values.id}` : '')
             + (!!values.text ? `&text=${encodeURIComponent(values.text)}` : '')
             + (!!values.questionType ? `&questionType=${values.questionType}` : '')

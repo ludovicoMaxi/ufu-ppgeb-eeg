@@ -7,7 +7,6 @@ import { errorMessage } from '../common/msg/errorMessage'
 
 const INITIAL_VALUES = { active: true };
 
-const DEFAULT_PAGE_SIZE = 10;
 const OPTIONS_PAGE_SIZE = 200;
 
 export function toAnswerOptionPayload(values) {
@@ -73,37 +72,6 @@ export const ACTIVE_OPTIONS = [
     { 'value': true, 'label': 'Ativa' },
     { 'value': false, 'label': 'Inativa' }
 ];
-
-export function searchAnswerOptions(values, page) {
-
-    const pageNumber = typeof page === 'number' ? page : 0;
-    return dispatch => {
-        var params = `page=${pageNumber}&size=${DEFAULT_PAGE_SIZE}`
-            + (!!values.id ? `&id=${values.id}` : '')
-            + (!!values.text ? `&text=${encodeURIComponent(values.text)}` : '')
-            + (values.active === true || values.active === false ? `&active=${values.active}` : '');
-        axios.get(`${BASE_URL_ANSWER_OPTION}?${params}`)
-            .then(resp => {
-                if (!!resp.data) {
-                    if (resp.data.content.length > 0) {
-                        dispatch({ type: 'ANSWER_OPTION_SEARCH_RESULT', payload: resp.data });
-                    }
-                    else
-                        toastr.warning('Atenção', `Nenhum resultado foi encontrado!`)
-                }
-            })
-            .catch(e => {
-                toastr.error('Erro', `Ocorreu um erro ao consultar: \n` + errorMessage(e))
-            })
-    }
-}
-
-export function clearSearchAnswerOptions() {
-
-    return dispatch => {
-        dispatch({ type: 'ANSWER_OPTION_SEARCH_RESULT', payload: [] });
-    }
-}
 
 export function removeAnswerOption(values) {
     return dispatch => {

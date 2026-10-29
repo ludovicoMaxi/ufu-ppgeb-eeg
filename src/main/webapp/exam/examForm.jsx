@@ -106,6 +106,7 @@ class ExamForm extends Component {
                     </div>
                 </form >
                 <If test={!!examId}>
+                    <div className='card-body'>
                     <Tabs>
                         <TabsHeader>
                             <TabHeader label='Medicamentos' icon='capsules' target='tabMedicine' />
@@ -136,7 +137,8 @@ class ExamForm extends Component {
                             <If test={examRequest != undefined} >
                                 <TabContent id='tabRequests'>
                                     <div>
-                                        <table className='table'>
+                                        <div className='table-responsive'>
+                                            <table className='table table-hover align-middle'>
                                             <thead>
                                                 <tr>
                                                     <th>Requerimento Id</th>
@@ -147,12 +149,14 @@ class ExamForm extends Component {
                                             <tbody>
                                                 {this.renderExamRequestRows()}
                                             </tbody>
-                                        </table>
+                                            </table>
+                                        </div>
                                     </div >
                                 </TabContent>
                             </If>
                         </TabsContent>
                     </Tabs>
+                    </div>
                 </If>
             </div>
         )

@@ -8,21 +8,33 @@ import { searchQuestions as onSubmit, clearSearchQuestions, QUESTION_TYPE_OPTION
 import LabelAndInput from '../common/form/labelAndInput'
 import LabelAndInputNativeSelect from '../common/form/labelAndInputNativeSelect'
 import If from '../common/operator/if'
-import Pagination from '../common/pagination/pagination'
+import Pagination, { PAGE_SIZE_OPTIONS } from '../common/pagination/pagination'
+import exportCsv from '../common/table/exportCsv'
 import { onlyNumbers } from '../common/form/formatValues'
 
 class QuestionSearch extends Component {
+
+    state = { pageSize: PAGE_SIZE_OPTIONS[0] }
 
     componentWillUnmount() {
         this.props.clearSearchQuestions();
     }
 
     submit = values => {
-        this.props.onSubmit(values, 0);
+        this.props.onSubmit(values, 0, this.state.pageSize);
     }
 
     onPageChange = (page) => {
-        this.props.onSubmit(this.props.formValues, page);
+        this.props.onSubmit(this.props.formValues, page, this.state.pageSize);
+    }
+
+    onPageSizeChange = (pageSize) => {
+        this.setState({ pageSize });
+        this.props.onSubmit(this.props.formValues, 0, pageSize);
+    }
+
+    onExport = () => {
+        exportCsv('questoes.csv', EXPORT_COLUMNS, this.props.list);
     }
 
     renderRows() {
@@ -80,7 +92,7 @@ class QuestionSearch extends Component {
                     <If test={!!list && list.length > 0}>
                         <div>
                             <h3>Resultado da Busca</h3>
-                            <table className='table'>
+                            <div className='table-responsive'><table className='table table-hover align-middle'>
                                 <thead>
                                     <tr>
                                         <th>Questão ID</th>
@@ -92,11 +104,14 @@ class QuestionSearch extends Component {
                                 <tbody>
                                     {this.renderRows()}
                                 </tbody>
-                            </table>
+                            </table></div>
                             <Pagination page={this.props.pagination.number}
                                 totalPages={this.props.pagination.totalPages}
                                 totalElements={this.props.pagination.totalElements}
-                                onPageChange={this.onPageChange} />
+                                onPageChange={this.onPageChange}
+                                pageSize={this.state.pageSize}
+                                onPageSizeChange={this.onPageSizeChange}
+                                onExport={this.onExport} />
                         </div>
                     </If>
                 </Form>
@@ -107,6 +122,12 @@ class QuestionSearch extends Component {
 
 QuestionSearch = reduxForm({ form: 'questionSearch' })(QuestionSearch)
 const SEARCH_FIELDS = ['id', 'text', 'questionType', 'active'];
+const EXPORT_COLUMNS = [
+    { label: 'Questão ID', value: question => question.id },
+    { label: 'Texto', value: question => question.text },
+    { label: 'Tipo', value: question => questionTypeLabel(question.questionType) },
+    { label: 'Ativa', value: question => (question.active ? 'Sim' : 'Não') }
+];
 const selector = formValueSelector('questionSearch')
 const mapStateToProps = state => ({
     list: state.question.resultSearch,

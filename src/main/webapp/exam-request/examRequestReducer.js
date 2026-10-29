@@ -1,9 +1,15 @@
-const INITIAL_STATE = { resultSearch: [], patient: {} }
+import { pageMetadata } from '../common/pagination/pageMetadata'
+
+const INITIAL_STATE = { resultSearch: [], patient: {}, pagination: {} }
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case 'EXAM_REQUEST_SEARCH_RESULT':
-            return { ...state, resultSearch: action.payload }
+            return {
+                ...state,
+                resultSearch: action.payload.content || [],
+                pagination: pageMetadata(action.payload)
+            }
         case 'PATIENT_FETCHED':
             return { ...state, patient: action.payload }
         case 'EXAM_REQUEST_EXAM_FETCHED':

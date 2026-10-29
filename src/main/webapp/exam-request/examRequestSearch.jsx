@@ -1,15 +1,36 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { reduxForm, Field, Form } from 'redux-form'
+import { reduxForm, Field, Form, formValueSelector } from 'redux-form'
 import { Link } from 'react-router-dom'
 
 import { searchExamRequest as onSubmit, clearSearchExamRequest } from './examRequestActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
+import Pagination, { PAGE_SIZE_OPTIONS } from '../common/pagination/pagination'
+import exportCsv from '../common/table/exportCsv'
 import { onlyNumbers, upper } from '../common/form/formatValues'
 
 class ExamRequestSearch extends Component {
+
+    state = { pageSize: PAGE_SIZE_OPTIONS[0] }
+
+    submit = values => {
+        this.props.onSubmit(values, 0, this.state.pageSize);
+    }
+
+    onPageChange = (page) => {
+        this.props.onSubmit(this.props.formValues, page, this.state.pageSize);
+    }
+
+    onPageSizeChange = (pageSize) => {
+        this.setState({ pageSize });
+        this.props.onSubmit(this.props.formValues, 0, pageSize);
+    }
+
+    onExport = () => {
+        exportCsv('requerimentos.csv', EXPORT_COLUMNS, this.props.list);
+    }
 
     componentWillUnmount() {
         this.props.clearSearchExamRequest();
@@ -31,7 +52,7 @@ class ExamRequestSearch extends Component {
 
         return (
             <div>
-                <Form role='form' onSubmit={handleSubmit} className='card'>
+                <Form role='form' onSubmit={handleSubmit(this.submit)} className='card'>
                     <div>
                         <div className='card-body'>
                             <fieldset>
@@ -64,7 +85,7 @@ class ExamRequestSearch extends Component {
                     <If test={!!list && list.length > 0}>
                         <div>
                             <h3>Resultado da Busca</h3>
-                            <table className='table'>
+                            <div className='table-responsive'><table className='table table-hover align-middle'>
                                 <thead>
                                     <tr>
                                         <th>Prontuário ID</th>
@@ -75,7 +96,14 @@ class ExamRequestSearch extends Component {
                                 <tbody>
                                     {this.renderRows()}
                                 </tbody>
-                            </table>
+                            </table></div>
+                            <Pagination page={this.props.pagination.number}
+                                totalPages={this.props.pagination.totalPages}
+                                totalElements={this.props.pagination.totalElements}
+                                onPageChange={this.onPageChange}
+                                pageSize={this.state.pageSize}
+                                onPageSizeChange={this.onPageSizeChange}
+                                onExport={this.onExport} />
                         </div>
                     </If>
                 </Form>
@@ -84,9 +112,18 @@ class ExamRequestSearch extends Component {
     }
 }
 
+const EXPORT_COLUMNS = [
+    { label: 'Prontuário ID', value: examRequest => examRequest.medicalRecord },
+    { label: 'Requisição ID', value: examRequest => examRequest.medicalRequest },
+    { label: 'Médico Solicitante', value: examRequest => examRequest.doctorRequestant }
+];
+
 ExamRequestSearch = reduxForm({ form: 'examRequestSearch' })(ExamRequestSearch)
+const selector = formValueSelector('examRequestSearch')
 const mapStateToProps = state => ({
-    list: state.examRequest.resultSearch
+    list: state.examRequest.resultSearch,
+    pagination: state.examRequest.pagination,
+    formValues: selector(state, 'medicalRecord', 'medicalRequest', 'doctorRequestant')
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({ onSubmit, clearSearchExamRequest }, dispatch)

@@ -4,6 +4,8 @@ import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.EXAM_REQUEST;
 import static br.com.ufu.ppgeb.eeg.constant.ApiPaths.PATH_SEPARATOR;
 import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,8 +47,10 @@ class ExamRequestControllerTest {
   private static final Long ID = 1001L;
   private static final String SECTOR = "NEUROLOGIA";
   private static final String JSON_PATH_SECTOR = "$.sector";
-  private static final String JSON_PATH_LENGTH = "$.length()";
+  private static final String JSON_PATH_CONTENT_SECTOR = "$.content[0].sector";
+  private static final String JSON_PATH_CONTENT_LENGTH = "$.content.length()";
   private static final int OPERATION_ARGUMENT_INDEX = 3;
+  private static final PageRequest PAGE_REQUEST = PageRequest.of(0, 10);
 
   @Mock
   private ExamRequestService examRequestService;
@@ -58,24 +66,25 @@ class ExamRequestControllerTest {
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(
             new ExamRequestController(examRequestService, idempotencyService))
+        .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         .setControllerAdvice(new GlobalExceptionHandler())
         .build();
   }
 
   @Test
-  @DisplayName("Given exam requests in service when listing exam requests then return exam requests")
-  void givenExamRequestsInService_whenListingExamRequests_thenReturnExamRequests()
+  @DisplayName("Given exam requests in service when listing exam requests then return exam requests page")
+  void givenExamRequestsInService_whenListingExamRequests_thenReturnExamRequestsPage()
       throws Exception {
     ExamRequest examRequest = createExamRequest();
-    when(examRequestService.findByFilter(ID, null, null, null))
-        .thenReturn(List.of(examRequest));
+    when(examRequestService.findByFilter(eq(ID), isNull(), isNull(), isNull(), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(examRequest), PAGE_REQUEST, 1));
 
     mockMvc.perform(get(EXAM_REQUEST).param("medicalRecord", String.valueOf(ID)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath(JSON_PATH_LENGTH).value(1))
-        .andExpect(jsonPath("$[0].sector").value(SECTOR));
+        .andExpect(jsonPath(JSON_PATH_CONTENT_LENGTH).value(1))
+        .andExpect(jsonPath(JSON_PATH_CONTENT_SECTOR).value(SECTOR));
 
-    verify(examRequestService).findByFilter(ID, null, null, null);
+    verify(examRequestService).findByFilter(eq(ID), isNull(), isNull(), isNull(), any(Pageable.class));
   }
 
   @Test

@@ -7,21 +7,33 @@ import { Link } from 'react-router-dom'
 import { searchQuestionnaires as onSubmit, clearSearchQuestionnaires } from './questionnaireActions'
 import LabelAndInput from '../common/form/labelAndInput'
 import If from '../common/operator/if'
-import Pagination from '../common/pagination/pagination'
+import Pagination, { PAGE_SIZE_OPTIONS } from '../common/pagination/pagination'
+import exportCsv from '../common/table/exportCsv'
 import { onlyNumbers } from '../common/form/formatValues'
 
 class QuestionnaireSearch extends Component {
+
+    state = { pageSize: PAGE_SIZE_OPTIONS[0] }
 
     componentWillUnmount() {
         this.props.clearSearchQuestionnaires();
     }
 
     submit = values => {
-        this.props.onSubmit(values, 0);
+        this.props.onSubmit(values, 0, this.state.pageSize);
     }
 
     onPageChange = (page) => {
-        this.props.onSubmit(this.props.formValues, page);
+        this.props.onSubmit(this.props.formValues, page, this.state.pageSize);
+    }
+
+    onPageSizeChange = (pageSize) => {
+        this.setState({ pageSize });
+        this.props.onSubmit(this.props.formValues, 0, pageSize);
+    }
+
+    onExport = () => {
+        exportCsv('questionarios.csv', EXPORT_COLUMNS, this.props.list);
     }
 
     renderRows() {
@@ -75,7 +87,7 @@ class QuestionnaireSearch extends Component {
                     <If test={!!list && list.length > 0}>
                         <div>
                             <h3>Resultado da Busca</h3>
-                            <table className='table'>
+                            <div className='table-responsive'><table className='table table-hover align-middle'>
                                 <thead>
                                     <tr>
                                         <th>Questionário ID</th>
@@ -87,11 +99,14 @@ class QuestionnaireSearch extends Component {
                                 <tbody>
                                     {this.renderRows()}
                                 </tbody>
-                            </table>
+                            </table></div>
                             <Pagination page={this.props.pagination.number}
                                 totalPages={this.props.pagination.totalPages}
                                 totalElements={this.props.pagination.totalElements}
-                                onPageChange={this.onPageChange} />
+                                onPageChange={this.onPageChange}
+                                pageSize={this.state.pageSize}
+                                onPageSizeChange={this.onPageSizeChange}
+                                onExport={this.onExport} />
                         </div>
                     </If>
                 </Form>
@@ -102,6 +117,12 @@ class QuestionnaireSearch extends Component {
 
 QuestionnaireSearch = reduxForm({ form: 'questionnaireSearch' })(QuestionnaireSearch)
 const SEARCH_FIELDS = ['id', 'title'];
+const EXPORT_COLUMNS = [
+    { label: 'Questionário ID', value: questionnaire => questionnaire.id },
+    { label: 'Título', value: questionnaire => questionnaire.title },
+    { label: 'Descrição', value: questionnaire => questionnaire.description },
+    { label: 'Questões', value: questionnaire => (questionnaire.questions || []).length }
+];
 const selector = formValueSelector('questionnaireSearch')
 const mapStateToProps = state => ({
     list: state.questionnaire.resultSearch,

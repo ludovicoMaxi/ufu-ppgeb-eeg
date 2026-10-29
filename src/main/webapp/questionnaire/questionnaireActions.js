@@ -68,11 +68,11 @@ export function submitQuestionnaire(values) {
     }
 }
 
-export function searchQuestionnaires(values, page) {
+export function searchQuestionnaires(values, page, size) {
 
     const pageNumber = typeof page === 'number' ? page : 0;
     return dispatch => {
-        var params = `page=${pageNumber}&size=${DEFAULT_PAGE_SIZE}`
+        var params = `page=${pageNumber}&size=${size || DEFAULT_PAGE_SIZE}`
             + (!!values.id ? `&id=${values.id}` : '')
             + (!!values.title ? `&title=${encodeURIComponent(values.title)}` : '');
         axios.get(`${BASE_URL_QUESTIONNAIRE}?${params}`)
