@@ -8,3 +8,7 @@ npm-debug.log
 .settings/
 .classpath
 .project
+
+# Dados sensiveis (nao versionar)
+src/main/resources/populate_db_dev.sql
+scripts/hom/carga_inicial_postgres.sql
