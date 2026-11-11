@@ -3,15 +3,7 @@ import Grid from '../layout/grid'
 
 const MULTI_COLUMN_MIN_OPTIONS = 10;
 
-const toSelectedArray = value => {
-    if (Array.isArray(value)) {
-        return value;
-    }
-    if (value === undefined || value === null || value === '') {
-        return [];
-    }
-    return [value];
-};
+const toSelectedArray = value => (Array.isArray(value) ? value : []);
 
 export default props => {
     const { cols, label, input, options, readOnly, meta: { error } } = props;
@@ -28,7 +20,8 @@ export default props => {
 
     const renderOption = option => (
         <div className='form-check' key={option.value}>
-            <input {...input}
+            <input
+                name={input.name}
                 type='checkbox'
                 className='form-check-input'
                 id={`${input.name}_${option.value}`}
