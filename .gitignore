@@ -10,7 +10,6 @@ npm-debug.log
 .project
 
 # Dados sensiveis (nao versionar)
-src/main/resources/populate_db_dev.sql
 scripts/hom/carga_inicial_postgres.sql
 /paciente/REGISTRO 2 SEMESTRE 2024/ANNA PAOLA 14_12_24/.~lock.Anna Paola Crosara Patronizio.odt#
 /paciente/REGISTRO 2 SEMESTRE 2024/ANNA PAOLA 14_12_24/Anna Paola Crosara Patronizio.odt
